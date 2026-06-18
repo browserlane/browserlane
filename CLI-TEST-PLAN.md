@@ -88,7 +88,7 @@ order matters). Args/flag variants exercised are noted.
 ### Phase 1 — meta (no browser)
 | Path | Tier | Asserted |
 |---|---|---|
-| `version` / `--version` | AUTO | `bl v0.1.0` |
+| `version` / `--version` | AUTO | `bl v0.1.1` |
 | `inspect` *(ext)* | AUTO | JSON `name=browserlane` |
 | `paths` | AUTO | exit 0 |
 | `is-installed` | AUTO | exit 0 (Chrome present) |
@@ -105,7 +105,7 @@ order matters). Args/flag variants exercised are noted.
 |---|---|---|
 | `daemon start` (`--headless`) | AUTO | exit 0; readiness-waited |
 | `daemon status` | AUTO | `running` |
-| `daemon status --json` | AUTO | JSON contains `0.1.0` |
+| `daemon status --json` | AUTO | JSON contains `0.1.1` |
 | `daemon stop` | AUTO | *(phase 11)* |
 
 ### Phase 3 — read-only inspection (on a local fixture)

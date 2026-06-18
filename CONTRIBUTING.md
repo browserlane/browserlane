@@ -13,7 +13,7 @@ additions** under `src/ext/`, wired through a small four-hook seam.
 git clone https://github.com/browserlane/browserlane
 cd browserlane
 cargo build --release
-./target/release/bl --version       # bl v0.1.0
+./target/release/bl --version       # bl v0.1.1
 ```
 
 The first `bl install` (or any browser command) downloads Chrome-for-Testing.

@@ -157,7 +157,7 @@ check AUTO "daemon start"  "" -- bl $G daemon start
 # before asserting status (otherwise the first status races a half-open daemon).
 for i in $(seq 1 20); do dstat="$(bl daemon status 2>&1)"; grep -qi running <<<"$dstat" && break; sleep 0.3; done
 check AUTO "daemon status" "running" -- bl daemon status
-check AUTO "daemon status" "0.1.0"   -- bl daemon status --json   # --json variant
+check AUTO "daemon status" "0.1.1"   -- bl daemon status --json   # --json variant
 
 # ===========================================================================
 phase "3 · session + read-only inspection"
