@@ -28,7 +28,7 @@ BL_VISIBLE=1 bash scripts/cli-smoke.sh   # watch it drive a real window
 
 One section navigates to `example.com` (cookies/storage need an http origin), so
 a network connection is required. The harness is bash-3.2 compatible (macOS
-system bash). Current status: **111 auto checks green · 9 manual · 109/109 live
+system bash). Current status: **112 auto checks green · 9 manual · 110/110 live
 command paths tracked**.
 
 ---
@@ -95,6 +95,7 @@ order matters). Args/flag variants exercised are noted.
 | `--help` / `help` | AUTO | lists `Available Commands` |
 | `completion bash\|zsh\|fish\|powershell` | AUTO | shell-specific token present |
 | `add-skill` (`--stdout`) | AUTO | non-empty skill text |
+| `add-mcp` (`--list`) *(ext)* | AUTO | lists MCP clients (`claude`) |
 | `install` | MANUAL | run once; verified via `is-installed` |
 | *(error)* `bl clik` | AUTO | `Did you mean … click` (cobra-exact) |
 | *(error)* `bl zzzznope` | AUTO | `unknown command`, exit 1 |

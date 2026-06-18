@@ -1,7 +1,11 @@
+use std::io::Write;
+
 use serde::Serialize;
 
 use crate::agent::ToolsCallResult;
 use crate::process;
+
+use super::style::ERROR;
 
 /// Output format for --json mode.
 #[derive(Serialize)]
@@ -45,7 +49,10 @@ pub fn print_error(err: &anyhow::Error, json_output: bool) -> ! {
         std::process::exit(1);
     }
 
-    eprintln!("Error: {err}");
+    // Colour just the "Error:" prefix (bold red) on a TTY; anstream strips the
+    // ANSI when stderr is piped/redirected or under NO_COLOR, so non-interactive
+    // and machine consumers see the same "Error: <msg>" bytes as before.
+    let _ = writeln!(anstream::stderr(), "{ERROR}Error:{ERROR:#} {err}");
     process::kill_all();
     std::process::exit(1);
 }

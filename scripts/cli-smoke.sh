@@ -144,6 +144,7 @@ check AUTO "completion zsh"        "compdef"                    -- bl completion
 check AUTO "completion fish"       "complete"                   -- bl completion fish
 check AUTO "completion powershell" "Register-ArgumentCompleter" -- bl completion powershell
 check AUTO add-skill ""                  -- bl add-skill --stdout
+check AUTO add-mcp   "claude"            -- bl add-mcp --list   # ext: lists MCP clients
 check AUTO _err:suggest "Did you mean"   -- bl clik       # cobra-exact suggestion
 check AUTO _err:unknown "unknown command" -- bl zzzznope  # cobra-exact unknown cmd
 manual install "run once; state verified by is-installed"
@@ -334,7 +335,11 @@ $COV
 EOF
   return 1
 }
-subcmds() { bl $1 --help 2>&1 | awk '/^Available Commands:/{f=1;next} f&&/^[A-Za-z][A-Za-z ]*:/{f=0} f&&/^  [a-z]/{print $1}'; }
+# The root help groups commands under section headers (Navigation:, Interaction:,
+# ...); subcommand helps list them flat. Either way commands are "  <lowercase>"
+# lines between "Available Commands:" and the "Flags:" section — headers sit at
+# column 0 so they're skipped, and we stop at Flags: (not at every "Heading:").
+subcmds() { bl $1 --help 2>&1 | awk '/^Available Commands:/{f=1;next} f&&/^Flags:/{f=0} f&&/^  [a-z]/{print $1}'; }
 Q=(""); ALLPATHS=()
 while [ ${#Q[@]} -gt 0 ]; do
   cur="${Q[0]}"; Q=("${Q[@]:1}")

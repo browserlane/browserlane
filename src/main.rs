@@ -15,6 +15,8 @@ mod log;
 mod paths;
 mod process;
 
+use std::io::IsTerminal;
+
 use clap::{Arg, ArgAction, ArgMatches, Command};
 use tokio_tungstenite::tungstenite::http::{header::AUTHORIZATION, HeaderMap, HeaderValue};
 
@@ -556,8 +558,14 @@ async fn main() {
         // ext-seam (browserlane extension hook)
         Some((name, sub)) if ext::dispatch_cli(name, sub, headless, json_output).await => {}
         _ => {
-            // Root Run in Go prints help (cobra-exact text, program name substituted).
-            print!("{}", cmd::root_help());
+            // No subcommand. On an interactive terminal, greet with the compact
+            // branded launch screen; on a pipe/redirect or under --json, print the
+            // plain help so scripts and the smoke harness see unchanged bytes.
+            if json_output || !std::io::stdout().is_terminal() {
+                print!("{}", cmd::root_help());
+            } else {
+                cmd::print_dashboard();
+            }
         }
     }
 }

@@ -29,7 +29,7 @@ jobs:
           - { target: x86_64-unknown-linux-gnu, os: ubuntu-22.04 }
           - { target: x86_64-pc-windows-msvc,   os: windows-latest }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: dtolnay/rust-toolchain@1.92.0
         with:
@@ -121,7 +121,7 @@ jobs:
             tar czf "${STAGE}.tar.gz" "$STAGE"
           fi
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: bl-${{ matrix.target }}
           path: ${{ env.ASSET }}
@@ -133,9 +133,9 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')   # only on a tag push, not on dispatch
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           path: dist
           merge-multiple: true

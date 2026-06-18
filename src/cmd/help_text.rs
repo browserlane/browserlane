@@ -19,71 +19,90 @@ Usage:
   __BROWSERLANE_PROG_NAME_PLACEHOLDER__ [command]
 
 Available Commands:
-  a11y-tree    Get the accessibility tree of the current page
-  add-skill    Install browserlane browser skill for Claude Code
-  attr         Get an HTML attribute value from an element
-  back         Navigate back in browser history
-  bidi-test    Launch browser, connect via BiDi, send session.status
-  check        Check a checkbox or radio button
-  click        Click an element (optionally navigate to URL first)
-  completion   Generate the autocompletion script for the specified shell
-  content      Replace the page HTML content
-  cookies      Manage browser cookies
-  count        Count matching elements
-  daemon       Manage the browserlane daemon (background browser process)
-  dblclick     Double-click an element
-  dialog       Handle browser dialogs (alert, confirm, prompt)
-  diff         Compare current state vs previous
-  download     Manage browser downloads
-  drag         Drag from one element to another
-  eval         Evaluate a JavaScript expression (optionally navigate to URL first)
-  fill         Clear an input field and type new text
-  find         Find elements by CSS selector or semantic locator
-  focus        Focus an element
-  forward      Navigate forward in browser history
-  frame        Find a frame by name or URL substring
-  frames       List all child frames (iframes) on the page
-  geolocation  Override the browser geolocation
+
+Navigation:
   go           Go to a URL and print page info
-  help         Help about any command
-  highlight    Highlight an element with a red outline for 3 seconds
-  hover        Hover over an element by CSS selector
-  html         Get HTML content of the page or an element
-  install      Download Chrome for Testing and chromedriver
-  is           Check element state (visible, enabled, checked, actionable)
-  is-installed Check if Chrome and chromedriver are installed (exit 0 = yes, exit 1 = no)
-  keys         Press a key or key combination
-  launch-test  Launch browser via chromedriver and print BiDi WebSocket URL
-  map          Map interactive page elements with @refs
-  mcp          Start MCP server (stdio JSON-RPC for LLM agents)
-  media        Override CSS media features
-  mouse        Mouse control (click, move, down, up)
-  page         Manage browser pages (new, close, switch)
-  pages        List all open browser pages
-  paths        Print browser and cache paths
-  pdf          Save page as PDF
-  press        Press a key on a specific element or the focused element
-  record       Record browser sessions (screenshots and snapshots)
+  back         Navigate back in browser history
+  forward      Navigate forward in browser history
   reload       Reload the current page
-  screenshot   Capture a screenshot (optionally navigate to URL first)
-  scroll       Scroll the page or an element
+  wait         Wait for an element, URL, text, page load, or JS condition
+
+Interaction:
+  click        Click an element (optionally navigate to URL first)
+  dblclick     Double-click an element
+  hover        Hover over an element by CSS selector
+  type         Type text into an element (optionally navigate to URL first)
+  fill         Clear an input field and type new text
+  press        Press a key on a specific element or the focused element
+  keys         Press a key or key combination
   select       Select an option in a <select> element
+  check        Check a checkbox or radio button
+  uncheck      Uncheck a checkbox
+  focus        Focus an element
+  scroll       Scroll the page or an element
+  drag         Drag from one element to another
+  mouse        Mouse control (click, move, down, up)
+  upload       Set files on an input[type=file] element
+
+Inspect page:
+  url          Get the current page URL
+  title        Get the current page title
+  text         Get text content of the page or an element
+  html         Get HTML content of the page or an element
+  attr         Get an HTML attribute value from an element
+  value        Get the current value of a form element
+  count        Count matching elements
+  find         Find elements by CSS selector or semantic locator
+  map          Map interactive page elements with @refs
+  a11y-tree    Get the accessibility tree of the current page
+  is           Check element state (visible, enabled, checked, actionable)
+  pages        List all open browser pages
+  frames       List all child frames (iframes) on the page
+  frame        Find a frame by name or URL substring
+
+Capture:
+  screenshot   Capture a screenshot (optionally navigate to URL first)
+  pdf          Save page as PDF
+  record       Record browser sessions (screenshots and snapshots)
+  highlight    Highlight an element with a red outline for 3 seconds
+
+Browser state & emulation:
+  cookies      Manage browser cookies
+  storage      Export or restore browser state (cookies, localStorage, sessionStorage)
+  download     Manage browser downloads
+  dialog       Handle browser dialogs (alert, confirm, prompt)
+  content      Replace the page HTML content
+  diff         Compare current state vs previous
+  viewport     Get or set the browser viewport size
+  window       Get or set the OS browser window size, position, or state
+  media        Override CSS media features
+  geolocation  Override the browser geolocation
+
+Scripting:
+  eval         Evaluate a JavaScript expression (optionally navigate to URL first)
   sleep        Pause execution for a number of milliseconds
+
+Session & daemon:
   start        Start a browser session
   stop         Stop the browser session
-  storage      Export or restore browser state (cookies, localStorage, sessionStorage)
-  text         Get text content of the page or an element
-  title        Get the current page title
-  type         Type text into an element (optionally navigate to URL first)
-  uncheck      Uncheck a checkbox
-  upload       Set files on an input[type=file] element
-  url          Get the current page URL
-  value        Get the current value of a form element
+  page         Manage browser pages (new, close, switch)
+  daemon       Manage the browserlane daemon (background browser process)
+
+Agent & MCP:
+  mcp          Start MCP server (stdio JSON-RPC for LLM agents)
+  add-mcp      Register the browserlane MCP server with a coding agent
+  add-skill    Install browserlane browser skill for Claude Code
+
+Setup & diagnostics:
+  install      Download Chrome for Testing and chromedriver
+  is-installed Check if Chrome and chromedriver are installed (exit 0 = yes, exit 1 = no)
+  paths        Print browser and cache paths
   version      Print the version number
-  viewport     Get or set the browser viewport size
-  wait         Wait for an element, URL, text, page load, or JS condition
-  window       Get or set the OS browser window size, position, or state
+  completion   Generate the autocompletion script for the specified shell
+  launch-test  Launch browser via chromedriver and print BiDi WebSocket URL
+  bidi-test    Launch browser, connect via BiDi, send session.status
   ws-test      Test WebSocket connection (type messages, see echoes)
+  help         Help about any command
 
 Flags:
       --headless   Hide browser window (visible by default)
