@@ -1,0 +1,358 @@
+---
+name: browserlane
+description: Browser automation for AI agents. Use when the user needs to navigate websites, read page content, fill forms, click elements, take screenshots, or manage browser pages.
+---
+
+# browserlane Browser Automation — CLI Reference
+
+The `bl` CLI automates Chrome via the command line. The browser auto-launches on first use (daemon mode keeps it running between commands).
+
+```
+bl go <url> && bl map && bl click @e1 && bl map
+```
+
+## Core Workflow
+
+Every browser automation follows this pattern:
+
+1. **Navigate**: `bl go <url>`
+2. **Map**: `bl map` (get element refs like `@e1`, `@e2`)
+3. **Interact**: Use refs to click, fill, select — e.g. `bl click @e1`
+4. **Re-map**: After navigation or DOM changes, get fresh refs with `bl map`
+
+## Binary Resolution
+
+Before running any commands, resolve the `bl` binary path once:
+
+1. Try `bl` directly — works if it's on your `PATH` (the normal install).
+2. Fall back to `./target/release/bl` — a local release build in the project root.
+
+Run `bl --help` (or the resolved path) to confirm it works, then use that path for every subsequent command.
+
+**Windows note:** the binary is `bl.exe`. Use forward slashes in paths and quote any path that contains spaces.
+
+## Command Chaining
+
+Chain commands with `&&` to run them sequentially. The chain stops on first error:
+
+```sh
+bl go https://example.com && bl map && bl click @e3 && bl diff map
+```
+
+**When to chain:** Use `&&` for sequences that should happen back-to-back (navigate → interact → verify). Run commands separately when you need to inspect output between steps.
+
+**When NOT to chain:** Don't chain commands that depend on parsing the previous output (e.g. reading map output to decide what to click). Run those separately so you can analyze the result first.
+
+## Commands
+
+### Discovery
+- `bl map` — map interactive elements with @refs (recommended before interacting)
+- `bl map --selector "nav"` — scope map to elements within a CSS subtree
+- `bl diff map` — compare current vs last map (see what changed)
+
+### Navigation
+- `bl go <url>` — go to a page
+- `bl back` — go back in history
+- `bl forward` — go forward in history
+- `bl reload` — reload the current page
+- `bl url` — print current URL
+- `bl title` — print page title
+
+### Reading Content
+- `bl text` — get all page text
+- `bl text "<selector>"` — get text of a specific element
+- `bl html` — get page HTML (use `--outer` for outerHTML)
+- `bl find "<selector>"` — find element, return `@e1` ref (clickable with `bl click @e1`)
+- `bl find "<selector>" --all` — find all matching elements → `@e1`, `@e2`, ... (`--limit N`)
+- `bl find text "Sign In"` — find element by text content → `@e1`
+- `bl find label "Email"` — find input by label → `@e1`
+- `bl find placeholder "Search"` — find by placeholder → `@e1`
+- `bl find testid "submit-btn"` — find by data-testid → `@e1`
+- `bl find xpath "//div[@class]"` — find by XPath → `@e1`
+- `bl find alt "Logo"` — find by alt attribute → `@e1`
+- `bl find title "Settings"` — find by title attribute → `@e1`
+- `bl find role <role>` — find element by ARIA role → `@e1` (`--name` for accessible name filter)
+- `bl eval "<js>"` — run JavaScript and print result (`--stdin` to read from stdin)
+- `bl count "<selector>"` — count matching elements
+- `bl screenshot -o file.png` — capture screenshot (`--full-page`, `--annotate`)
+- `bl a11y-tree` — accessibility tree (`--everything` for all nodes)
+
+### Interaction
+- `bl click "<selector>"` — click an element (also accepts `@ref` from map)
+- `bl dblclick "<selector>"` — double-click an element
+- `bl type "<selector>" "<text>"` — type into an input (appends to existing value)
+- `bl fill "<selector>" "<text>"` — clear field and type new text (replaces value)
+- `bl press <key> [selector]` — press a key on element or focused element
+- `bl focus "<selector>"` — focus an element
+- `bl hover "<selector>"` — hover over an element
+- `bl scroll [direction]` — scroll page (`--amount N`, `--selector`)
+- `bl scroll into-view "<selector>"` — scroll element into view (centered)
+- `bl keys "<combo>"` — press keys (Enter, Control+a, Shift+Tab)
+- `bl select "<selector>" "<value>"` — pick a dropdown option
+- `bl check "<selector>"` — check a checkbox/radio (idempotent)
+- `bl uncheck "<selector>"` — uncheck a checkbox (idempotent)
+
+### Mouse Primitives
+- `bl mouse click [x] [y]` — click at coordinates or current position (`--button 0|1|2`)
+- `bl mouse move <x> <y>` — move mouse to coordinates
+- `bl mouse down` — press mouse button (`--button 0|1|2`)
+- `bl mouse up` — release mouse button (`--button 0|1|2`)
+- `bl drag "<source>" "<target>"` — drag from one element to another
+
+### Element State
+- `bl value "<selector>"` — get input/textarea/select value
+- `bl attr "<selector>" "<attribute>"` — get HTML attribute value
+- `bl is visible "<selector>"` — check if element is visible (true/false)
+- `bl is enabled "<selector>"` — check if element is enabled (true/false)
+- `bl is checked "<selector>"` — check if checkbox/radio is checked (true/false)
+- `bl is actionable "<selector>"` — check if element is actionable (true/false)
+
+### Waiting
+- `bl wait "<selector>"` — wait for element (`--state visible|hidden|attached`, `--timeout ms`)
+- `bl wait url "<pattern>"` — wait until URL contains substring (`--timeout ms`)
+- `bl wait load` — wait until page is fully loaded (`--timeout ms`)
+- `bl wait text "<text>"` — wait until text appears on page (`--timeout ms`)
+- `bl wait fn "<expression>"` — wait until JS expression returns truthy (`--timeout ms`)
+- `bl sleep <ms>` — pause execution (max 30000ms)
+
+### Capture
+- `bl screenshot -o file.png` — capture screenshot (`--full-page`, `--annotate`)
+- `bl pdf -o file.pdf` — save page as PDF
+
+### Dialogs
+- `bl dialog accept [text]` — accept dialog (optionally with prompt text)
+- `bl dialog dismiss` — dismiss dialog
+
+### Emulation
+- `bl viewport` — get current viewport dimensions
+- `bl viewport <width> <height>` — set viewport size (`--dpr` for device pixel ratio)
+- `bl window` — get OS browser window dimensions and state
+- `bl window <width> <height> [x] [y]` — set window size and position (`--state`)
+- `bl media` — override CSS media features (`--color-scheme`, `--reduced-motion`, `--forced-colors`, `--contrast`, `--media`)
+- `bl geolocation <lat> <lng>` — override geolocation (`--accuracy`)
+- `bl content "<html>"` — replace page HTML (`--stdin` to read from stdin)
+
+### Frames
+- `bl frames` — list all iframes on the page
+- `bl frame "<nameOrUrl>"` — find a frame by name or URL substring
+
+### File Upload
+- `bl upload "<selector>" <files...>` — set files on input[type=file]
+
+### Recording
+- `bl record start` — start recording (`--screenshots`, `--snapshots`, `--name`)
+- `bl record stop` — stop recording and save ZIP (`-o path`)
+
+### Cookies
+- `bl cookies` — list all cookies
+- `bl cookies <name> <value>` — set a cookie
+- `bl cookies clear` — clear all cookies
+
+### Storage State
+- `bl storage` — export cookies + localStorage + sessionStorage (`-o state.json`)
+- `bl storage restore <path>` — restore state from JSON file
+
+### Downloads
+- `bl download dir <path>` — set download directory
+
+### Pages
+- `bl pages` — list open pages
+- `bl page new [url]` — open new page
+- `bl page switch <index|url>` — switch page
+- `bl page close [index]` — close page
+
+### Debug
+- `bl highlight "<selector>"` — highlight element visually (3 seconds)
+
+### Session
+- `bl start` — start a local browser session
+- `bl start <url>` — start connected to a remote browser
+- `bl stop` — stop the browser session
+- `bl daemon start` — start background browser
+- `bl daemon status` — check if running
+- `bl daemon stop` — stop daemon
+
+## Common Patterns
+
+### Ref-based workflow (recommended for AI)
+```sh
+bl go https://example.com
+bl map
+bl click @e1
+bl map  # re-map after interaction
+```
+
+### Verify action worked
+```sh
+bl map
+bl click @e3
+bl diff map  # see what changed
+```
+
+### Read a page
+```sh
+bl go https://example.com && bl text
+```
+
+### Fill a form (end-to-end)
+```sh
+bl go https://example.com/login
+bl map
+# Look at map output to identify form fields
+bl fill @e1 "user@example.com"
+bl fill @e2 "secret"
+bl click @e3
+bl wait url "/dashboard"
+bl screenshot -o after-login.png
+```
+
+### Scoped map (large pages)
+```sh
+bl map --selector "nav"        # Only map elements in <nav>
+bl map --selector "#sidebar"   # Only map elements in #sidebar
+bl map --selector "form"       # Only map form controls
+```
+
+### Semantic find (no CSS selectors needed)
+```sh
+bl find text "Sign In"             # → @e1 [button] "Sign In"
+bl find label "Email"              # → @e1 [input] placeholder="Email"
+bl click @e1                       # Click the found element
+bl find placeholder "Search..."    # → @e1 [input] placeholder="Search..."
+bl find testid "submit-btn"        # → @e1 [button] "Submit"
+bl find alt "Company logo"         # → @e1 [img] alt="Company logo"
+bl find title "Close"              # → @e1 [button] title="Close"
+bl find xpath "//a[@href='/about']"  # → @e1 [a] "About"
+```
+
+### Authentication with state persistence
+```sh
+# Log in once and save state
+bl go https://app.example.com/login
+bl fill "input[name=email]" "user@example.com"
+bl fill "input[name=password]" "secret"
+bl click "button[type=submit]"
+bl wait url "/dashboard"
+bl storage -o auth.json
+
+# Restore in a later session (skips login)
+bl storage restore auth.json
+bl go https://app.example.com/dashboard
+```
+
+### Extract structured data
+```sh
+bl go https://example.com
+bl eval "JSON.stringify([...document.querySelectorAll('a')].map(a => ({text: a.textContent.trim(), href: a.href})))"
+```
+
+### Check page structure without rendering
+```sh
+bl go https://example.com && bl a11y-tree
+```
+
+### Remote browser
+```sh
+bl start ws://remote-host:9515/session
+bl go https://example.com
+bl map
+bl stop
+```
+
+### Multi-page workflow
+```sh
+bl page new https://docs.example.com
+bl text "h1"
+bl page switch 0
+```
+
+### Annotated screenshot
+```sh
+bl screenshot -o annotated.png --annotate
+```
+
+### Inspect an element
+```sh
+bl attr "a" "href"
+bl value "input[name=email]"
+bl is visible ".modal"
+```
+
+### Save as PDF
+```sh
+bl go https://example.com && bl pdf -o page.pdf
+```
+
+## Eval / JavaScript
+
+`bl eval` is the escape hatch for any DOM query or mutation the CLI doesn't cover directly.
+
+**Simple expressions** — use single quotes:
+```sh
+bl eval 'document.title'
+bl eval 'document.querySelectorAll("li").length'
+```
+
+**Complex scripts** — use `--stdin` with a heredoc:
+```sh
+bl eval --stdin <<'EOF'
+const rows = [...document.querySelectorAll('table tbody tr')];
+JSON.stringify(rows.map(r => {
+  const cells = r.querySelectorAll('td');
+  return { name: cells[0].textContent.trim(), price: cells[1].textContent.trim() };
+}));
+EOF
+```
+
+**JSON output** — use `--json` to get machine-readable output:
+```sh
+bl eval --json 'JSON.stringify({url: location.href, title: document.title})'
+```
+
+**Important:** `eval` returns the expression result. If your script doesn't return a value, you'll get `null`. Always make sure the last expression evaluates to the data you want.
+
+## Timeouts and Waiting
+
+All interaction commands (`click`, `fill`, `type`, etc.) auto-wait for the target element to be actionable. You usually don't need explicit waits.
+
+Use explicit waits when:
+- **Waiting for navigation:** `bl wait url "/dashboard"` — after clicking a link that navigates
+- **Waiting for content:** `bl wait text "Success"` — after form submission, wait for confirmation
+- **Waiting for element:** `bl wait ".modal"` — wait for a modal to appear
+- **Waiting for page load:** `bl wait load` — after navigation to a slow page
+- **Waiting for JS condition:** `bl wait fn "window.appReady === true"` — wait for app initialization
+- **Fixed delay (last resort):** `bl sleep 2000` — only when no better signal exists (max 30s)
+
+All wait commands accept `--timeout <ms>` (default varies by command).
+
+## Ref Lifecycle
+
+Refs (`@e1`, `@e2`) are invalidated when the page changes. Always re-map after:
+- Clicking links or buttons that navigate
+- Form submissions
+- Dynamic content loading (dropdowns, modals)
+
+## Global Flags
+
+| Flag | Description |
+|------|-------------|
+| `--headless` | Hide browser window |
+| `--json` | Output as JSON |
+| `-v, --verbose` | Debug logging |
+
+## Tips
+
+- All click/type/hover/fill actions auto-wait for the element to be actionable
+- All selector arguments also accept `@ref` from `bl map`
+- Use `bl map` before interacting to discover interactive elements
+- Use `bl map --selector` to reduce noise on large pages
+- Use `bl fill` to replace a field's value, `bl type` to append to it
+- Use `bl find text` / `find label` / `find testid` for semantic element lookup (more reliable than CSS selectors)
+- Use `bl find role` for ARIA-role-based lookup
+- Use `bl a11y-tree` to understand page structure without visual rendering
+- Use `bl text "<selector>"` to read specific sections
+- Use `bl diff map` after interactions to see what changed
+- `bl eval` is the escape hatch for complex DOM queries
+- `bl check`/`bl uncheck` are idempotent — safe to call without checking state first
+- Screenshots save to the current directory by default (`-o` to change)
+- Use `bl storage` / `bl storage restore` to persist auth across sessions

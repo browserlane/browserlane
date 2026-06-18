@@ -1,0 +1,152 @@
+name: release
+
+# Cut a release by pushing a version tag:
+#   git tag v0.1.0 && git push origin v0.1.0
+#
+# Builds `bl` for macOS (arm64 + x64), Linux (x64), and Windows (x64), then
+# SIGNS each platform binary (macOS: Developer ID codesign + Apple notarization;
+# Windows: Azure Artifact Signing), packages with LICENSE/NOTICE/README, and
+# publishes a GitHub Release with the archives + SHA256SUMS. A manual
+# workflow_dispatch run builds + signs WITHOUT publishing (a full dry run).
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch: {}
+
+permissions:
+  contents: write        # the release job creates a GitHub Release
+
+jobs:
+  build:
+    name: build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { target: aarch64-apple-darwin,     os: macos-latest }
+          - { target: x86_64-apple-darwin,      os: macos-latest }   # Intel binary, cross-compiled (macos-13 Intel image retired 2025-12-04)
+          - { target: x86_64-unknown-linux-gnu, os: ubuntu-22.04 }
+          - { target: x86_64-pc-windows-msvc,   os: windows-latest }
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@1.92.0
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+
+      - name: Build (release)
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Stage
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${GITHUB_REF_NAME:-dev}"
+          STAGE="bl-${VERSION}-${{ matrix.target }}"
+          mkdir "$STAGE"
+          cp LICENSE NOTICE README.md "$STAGE/"
+          if [[ "${{ matrix.target }}" == *windows* ]]; then
+            cp "target/${{ matrix.target }}/release/bl.exe" "$STAGE/"
+            echo "ASSET=${STAGE}.zip" >> "$GITHUB_ENV"
+          else
+            cp "target/${{ matrix.target }}/release/bl" "$STAGE/"
+            echo "ASSET=${STAGE}.tar.gz" >> "$GITHUB_ENV"
+          fi
+          echo "STAGE=${STAGE}" >> "$GITHUB_ENV"
+
+      # macOS: Developer ID codesign (hardened runtime + secure timestamp) then
+      # notarize. A bare CLI binary can't be stapled, so Gatekeeper verifies the
+      # notarization online on first run — fine for tarball/curl distribution.
+      - name: Sign + notarize (macOS)
+        if: contains(matrix.target, 'apple-darwin')
+        env:
+          APPLE_CERT_P12_BASE64: ${{ secrets.APPLE_CERT_P12_BASE64 }}
+          APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_API_KEY_P8_BASE64: ${{ secrets.APPLE_API_KEY_P8_BASE64 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          KC="$RUNNER_TEMP/build.keychain-db"
+          KCPW="$(uuidgen)"
+          echo "$APPLE_CERT_P12_BASE64" | base64 -d > "$RUNNER_TEMP/cert.p12"
+          echo "$APPLE_API_KEY_P8_BASE64" | base64 -d > "$RUNNER_TEMP/key.p8"
+          # import the Developer ID cert into a temporary keychain
+          security create-keychain -p "$KCPW" "$KC"
+          security set-keychain-settings -lut 21600 "$KC"
+          security unlock-keychain -p "$KCPW" "$KC"
+          security import "$RUNNER_TEMP/cert.p12" -k "$KC" -P "$APPLE_CERT_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KCPW" "$KC" >/dev/null
+          security list-keychains -d user -s "$KC" $(security list-keychains -d user | sed -e 's/"//g')
+          # sign + verify
+          codesign --force --options runtime --timestamp --sign "$APPLE_SIGNING_IDENTITY" "$STAGE/bl"
+          codesign --verify --strict --verbose=2 "$STAGE/bl"
+          # notarize (zip the signed binary, submit, wait for the verdict)
+          zip -j "$RUNNER_TEMP/notarize.zip" "$STAGE/bl" >/dev/null
+          out="$(xcrun notarytool submit "$RUNNER_TEMP/notarize.zip" \
+            --key "$RUNNER_TEMP/key.p8" --key-id "$APPLE_API_KEY_ID" --issuer "$APPLE_API_ISSUER_ID" --wait)"
+          echo "$out"
+          echo "$out" | grep -q "status: Accepted" || { echo "::error::notarization not Accepted"; exit 1; }
+          rm -f "$RUNNER_TEMP/cert.p12" "$RUNNER_TEMP/key.p8"
+
+      - name: Sign (Windows — Azure Artifact Signing)
+        if: contains(matrix.target, 'windows')
+        uses: azure/artifact-signing-action@v2
+        with:
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+          signing-account-name: ${{ secrets.AZURE_CODESIGNING_ACCOUNT }}
+          certificate-profile-name: ${{ secrets.AZURE_CERT_PROFILE }}
+          files-folder: ${{ env.STAGE }}
+          files-folder-filter: exe
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+
+      - name: Archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ matrix.target }}" == *windows* ]]; then
+            7z a "${STAGE}.zip" "$STAGE" >/dev/null
+          else
+            tar czf "${STAGE}.tar.gz" "$STAGE"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bl-${{ matrix.target }}
+          path: ${{ env.ASSET }}
+          if-no-files-found: error
+
+  release:
+    name: publish release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')   # only on a tag push, not on dispatch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Checksums
+        run: cd dist && sha256sum * | tee SHA256SUMS
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --title "browserlane $GITHUB_REF_NAME" \
+            --generate-notes

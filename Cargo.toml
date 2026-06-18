@@ -1,0 +1,61 @@
+# browserlane — Browser automation for humans and AI agents, via CLI and MCP,
+# built on WebDriver BiDi in Rust. A single static binary; agent-native (CLI +
+# MCP), BiDi-only. See NOTICE for third-party license attribution.
+[package]
+name = "browserlane"
+version = "0.1.0"
+edition = "2021"
+description = "Browser automation for humans and AI agents, via CLI and MCP, built on WebDriver BiDi in Rust."
+license = "Apache-2.0"
+repository = "https://github.com/browserlane/browserlane"
+readme = "README.md"
+publish = false              # do NOT publish to crates.io yet
+
+[[bin]]
+name = "bl"
+path = "src/main.rs"
+
+[dependencies]
+# async runtime + websocket (BiDi transport)
+tokio = { version = "1", features = ["full"] }
+tokio-tungstenite = "0.24"
+futures-util = "0.3"
+
+# CLI (+ clap_complete for the `completion` command)
+clap = { version = "4", features = ["derive"] }
+clap_complete = "4"
+
+# JSON / serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# async trait methods (Session abstraction shared by router + agent)
+async-trait = "0.1"
+
+# errors + logging
+anyhow = "1"
+thiserror = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# paths / dirs
+directories = "5"
+
+# Chrome download + unzip (browser installer). rustls keeps the binary self-contained.
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream"] }
+zip = "2"
+
+# Daemon IPC: cross-platform local socket (Unix-domain socket on unix, named pipe on Windows).
+interprocess = { version = "2", features = ["tokio"] }
+
+# low-level process group signalling (process.KillAll / WaitForSignal)
+libc = "0.2"
+base64 = "0.22.1"
+
+# editing client MCP config files (format-preserving TOML) for `bl add-mcp`
+toml_edit = "0.22"
+
+[profile.release]
+strip = true
+lto = true
+codegen-units = 1

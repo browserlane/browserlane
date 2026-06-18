@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>browserlane — browser automation for humans and AI agents</title>
+  <meta name="description" content="A single Rust binary: a CLI for humans and an MCP server for AI agents, driving Chrome over WebDriver BiDi." />
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: #0b0d10;
+      color: #e6e9ef;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+    }
+    main { width: 100%; max-width: 700px; }
+    h1 { margin: 0 0 .25rem; font-size: 2.5rem; letter-spacing: -.02em; }
+    .tag { margin: 0 0 2.5rem; color: #9aa4b2; font-size: 1.15rem; }
+    h2 {
+      margin: 2rem 0 .6rem;
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: #7d8590;
+    }
+    pre {
+      margin: 0 0 1rem;
+      padding: 1rem 1.1rem;
+      background: #14171c;
+      border: 1px solid #232830;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .9rem;
+      color: #c8d0da;
+    }
+    .muted { color: #6e7681; }
+    a { color: #6cb6ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    footer { margin-top: 2.5rem; color: #6e7681; font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>browserlane</h1>
+    <p class="tag">Browser automation for humans and AI agents — one Rust binary, over WebDriver BiDi.</p>
+
+    <h2>Install — macOS / Linux</h2>
+    <pre>curl -fsSL https://browserlane.com/install.sh | sh</pre>
+
+    <h2>Install — Windows (PowerShell)</h2>
+    <pre>irm https://browserlane.com/install.ps1 | iex</pre>
+
+    <h2>Then</h2>
+    <pre>bl go https://example.com        <span class="muted"># drive a browser from the CLI</span>
+bl add-mcp claude                <span class="muted"># wire the MCP server into your agent</span></pre>
+
+    <footer>
+      <a href="https://github.com/browserlane/browserlane">GitHub →</a>
+      &nbsp;·&nbsp; Apache-2.0
+    </footer>
+  </main>
+</body>
+</html>

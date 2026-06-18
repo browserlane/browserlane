@@ -1,0 +1,13 @@
+browserlane
+Copyright 2026 Shree Munukuntla and contributors.
+
+browserlane was originally derived from the vibium browser-automation Go
+binary, distributed under the Apache License, Version 2.0:
+
+    vibium
+    Copyright 2025 VibiumDev
+    https://github.com/VibiumDev/vibium
+
+browserlane has since diverged into an independent project. Portions of its
+core remain a derivative work of vibium and are likewise licensed under the
+Apache License, Version 2.0.

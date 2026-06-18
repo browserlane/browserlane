@@ -1,0 +1,16 @@
+use clap::Command;
+use serde_json::Map;
+
+use super::daemon_client::daemon_call;
+use super::output::{print_error, print_result};
+
+pub fn pages_command() -> Command {
+    Command::new("pages").about("List all open browser pages")
+}
+
+pub async fn run_pages(headless: bool, json_output: bool) {
+    match daemon_call("browser_list_pages", Map::new(), headless).await {
+        Ok(result) => print_result(&result, json_output),
+        Err(e) => print_error(&e, json_output),
+    }
+}

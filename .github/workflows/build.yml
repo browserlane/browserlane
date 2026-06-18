@@ -1,0 +1,39 @@
+name: build (macOS / Linux / Windows)
+
+# Cross-platform build gate. We pin the toolchain so clippy lints don't drift
+# out from under us on @stable bumps.
+on:
+  push: {}
+  pull_request: {}
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    name: build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@1.92.0
+        with:
+          components: clippy
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build (release)
+        run: cargo build --release
+
+      - name: Clippy (deny new warnings; allow the known module_inception)
+        run: cargo clippy --release -- -D warnings -A clippy::module_inception
+
+      - name: Smoke test
+        shell: bash
+        run: |
+          BIN="target/release/bl"
+          [[ "${{ runner.os }}" == "Windows" ]] && BIN="target/release/bl.exe"
+          "$BIN" --version
+          "$BIN" inspect
