@@ -49,14 +49,10 @@ const AUTOGEN_HEADER =
 // there is no local `bl`. It mirrors install.sh: detect OS/arch -> target
 // triple, download bl-<version>-<target>.tar.gz from the GitHub release,
 // verify it against SHA256SUMS, extract, cache, and chmod +x. The version is
-// pinned via BL_VERSION (default: the current release tag).
+// the latest published release by default (override with BL_VERSION).
 // ---------------------------------------------------------------------------
 
 const REPO = 'browserlane/browserlane';
-// Pinned release tag used for the download fallback. Bump on each `bl` release
-// (or override per-build with the BL_VERSION env var, e.g. on Vercel).
-const DEFAULT_BL_VERSION = 'v0.1.1';
-const BL_VERSION = process.env.BL_VERSION || DEFAULT_BL_VERSION;
 // Downloaded binaries are cached here (gitignored) so repeat builds are fast.
 const CACHE_DIR = join(WEBSITE_ROOT, '.bl-cache');
 
@@ -83,7 +79,10 @@ function detectTarget() {
 
 /** Fetch a URL into a Buffer (Node built-in fetch). Throws on non-2xx. */
 async function fetchBuffer(url) {
-  const res = await fetch(url, { redirect: 'follow' });
+  const res = await fetch(url, {
+    redirect: 'follow',
+    headers: { 'User-Agent': 'browserlane-docs-gen' },
+  });
   if (!res.ok) {
     throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
   }
@@ -91,16 +90,41 @@ async function fetchBuffer(url) {
 }
 
 /**
- * Download the pinned `bl` release for the current platform, verify its
+ * Resolve which release tag to download. Pinned via BL_VERSION; when unset (or
+ * "latest"), query the GitHub API for the newest published release so the docs
+ * always build against the latest `bl` with no manual version bumping.
+ */
+async function resolveReleaseTag() {
+  const pin = process.env.BL_VERSION;
+  if (pin && pin !== 'latest') return pin;
+  try {
+    const body = (
+      await fetchBuffer(`https://api.github.com/repos/${REPO}/releases/latest`)
+    ).toString('utf8');
+    const tag = JSON.parse(body).tag_name;
+    if (!tag) throw new Error('no tag_name in the releases/latest response');
+    console.log(`[gen-reference] latest release resolved: ${tag}`);
+    return tag;
+  } catch (e) {
+    throw new Error(
+      `could not resolve the latest release tag from the GitHub API ` +
+        `(${e.message}); pin one explicitly with BL_VERSION=vX.Y.Z`,
+    );
+  }
+}
+
+/**
+ * Download the resolved `bl` release for the current platform, verify its
  * checksum against the release SHA256SUMS, extract it, cache it under
  * .bl-cache/<version>/<target>/bl, chmod +x, and return its path.
  * Caches: a present, executable cached binary short-circuits the download.
  */
 async function downloadReleaseBinary() {
   const target = detectTarget();
-  const asset = `bl-${BL_VERSION}-${target}.tar.gz`;
-  const base = `https://github.com/${REPO}/releases/download/${BL_VERSION}`;
-  const outDir = join(CACHE_DIR, BL_VERSION, target);
+  const version = await resolveReleaseTag();
+  const asset = `bl-${version}-${target}.tar.gz`;
+  const base = `https://github.com/${REPO}/releases/download/${version}`;
+  const outDir = join(CACHE_DIR, version, target);
   const outBin = join(outDir, 'bl');
 
   if (existsSync(outBin)) {
@@ -109,7 +133,7 @@ async function downloadReleaseBinary() {
   }
 
   console.log(
-    `[gen-reference] no local binary — downloading ${asset} (${BL_VERSION}, ${target})`,
+    `[gen-reference] no local binary — downloading ${asset} (${version}, ${target})`,
   );
   mkdirSync(outDir, { recursive: true });
   const tgzPath = join(outDir, asset);
@@ -121,7 +145,7 @@ async function downloadReleaseBinary() {
   } catch (e) {
     throw new Error(
       `download failed for ${asset}\n  url: ${base}/${asset}\n  cause: ${e.message}\n` +
-        `  -> is ${BL_VERSION} released for ${target}? ` +
+        `  -> is ${version} released for ${target}? ` +
         `set BL_VERSION to a valid tag, or BL_BIN to a local binary.`,
     );
   }
@@ -212,7 +236,7 @@ async function resolveBin() {
 
   // Final fallback: download a pinned release for this platform. This is the
   // path Vercel's build takes (no local `bl`).
-  tried.push(`release download (${REPO}@${BL_VERSION})`);
+  tried.push(`release download (${REPO}@${process.env.BL_VERSION || 'latest'})`);
   try {
     return await downloadReleaseBinary();
   } catch (e) {
@@ -225,9 +249,8 @@ async function resolveBin() {
         '  1. Build it:        cargo build --release   (creates target/release/bl)\n' +
         '  2. Point at it:     BL_BIN=/abs/path/to/bl pnpm gen:reference\n' +
         '  3. Put it on PATH:  ensure `bl` resolves\n' +
-        '  4. Pin a release:   BL_VERSION=vX.Y.Z (default ' +
-        DEFAULT_BL_VERSION +
-        ') so the download can find a published asset\n',
+        '  4. Pin a release:   BL_VERSION=vX.Y.Z (defaults to the latest ' +
+        'published release)\n',
     );
     process.exit(1);
   }
