@@ -11,15 +11,17 @@ The generator resolves the binary in this order:
 1. `BL_BIN` (absolute path)
 2. `../target/release/bl` (local cargo build)
 3. `bl` on `PATH`
-4. **Download a pinned release** for the current platform — detects OS/arch,
-   downloads `bl-<BL_VERSION>-<target>.tar.gz` from
-   `github.com/browserlane/browserlane/releases/download/<BL_VERSION>/…`,
+4. **Download a release binary** for the current platform — detects OS/arch,
+   resolves which release to fetch (see below), downloads
+   `bl-<tag>-<target>.tar.gz` from
+   `github.com/browserlane/browserlane/releases/download/<tag>/…`,
    verifies it against `SHA256SUMS`, caches it under `website/.bl-cache/`
    (gitignored), and `chmod +x`'s it.
 
-Step 4 is what makes the **Vercel build work without a local binary**. The pinned
-version is `BL_VERSION` (defaults to the current release tag in
-`scripts/gen-reference.mjs`; override per-environment in the Vercel dashboard).
+Step 4 is what makes the **Vercel build work without a local binary**. By default
+it builds against the **latest published release** (resolved from the GitHub API
+at build time), so the docs track new `bl` releases with no version management.
+Set `BL_VERSION=vX.Y.Z` only if you want to pin the docs to a specific tag.
 
 ---
 
@@ -32,10 +34,10 @@ These are dashboard steps only you can do:
    Vercel will pick up `website/vercel.json` (framework `nextjs`, pnpm install,
    `pnpm build`).
 3. **Environment Variables** (Project → Settings → Environment Variables):
-   - `BL_VERSION` = the release tag whose reference you want published
-     (e.g. `v0.1.1`). Optional — omit to use the default pinned in the
-     generator. Set this when you cut a new `bl` release and want the docs to
-     track it without a code change.
+   - **Leave `BL_VERSION` unset** — the generator then builds against the latest
+     published release, so the docs always track the newest `bl` automatically.
+     Set `BL_VERSION=vX.Y.Z` only if you ever want to pin the docs to a specific
+     release.
 4. **Deploy.** The first build runs `pnpm build` → `prebuild` downloads the
    Linux `bl` asset, regenerates the reference, then `next build` (webpack).
 
@@ -56,10 +58,10 @@ These are dashboard steps only you can do:
 
 ## Keeping the reference fresh on each `bl` release
 
-The reference is regenerated on every deploy, so the simplest way to refresh it
-after a `bl` release is to **trigger a Vercel deploy** (optionally bumping
-`BL_VERSION` first). Set up a Deploy Hook and ping it from the **product repo's**
-release workflow.
+The reference is regenerated on every deploy and (with `BL_VERSION` unset) always
+fetches the latest release — so refreshing the docs after a `bl` release is just
+**triggering a Vercel deploy**, no version bumping. Set up a Deploy Hook and ping
+it from the **product repo's** release workflow.
 
 ### 1. Create a Deploy Hook (your account action)
 
@@ -100,10 +102,9 @@ jobs:
           echo "Pinged Vercel deploy hook — docs will rebuild and regenerate the reference."
 ```
 
-If you want the published docs to follow the **just-released** tag automatically,
-either keep `BL_VERSION` unset and bump the default in `scripts/gen-reference.mjs`
-each release, or set `BL_VERSION` in the Vercel project to the new tag before (or
-as part of) cutting the release.
+With `BL_VERSION` unset (the recommended setup), the deploy hook is all you need:
+each release fires the workflow → Vercel rebuilds → the generator fetches the
+newly-released `bl` and regenerates the reference. No tag bumping anywhere.
 
 ---
 
@@ -120,5 +121,6 @@ To exercise the download path locally (what Vercel does), point `BL_BIN` at a
 nonexistent path so the resolver falls through to the release download:
 
 ```bash
-BL_BIN=/nonexistent BL_VERSION=v0.1.1 pnpm gen:reference
+BL_BIN=/nonexistent pnpm gen:reference          # fetches the latest release
+# or pin a specific tag:  BL_BIN=/nonexistent BL_VERSION=v0.1.1 pnpm gen:reference
 ```
