@@ -1,0 +1,70 @@
+---
+title: Overview
+description: What browserlane is, why it drives Chrome over WebDriver BiDi, and who it is for.
+---
+
+import { Card, Cards } from 'fumadocs-ui/components/card';
+
+browserlane is browser automation for **humans and AI agents**. It is one Rust
+binary, `bl`, that exposes two surfaces over the same engine:
+
+- A **CLI** for humans and scripts — `bl go`, `bl click`, `bl screenshot`,
+  `bl find`, and dozens more.
+- An **MCP server** for AI agents — `bl mcp` speaks JSON-RPC 2.0 over stdio, so
+  an agent can drive a real browser through a catalog of tools.
+
+Both surfaces drive Chrome over the **WebDriver BiDi** protocol.
+
+## Why WebDriver BiDi
+
+Most agent-facing browser tools sit on the **Chrome DevTools Protocol (CDP)** —
+Chrome's vendor-specific side-channel, the same plumbing Playwright and Puppeteer
+use underneath. browserlane instead drives Chrome **exclusively over
+[WebDriver BiDi](https://w3c.github.io/webdriver-bidi/)**, the bidirectional,
+W3C-standard protocol the browser vendors are converging toward. Building on the
+standard rather than a vendor side-channel is the core bet.
+
+## What makes it different
+
+<Cards>
+  <Card title="One static binary, no runtime">
+    `bl` ships as a single native executable for macOS, Linux, and Windows.
+    There is no Node or JVM runtime to install — download it, put it on your
+    `PATH`, and run.
+  </Card>
+  <Card title="Visible browser by default">
+    Commands open a real, visible Chrome window so you can watch automation
+    happen. Pass `--headless` when you want it hidden.
+  </Card>
+  <Card title="Auto-installs Chrome">
+    On first use, `bl` downloads a pinned build of Chrome for Testing into a
+    local cache. Run `bl install` to fetch it ahead of time.
+  </Card>
+  <Card title="Two surfaces, one engine">
+    The human CLI and the agent MCP server share the same browser engine, so an
+    automation you prototype by hand behaves the same when an agent runs it.
+  </Card>
+</Cards>
+
+## Two quickstarts
+
+Pick the on-ramp that matches how you want to use browserlane:
+
+<Cards>
+  <Card
+    title="Drive a browser yourself (CLI)"
+    href="/getting-started/first-automation-cli"
+  >
+    Run real commands — navigate, screenshot, map elements, click, read text,
+    and evaluate JavaScript.
+  </Card>
+  <Card
+    title="Wire up an AI agent (MCP)"
+    href="/getting-started/wire-up-an-agent-mcp"
+  >
+    Register the MCP server with your coding agent and let it drive Chrome with
+    natural-language prompts.
+  </Card>
+</Cards>
+
+New to browserlane? Start with [Install](/getting-started/install).

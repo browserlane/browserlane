@@ -1,0 +1,107 @@
+---
+title: Screenshots & PDFs
+description: Capture the viewport, the full page, or an annotated map — and export the page to PDF.
+---
+
+browserlane captures the page two ways: as an image with `bl screenshot`, or as
+a document with `bl pdf`. Both can navigate first, so a capture is often a
+one-liner.
+
+## Screenshots
+
+Capture the current page to a file with `-o`:
+
+```bash
+bl go https://example.com
+bl screenshot -o page.png
+```
+
+Without `-o`, the file is named `screenshot.png` in the current directory. You
+can also navigate and capture in a single command — pass the URL first:
+
+```bash
+bl screenshot https://example.com -o page.png
+```
+
+### Full page
+
+By default a screenshot captures just the visible viewport. Add `--full-page` to
+capture the entire scrollable page, top to bottom:
+
+```bash
+bl screenshot -o full.png --full-page
+```
+
+### Annotated screenshots
+
+`--annotate` overlays numbered labels on the interactive elements — the same
+elements `bl map` would list. It's a quick visual companion to the map output
+when you want to *see* where `@e1`, `@e2`, … actually are on the page:
+
+```bash
+bl map
+bl screenshot -o annotated.png --annotate
+```
+
+<Callout title="Annotate pairs with map">
+  `--annotate` is most useful alongside `bl map`: the map gives you the refs as
+  text, the annotated screenshot shows you where each one sits on the page. It's
+  a fast way to confirm you're about to act on the right element.
+</Callout>
+
+## PDFs
+
+`bl pdf` saves the current page as a PDF. Like `screenshot`, it takes `-o` (and
+defaults to `page.pdf`):
+
+```bash
+bl go https://example.com
+bl pdf -o page.pdf
+```
+
+Or navigate and export in one step:
+
+```bash
+bl pdf https://example.com -o invoice.pdf
+```
+
+A common pattern is to render a page exactly as you want it, then export — for
+example after logging in or applying a print stylesheet:
+
+```bash
+bl go https://app.example.com/report/42
+bl wait load
+bl pdf -o report.pdf
+```
+
+## Capturing in CI or on a server
+
+Every command runs a visible Chrome window by default. On a headless box, add
+`--headless` to hide it — the capture is identical either way:
+
+```bash
+bl screenshot https://example.com -o page.png --headless
+bl pdf https://example.com -o page.pdf --headless
+```
+
+## Control what's captured
+
+A screenshot reflects the page's current state, so set that up first. A few
+controls worth knowing:
+
+```bash
+bl viewport 1280 720          # set the viewport size before capturing
+bl media --color-scheme dark  # force dark mode
+bl scroll into-view ".chart"  # bring an element into view first
+```
+
+See [`bl viewport`](/cli-reference/browser-state/viewport) and
+[`bl media`](/cli-reference/browser-state/media) for the full set of emulation
+options.
+
+## Related
+
+- [`bl screenshot`](/cli-reference/capture/screenshot) and
+  [`bl pdf`](/cli-reference/capture/pdf) in the CLI reference.
+- [`bl map`](/cli-reference/inspect-page/map) — the source of the refs `--annotate` labels.
+- [Record a session](/guides/record-a-session) — capture a whole sequence of actions, not just one frame.

@@ -1,0 +1,83 @@
+---
+title: JSON output & exit codes
+description: Using the global --json flag and exit codes to script browserlane reliably.
+---
+
+browserlane is built to be scripted. Two mechanisms make its output easy to
+consume from other programs: the global `--json` flag and meaningful exit codes.
+
+## The `--json` flag
+
+`--json` is a global flag — append it to a command to get machine-readable
+output where the command produces data:
+
+```bash
+bl eval --json 'JSON.stringify({url: location.href, title: document.title})'
+```
+
+This pairs naturally with `bl eval`, which is the most common place you want a
+structured payload back. Combine it with `--stdin` for longer scripts:
+
+```bash
+bl eval --json --stdin <<'EOF'
+const rows = [...document.querySelectorAll('table tbody tr')];
+JSON.stringify(rows.map(r => {
+  const cells = r.querySelectorAll('td');
+  return { name: cells[0].textContent.trim(), price: cells[1].textContent.trim() };
+}));
+EOF
+```
+
+<Callout title="Make eval return the value">
+  `bl eval` prints the expression's result. If your script doesn't end in an
+  expression that evaluates to your data, you'll get `null` — so make the last
+  line the value you want.
+</Callout>
+
+## State checks return true / false
+
+The `bl is` checks print a plain `true` or `false`, which is easy to branch on
+in a script:
+
+```bash
+bl is visible "h1"        # prints "true" or "false"
+bl is enabled "button"
+bl is checked "#agree"
+bl is actionable ".cta"
+```
+
+```bash
+if [ "$(bl is visible '.modal')" = "true" ]; then
+  bl click ".modal .close"
+fi
+```
+
+## Exit codes for scripting
+
+Some commands signal their result through the **exit code** so you can use them
+directly in shell conditionals — no output parsing required. The clearest
+example is `bl is-installed`:
+
+```bash
+bl is-installed   # exit 0 = Chrome + chromedriver present, exit 1 = missing
+```
+
+```bash
+bl is-installed || bl install   # install Chrome only if it isn't already there
+```
+
+More generally, `bl` follows the usual convention: a command exits `0` on
+success and non-zero on failure. Chains stop on the first failure, so a sequence
+like the following won't take the screenshot if navigation fails:
+
+```bash
+bl go https://example.com && bl screenshot -o page.png
+```
+
+## Related
+
+- [`bl is`](/cli-reference/inspect-page/is),
+  [`bl is-installed`](/cli-reference/setup/is-installed), and
+  [`bl eval`](/cli-reference/scripting/eval) in the CLI reference.
+- [Auto-waiting vs. explicit waits](/concepts/auto-waiting-vs-explicit-waits) —
+  failures vs. timeouts.

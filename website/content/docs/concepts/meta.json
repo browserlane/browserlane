@@ -1,0 +1,11 @@
+{
+  "title": "Concepts",
+  "pages": [
+    "daemon-and-visible-browser",
+    "selectors-vs-refs-map-act-remap",
+    "auto-waiting-vs-explicit-waits",
+    "sessions-storage-auth",
+    "json-output-and-exit-codes",
+    "cli-vs-mcp-two-surfaces"
+  ]
+}

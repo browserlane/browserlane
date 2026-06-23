@@ -1,0 +1,10 @@
+{
+  "title": "Setup",
+  "pages": [
+    "install",
+    "is-installed",
+    "paths",
+    "version",
+    "completion"
+  ]
+}

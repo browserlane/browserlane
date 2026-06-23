@@ -1,0 +1,38 @@
+{
+  "name": "browserlane-website",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Documentation site for browserlane — browser automation for humans and AI agents.",
+  "//bundler": "dev/build pin --webpack on purpose: Next 16.2.9's default Turbopack cannot load fumadocs-mdx@15.0.12's loaders. Repro (clean .next): `next build` (and `next dev` on first MDX page request) fails with `Error: require() of ES Module .../fumadocs-mdx/dist/webpack/mdx.js from .../next/dist/compiled/loader-runner/LoaderRunner.js not supported` (Turbopack: 33 errors / dev returns HTTP 500). Webpack bundles the same source cleanly (build exit 0, 24 pages). Revisit when fumadocs-mdx ships Turbopack-compatible (non-CJS-require) loaders.",
+  "//reference": "cli-reference/ and mcp-reference/ MDX are AUTO-GENERATED from the `bl` binary by scripts/gen-reference.mjs. `gen:reference` runs it; `prebuild` re-runs it before every `next build` so the committed MDX stays fresh. Binary resolves via BL_BIN > ../target/release/bl > `bl` on PATH; prebuild fails loudly if none is found.",
+  "scripts": {
+    "gen:reference": "node scripts/gen-reference.mjs",
+    "prebuild": "node scripts/gen-reference.mjs",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
+    "start": "next start",
+    "lint": "next lint",
+    "postinstall": "fumadocs-mdx"
+  },
+  "dependencies": {
+    "fumadocs-core": "16.10.5",
+    "fumadocs-mdx": "15.0.12",
+    "fumadocs-ui": "16.10.5",
+    "next": "16.2.9",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "3.3.1",
+    "@tailwindcss/postcss": "4.3.1",
+    "@types/mdx": "2.0.14",
+    "@types/node": "24.7.0",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "eslint": "9.39.1",
+    "eslint-config-next": "16.2.9",
+    "postcss": "8.5.15",
+    "tailwindcss": "4.3.1",
+    "typescript": "5.9.3"
+  }
+}

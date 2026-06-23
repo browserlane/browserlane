@@ -1,0 +1,20 @@
+{
+  "title": "Interaction",
+  "pages": [
+    "click",
+    "dblclick",
+    "hover",
+    "type",
+    "fill",
+    "press",
+    "keys",
+    "select",
+    "check",
+    "uncheck",
+    "focus",
+    "scroll",
+    "drag",
+    "mouse",
+    "upload"
+  ]
+}

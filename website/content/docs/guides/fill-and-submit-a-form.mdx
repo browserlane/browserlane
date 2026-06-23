@@ -1,0 +1,153 @@
+---
+title: Fill & submit a form
+description: Navigate to a form, fill its fields, submit it, and verify the result — with @refs or semantic find.
+---
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+Filling a form is the same loop every time: open the page, discover the fields,
+fill them, submit, then wait for the result and confirm it. This guide shows
+both ways to target the fields — `@refs` from `bl map`, and semantic
+`bl find` — so you can pick whichever suits the page.
+
+## With @refs from `bl map`
+
+This is the workflow to reach for when you don't know the page's markup. `bl map`
+hands you a ref for every interactive element; you fill against those refs.
+
+<Steps>
+  <Step>
+    ### Open the form and map it
+
+    ```bash
+    bl go https://example.com/login
+    bl map
+    ```
+
+    `bl map` prints the interactive elements, each with a ref:
+
+    ```
+    @e1 [input] type="email"  placeholder="Email"
+    @e2 [input] type="password"
+    @e3 [button] "Sign in"
+    ```
+
+    Read that output to decide which ref is which field — don't chain past
+    `bl map` when you still need to inspect it.
+  </Step>
+  <Step>
+    ### Fill the fields
+
+    ```bash
+    bl fill @e1 "user@example.com"
+    bl fill @e2 "secret"
+    ```
+
+    `bl fill` clears the field first, then types — so it replaces any existing
+    value. Use `bl type` instead when you want to *append* to what's already
+    there.
+  </Step>
+  <Step>
+    ### Submit
+
+    ```bash
+    bl click @e3
+    ```
+
+    `bl click` auto-waits for the button to be actionable before clicking, so
+    you rarely need an explicit wait here.
+  </Step>
+  <Step>
+    ### Wait for the result, then verify
+
+    ```bash
+    bl wait url "/dashboard"
+    bl screenshot -o after-login.png
+    ```
+
+    Clicking submit navigates the page, which invalidates every `@ref` from the
+    earlier map. `bl wait url` blocks until the URL contains the substring (it
+    times out after 30s by default — pass `--timeout <ms>` to change that). If
+    the page shows a confirmation instead of navigating, wait on that text:
+
+    ```bash
+    bl wait text "Welcome back"
+    ```
+  </Step>
+</Steps>
+
+<Callout type="warn" title="Refs go stale on submit">
+  Submitting a form navigates or re-renders the page, which invalidates the
+  `@e1`, `@e2`, … refs from your earlier `bl map`. If you need to interact again
+  after submitting, run `bl map` once more for a fresh set. See
+  [Selectors vs @refs & the map → act → re-map loop](/concepts/selectors-vs-refs-map-act-remap).
+</Callout>
+
+## With semantic `bl find`
+
+When the form is stable and you can describe the fields the way a person would —
+"the Email field", "the Sign In button" — `bl find` is more robust than guessing
+CSS selectors. Each lookup returns a ref you act on exactly like a mapped one.
+
+```bash
+bl go https://example.com/login
+
+bl find label "Email"           # → @e1 [input]
+bl fill @e1 "user@example.com"
+
+bl find label "Password"        # → @e1 [input]
+bl fill @e1 "secret"
+
+bl find text "Sign in"          # → @e1 [button] "Sign in"
+bl click @e1
+
+bl wait url "/dashboard"
+```
+
+`bl find` also matches on `placeholder`, `role`, `testid`, `alt`, `title`, and
+`xpath`. For a field with no label, target its placeholder:
+
+```bash
+bl find placeholder "Search…"   # → @e1 [input]
+```
+
+You can also skip `find` entirely and fill against a CSS selector directly —
+every command that takes an element accepts one:
+
+```bash
+bl fill "input[name=email]" "user@example.com"
+bl fill "input[name=password]" "secret"
+bl click "button[type=submit]"
+```
+
+## Other field types
+
+Forms aren't just text inputs. browserlane has a command for each control:
+
+```bash
+bl select "select#country" "Canada"   # pick a dropdown option
+bl check "#terms"                      # tick a checkbox (idempotent)
+bl uncheck "#newsletter"               # untick a checkbox (idempotent)
+bl upload "input[type=file]" ./resume.pdf
+```
+
+`bl check` and `bl uncheck` are idempotent — they leave the control in the
+requested state, so you can call them without first checking whether the box is
+already ticked.
+
+## Inspect before or after
+
+To confirm a field holds what you expect, read its value back:
+
+```bash
+bl value "input[name=email]"   # → user@example.com
+bl is checked "#terms"         # → true
+```
+
+## Related
+
+- [`bl fill`](/cli-reference/interaction/fill), [`bl click`](/cli-reference/interaction/click),
+  [`bl select`](/cli-reference/interaction/select), and
+  [`bl find`](/cli-reference/inspect-page/find) in the CLI reference.
+- [Selectors vs @refs & the map → act → re-map loop](/concepts/selectors-vs-refs-map-act-remap).
+- [Auto-waiting vs. explicit waits](/concepts/auto-waiting-vs-explicit-waits) — when you need `bl wait` and when you don't.

@@ -1,0 +1,68 @@
+---
+title: Auto-waiting vs explicit waits
+description: How browserlane auto-waits for elements, and when to add an explicit wait.
+---
+
+Timing is the hardest part of browser automation. browserlane handles most of it
+for you, so you only reach for explicit waits when there's a signal it can't
+infer.
+
+## Actions auto-wait
+
+Every interaction command — `bl click`, `bl fill`, `bl type`, `bl hover`,
+`bl select`, and the rest — **auto-waits for the target element to be
+actionable** before acting. "Actionable" means visible, stable, able to receive
+events, enabled, and (for inputs) editable. You usually don't need an explicit
+wait before an action.
+
+Interaction commands have a default actionability timeout (for example,
+`bl click` defaults to 30s, tunable with `--timeout`, e.g. `--timeout 5s`). If
+the element never becomes actionable in that window, the command fails rather
+than hanging forever.
+
+## When to wait explicitly
+
+Add an explicit wait when you're waiting on something that isn't "an element
+becoming actionable" — most often **after** an action triggers navigation or
+asynchronous work. `bl wait` has a form for each signal:
+
+| You're waiting for… | Command |
+| --- | --- |
+| An element to appear / change state | `bl wait "<selector>"` (`--state attached\|visible\|hidden`) |
+| A URL to change | `bl wait url "/dashboard"` |
+| The page to finish loading | `bl wait load` |
+| Some text to appear | `bl wait text "Success"` |
+| A JS condition to become truthy | `bl wait fn "window.appReady === true"` |
+
+Every `bl wait` form accepts `--timeout <ms>` (default 30000).
+
+A common pattern — click, then wait for the resulting navigation, then verify:
+
+```bash
+bl click "button[type=submit]"
+bl wait url "/dashboard"
+bl screenshot -o after-login.png
+```
+
+## `bl sleep` is the last resort
+
+```bash
+bl sleep 2000   # pause 2 seconds (max 30000ms)
+```
+
+A fixed `bl sleep` pauses for a set number of milliseconds regardless of what the
+page is doing. Use it only when there is genuinely no better signal to wait on —
+it's slower than necessary when the page is ready early, and flaky when it isn't
+ready yet. The maximum is 30000ms.
+
+<Callout title="Prefer a real signal">
+  Reach for `bl wait url` / `bl wait text` / `bl wait fn` before `bl sleep`. A
+  condition-based wait returns as soon as the condition is met, so it's both
+  faster and more reliable than guessing a delay.
+</Callout>
+
+## Related
+
+- [`bl wait`](/cli-reference/navigation/wait) and
+  [`bl sleep`](/cli-reference/scripting/sleep) in the CLI reference.
+- [Selectors, refs, and the map/act/re-map loop](/concepts/selectors-vs-refs-map-act-remap).

@@ -1,0 +1,37 @@
+---
+title: Changelog
+description: Notable changes, additions, and fixes in each browserlane release.
+---
+
+Notable changes in each `bl` release. Versions follow the published
+[GitHub releases](https://github.com/browserlane/browserlane/releases); check
+your own build with `bl --version`.
+
+## v0.1.1 — 2026-06-18
+
+CLI UX polish on top of the v0.1.0 surface (same 65 CLI commands, 85 MCP tools).
+
+- Branded launch screen when you run `bl` with no arguments.
+- Grouped `--help` output, organized by category (Navigation, Interaction,
+  Inspect page, and so on).
+- Restrained, TTY-aware colour — colour only when writing to a terminal.
+- Fixed `bl add-mcp` so it appears correctly in the help output.
+
+## v0.1.0 — 2026-06-18
+
+First public release.
+
+- **CLI** — 65 commands for humans and scripts: navigate, interact, inspect the
+  page, capture, manage browser state and emulation, script with JavaScript, and
+  manage sessions and the daemon.
+- **MCP server** — `bl mcp` exposes 85 tools to AI agents over stdio JSON-RPC.
+- **WebDriver BiDi** — drives Chrome for Testing exclusively over the
+  W3C-standard WebDriver BiDi protocol, and auto-installs the browser on first
+  use.
+- **Persistent daemon** — `bl daemon start` keeps Chrome warm across CLI
+  invocations for sub-second command startup.
+- **One-command agent setup** — `bl add-mcp` registers the MCP server with
+  Claude Code, Claude Desktop, Cursor, VS Code, and the OpenAI Codex CLI.
+- **Universal install scripts** — a one-line installer for macOS, Linux, and
+  Windows, with checksum verification.
+- **Signed, notarized prebuilt binaries** for macOS, Linux, and Windows.

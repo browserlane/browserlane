@@ -1,0 +1,100 @@
+---
+title: Remote & multi-page
+description: Connect bl to a remote browser over a WebSocket, and coordinate work across several pages.
+---
+
+Two related needs come up once your automation grows past a single local tab:
+driving a browser that lives **somewhere else** (a cloud grid, a container), and
+working across **multiple pages** at once. browserlane handles both.
+
+## Connect to a remote browser
+
+By default `bl start` launches a local Chrome. Pass a URL and it instead
+connects to a remote browser over a WebDriver BiDi WebSocket endpoint:
+
+```bash
+bl start ws://remote-host:9515/session
+bl go https://example.com
+bl map
+bl stop
+```
+
+Once connected, every command works exactly as it does locally — the only
+difference is where the browser runs.
+
+### Connect via environment variables
+
+If you don't pass a URL, `bl start` checks the `BROWSERLANE_CONNECT_URL`
+environment variable before falling back to launching a local browser. Set
+`BROWSERLANE_CONNECT_API_KEY` to send an `Authorization: Bearer` header with the
+connection — useful for hosted browser services that require a key:
+
+```bash
+export BROWSERLANE_CONNECT_URL=wss://cloud.example.com/session
+export BROWSERLANE_CONNECT_API_KEY=my-api-key
+bl start    # connects using the env vars
+```
+
+This is the convenient form for CI: set the two variables in the environment and
+every `bl` command in the job targets the remote browser without repeating the
+URL.
+
+<Callout title="ws:// vs wss://">
+  Use `ws://` for a plaintext endpoint (typically local or inside a trusted
+  network) and `wss://` for a TLS endpoint (anything over the public internet).
+  Hosted services generally give you a `wss://` URL plus an API key.
+</Callout>
+
+## Work across multiple pages
+
+A session can hold several open pages. List them, open new ones, and switch
+between them — commands always act on the **current** page.
+
+```bash
+bl pages
+# [0] https://example.com
+# [1] https://docs.example.com
+```
+
+### Open, switch, close
+
+```bash
+bl page new https://docs.example.com   # open a new page (and navigate)
+bl text "h1"                           # acts on the new page — it's now current
+
+bl page switch 0                       # switch back to the first page by index
+bl page switch docs.example.com        # …or switch by URL substring
+
+bl page close 1                        # close page at index 1
+bl page close                          # close the current page
+```
+
+`bl page new` with no URL opens a blank page; `bl page switch` takes either a
+numeric index (from `bl pages`) or a substring of the page's URL; `bl page close`
+defaults to the current page when you omit the index.
+
+### A two-page workflow
+
+Open a reference page alongside your main one, read from it, then return:
+
+```bash
+bl go https://app.example.com
+bl page new https://docs.example.com   # second page, now current
+bl text "h1"                           # read something from the docs
+bl page switch 0                       # back to the app
+bl map                                 # carry on with the app
+```
+
+<Callout type="warn" title="Refs are per-page and per-state">
+  `@e1`, `@e2`, … come from `bl map` on whichever page was current at the time.
+  After `bl page switch`, the page underneath your refs has changed — run
+  `bl map` again on the page you switched to before acting on refs.
+</Callout>
+
+## Related
+
+- [`bl start`](/cli-reference/session-daemon/start), [`bl stop`](/cli-reference/session-daemon/stop),
+  [`bl page`](/cli-reference/session-daemon/page), and
+  [`bl pages`](/cli-reference/inspect-page/pages) in the CLI reference.
+- [Sessions, storage & auth](/concepts/sessions-storage-auth) — sessions and the remote-connect flags in depth.
+- [The daemon & the visible browser](/concepts/daemon-and-visible-browser) — how the session stays warm between commands.

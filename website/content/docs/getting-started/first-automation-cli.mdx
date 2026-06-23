@@ -1,0 +1,119 @@
+---
+title: First automation (CLI)
+description: A short, runnable walkthrough driving Chrome from the command line with bl.
+---
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+This is the human on-ramp: a handful of real `bl` commands that navigate a page,
+capture it, find elements, and interact with them. If you haven't installed
+browserlane yet, start with [Install](/getting-started/install).
+
+<Callout title="Visible by default">
+  Every command below opens a real, visible Chrome window so you can watch what
+  happens. Add `--headless` to any command to hide the window — handy on a
+  server or in CI.
+</Callout>
+
+<Steps>
+  <Step>
+    ### Open a page
+
+    ```bash
+    bl go https://example.com
+    ```
+
+    `bl go` navigates to the URL and prints basic page info. The browser stays
+    open between commands, so the next command acts on this same page.
+  </Step>
+  <Step>
+    ### Capture a screenshot
+
+    ```bash
+    bl screenshot -o page.png
+    ```
+
+    Without `-o`, the file is named `screenshot.png` in the current directory.
+    Add `--full-page` to capture the whole page instead of just the viewport.
+  </Step>
+  <Step>
+    ### Map the interactive elements
+
+    ```bash
+    bl map
+    ```
+
+    `bl map` lists the page's interactive elements and assigns each a short ref
+    like `@e1`, `@e2`. You then act on those refs directly — no CSS selectors
+    required.
+  </Step>
+  <Step>
+    ### Click something
+
+    ```bash
+    bl click @e1
+    ```
+
+    `bl click` accepts either a ref from `bl map` or a CSS selector
+    (`bl click "a"`). It auto-waits for the element to be actionable before
+    clicking. After anything that changes the page, run `bl map` again — refs
+    from the old page no longer apply.
+  </Step>
+  <Step>
+    ### Read the page text
+
+    ```bash
+    bl text
+    ```
+
+    `bl text` prints the page's text content. Pass a selector to scope it, e.g.
+    `bl text "h1"`.
+  </Step>
+  <Step>
+    ### Find an element semantically
+
+    ```bash
+    bl find text "More information"
+    ```
+
+    `bl find` locates elements without a CSS selector. Beyond `text`, it
+    supports `role`, `label`, `placeholder`, `testid`, `alt`, `title`, and
+    `xpath`. Each match comes back as a ref you can act on:
+
+    ```bash
+    bl find role button        # → @e1 [button] "Submit"
+    bl click @e1
+    ```
+  </Step>
+  <Step>
+    ### Run JavaScript
+
+    ```bash
+    bl eval "document.title"
+    ```
+
+    `bl eval` is the escape hatch for anything the CLI doesn't cover directly —
+    any DOM query or mutation. The expression's result is printed; use
+    `--stdin` to pipe in longer scripts and avoid shell-quoting headaches.
+  </Step>
+</Steps>
+
+## Chaining commands
+
+Because each command acts on the same open page, you can chain a sequence with
+`&&` — it stops on the first error:
+
+```bash
+bl go https://example.com && bl map && bl click @e1 && bl map
+```
+
+Run commands separately when you need to read one command's output before
+deciding what to do next (for example, reading `bl map` to pick which ref to
+click).
+
+## Where to go next
+
+- Learn the **map → act → re-map** loop in
+  [Selectors, refs, and the map/act/re-map loop](/concepts/selectors-vs-refs-map-act-remap).
+- Understand [auto-waiting vs. explicit waits](/concepts/auto-waiting-vs-explicit-waits).
+- Browse every command in the [CLI reference](/cli-reference).

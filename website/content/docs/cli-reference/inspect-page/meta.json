@@ -1,0 +1,19 @@
+{
+  "title": "Inspect page",
+  "pages": [
+    "url",
+    "title",
+    "text",
+    "html",
+    "attr",
+    "value",
+    "count",
+    "find",
+    "map",
+    "a11y-tree",
+    "is",
+    "pages",
+    "frames",
+    "frame"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "title": "Docs",
+  "root": true,
+  "pages": [
+    "index",
+    "getting-started",
+    "concepts",
+    "guides",
+    "cli-reference",
+    "mcp-reference",
+    "faq",
+    "changelog"
+  ]
+}

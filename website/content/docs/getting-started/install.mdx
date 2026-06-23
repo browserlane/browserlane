@@ -1,0 +1,97 @@
+---
+title: Install
+description: Install the browserlane binary on macOS, Linux, or Windows, then download Chrome for Testing.
+---
+
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+browserlane ships as a single native binary, `bl`, for macOS, Linux, and
+Windows. The fastest way to get it is the one-line installer.
+
+## One-line install
+
+<Tabs items={['macOS / Linux', 'Windows (PowerShell)']}>
+  <Tab value="macOS / Linux">
+    ```bash
+    curl -fsSL https://browserlane.com/install.sh | sh
+    ```
+  </Tab>
+  <Tab value="Windows (PowerShell)">
+    ```powershell
+    irm https://browserlane.com/install.ps1 | iex
+    ```
+  </Tab>
+</Tabs>
+
+The installer detects your platform, verifies the download's checksum, installs
+`bl`, and puts it on your `PATH`.
+
+<Callout title="Re-run to update">
+  Running the installer again fetches the latest release and replaces your
+  existing `bl` — that is the supported way to update.
+</Callout>
+
+## Manual download
+
+Prefer to grab the archive yourself? Download the asset for your platform from
+the [latest release](https://github.com/browserlane/browserlane/releases/latest),
+extract it, and put `bl` on your `PATH`.
+
+| Platform | Asset |
+| --- | --- |
+| macOS (Apple Silicon) | `bl-*-aarch64-apple-darwin.tar.gz` |
+| macOS (Intel) | `bl-*-x86_64-apple-darwin.tar.gz` |
+| Linux (x64) | `bl-*-x86_64-unknown-linux-gnu.tar.gz` |
+| Windows (x64) | `bl-*-x86_64-pc-windows-msvc.zip` |
+
+## Build from source
+
+If you'd rather build it yourself, you need Rust stable.
+
+```bash
+git clone https://github.com/browserlane/browserlane
+cd browserlane
+cargo build --release
+./target/release/bl --version
+```
+
+The binary lands at `./target/release/bl`.
+
+## First run
+
+<Steps>
+  <Step>
+    ### Download Chrome for Testing
+
+    `bl` drives a pinned build of **Chrome for Testing** (and a matching
+    chromedriver) that it keeps in a local cache. Fetch it once:
+
+    ```bash
+    bl install
+    ```
+
+    You can skip this — any browser command downloads Chrome on first use — but
+    running it up front means your first automation doesn't stall on the
+    download.
+  </Step>
+  <Step>
+    ### Verify the install
+
+    ```bash
+    bl --version
+    ```
+
+    To confirm the browser is in place, check:
+
+    ```bash
+    bl is-installed   # exit 0 = Chrome + chromedriver present, exit 1 = missing
+    bl paths          # print the cache, Chrome, and chromedriver paths
+    ```
+  </Step>
+</Steps>
+
+## Next steps
+
+- [Your first automation (CLI)](/getting-started/first-automation-cli)
+- [Wire up an agent (MCP)](/getting-started/wire-up-an-agent-mcp)
