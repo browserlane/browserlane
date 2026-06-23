@@ -1,0 +1,73 @@
+---
+title: Dialogs & downloads
+description: Handle native alert/confirm/prompt dialogs and control where downloaded files land.
+---
+
+Two things that trip up automation on real sites: native browser **dialogs**
+(`alert`, `confirm`, `prompt`) that block the page until answered, and
+**downloads** that need to land somewhere predictable. browserlane has a command
+for each.
+
+## Dialogs: accept or dismiss
+
+A native dialog — the browser's own `alert`, `confirm`, or `prompt` box — pauses
+the page until it's handled. Use `bl dialog` to answer it:
+
+```bash
+bl dialog accept          # accept (OK / Yes)
+bl dialog dismiss         # dismiss (Cancel / No)
+```
+
+For a `prompt` that asks for text, pass the answer to `accept`:
+
+```bash
+bl dialog accept "my answer"
+```
+
+A typical flow is: trigger the action that raises the dialog, then answer it.
+For example, a "Delete" button that pops a confirm:
+
+```bash
+bl map
+bl click @e3              # this raises a confirm dialog
+bl dialog accept          # confirm the deletion
+bl diff map               # verify the row is gone
+```
+
+<Callout title="Confirm vs prompt vs alert">
+  `accept` confirms an `alert`/`confirm` (and submits text for a `prompt` when
+  you pass it); `dismiss` cancels. An `alert` has only one button, so `accept`
+  and `dismiss` both just clear it.
+</Callout>
+
+## Downloads: set the directory
+
+When a click triggers a file download, point the browser at a directory first so
+you know where the file lands:
+
+```bash
+bl download dir ./downloads
+bl click @e5             # click the download link
+```
+
+After that, the downloaded file appears in `./downloads`. Set the directory once
+per session before the download happens.
+
+```bash
+# Full example: navigate, set the target dir, trigger the download
+bl go https://example.com/reports
+bl download dir ./downloads
+bl find text "Export CSV"   # → @e1
+bl click @e1
+```
+
+<Callout title="Set the directory before downloading">
+  `bl download dir` configures where *subsequent* downloads go, so set it before
+  the click that starts the download — not after.
+</Callout>
+
+## Related
+
+- [`bl dialog`](/cli-reference/browser-state/dialog) and
+  [`bl download`](/cli-reference/browser-state/download) in the CLI reference.
+- [Fill & submit a form](/guides/fill-and-submit-a-form) — the actions that often trigger these dialogs.

@@ -1,0 +1,7 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="browserlane">
+  <rect width="64" height="64" rx="14" fill="#0B0D12"/>
+  <rect x="3" y="3" width="58" height="58" rx="11" fill="none" stroke="#2B6CF6" stroke-width="2"/>
+  <text x="50%" y="50%" dy="0.34em" text-anchor="middle"
+        font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="30" font-weight="700" fill="#F5F7FA" letter-spacing="-1">bl</text>
+</svg>

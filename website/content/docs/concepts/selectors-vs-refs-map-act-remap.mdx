@@ -1,0 +1,115 @@
+---
+title: Selectors vs @refs & the map → act → re-map loop
+description: How to target elements — CSS selectors, semantic find, and @refs — and the core interaction loop.
+---
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+Every browser action needs to know **which element** to act on. browserlane
+gives you three ways to target one, and a loop that ties them together.
+
+## Three ways to target an element
+
+### 1. CSS selectors
+
+Any command that takes an element accepts a CSS selector:
+
+```bash
+bl click "button[type=submit]"
+bl fill "input[name=email]" "user@example.com"
+bl text "h1"
+```
+
+Selectors are precise when you know the page's markup, but brittle when it
+changes.
+
+### 2. Semantic find
+
+`bl find` locates elements the way a person describes them — by visible text,
+label, role, and more — instead of by markup. Each lookup returns a ref:
+
+```bash
+bl find text "Sign In"          # → @e1 [button] "Sign In"
+bl find label "Email"           # → @e1 [input]
+bl find role button             # → @e1 [button] "Submit"
+bl find role heading --name "Welcome"
+bl find placeholder "Search"
+bl find testid "submit-btn"
+```
+
+`bl find` also supports `alt`, `title`, and `xpath`, plus `--all` (with
+`--limit N`) to return every match as `@e1`, `@e2`, …. These semantic locators
+are usually more reliable than CSS selectors.
+
+### 3. `@refs` from `bl map`
+
+`bl map` scans the page for interactive elements and assigns each a short ref:
+
+```bash
+bl map
+```
+
+It prints a list like `@e1 [button] "Submit"`, `@e2 [a] "Home"`, …. You then act
+on a ref directly:
+
+```bash
+bl click @e1
+bl fill @e2 "hello"
+```
+
+Anywhere a command takes a selector, it also takes an `@ref`. On a large page,
+scope the map with `bl map --selector "form"` to cut the noise.
+
+## The map → act → re-map loop
+
+This is the core workflow, especially for agents:
+
+<Steps>
+  <Step>
+    ### Map
+
+    `bl map` to get fresh refs for what's on the page right now.
+  </Step>
+  <Step>
+    ### Act
+
+    Use a ref to click, fill, select, etc. — e.g. `bl click @e1`.
+  </Step>
+  <Step>
+    ### Re-map
+
+    After the page changes, run `bl map` again to get a new set of refs.
+  </Step>
+</Steps>
+
+```bash
+bl go https://example.com
+bl map          # → @e1, @e2, ...
+bl click @e1
+bl map          # re-map: refs are fresh for the new page state
+```
+
+To see exactly what changed between two maps, use `bl diff map`.
+
+## Ref lifecycle
+
+<Callout type="warn" title="Refs go stale when the page changes">
+  `@e1`, `@e2`, … point at a specific snapshot of the page. They are invalidated
+  by navigation, form submission, and dynamic content (dropdowns, modals,
+  client-side rendering). Always re-map after:
+
+  - clicking a link or button that navigates,
+  - submitting a form,
+  - any interaction that loads or replaces content.
+</Callout>
+
+CSS selectors and `bl find` are re-evaluated every time you use them, so they
+don't go stale the way refs do — but the element they match may still have
+changed, so re-checking after navigation is always wise.
+
+## Related
+
+- [`bl map`](/cli-reference/inspect-page/map),
+  [`bl find`](/cli-reference/inspect-page/find), and
+  [`bl diff`](/cli-reference/browser-state/diff) in the CLI reference.
+- [Auto-waiting vs. explicit waits](/concepts/auto-waiting-vs-explicit-waits).

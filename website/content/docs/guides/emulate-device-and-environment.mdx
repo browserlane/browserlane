@@ -1,0 +1,86 @@
+---
+title: Emulate a device & environment
+description: Set the viewport, window, device pixel ratio, color scheme, and geolocation to reproduce a specific environment.
+---
+
+To reproduce how a page behaves on a phone, in dark mode, or from a particular
+location, override the browser's environment before you interact or capture.
+browserlane exposes each axis as its own command.
+
+## Viewport size (and Retina)
+
+The **viewport** is the page's rendering area — the size CSS media queries and
+responsive layouts react to. Set it before capturing or testing a breakpoint:
+
+```bash
+bl viewport               # print current size, e.g. {"width":1280,"height":720,...}
+bl viewport 1280 720      # set the viewport
+bl viewport 375 812 --dpr 3   # simulate a high-density phone viewport
+```
+
+`--dpr` sets the device pixel ratio — use `2` or `3` to emulate Retina / mobile
+displays, which affects how images and `@media (resolution)` queries resolve.
+
+## OS window size, position, and state
+
+The **window** is the actual OS browser window, distinct from the viewport. Use
+it to size or place the window, or to maximize / minimize it:
+
+```bash
+bl window                       # print current window geometry + state
+bl window 1920 1080             # set window size
+bl window 1920 1080 0 0         # set size and position (x, y)
+bl window --state maximized     # state: normal, maximized, minimized, fullscreen
+```
+
+<Callout title="Viewport vs window">
+  Set the **viewport** to control what the page renders into (the size CSS
+  responds to). Set the **window** to control the OS chrome around it (position,
+  maximized/minimized state). For most layout testing and screenshots, the
+  viewport is what you want.
+</Callout>
+
+## Color scheme & other media features
+
+`bl media` overrides CSS media features so you can render a page as if the user
+had a particular preference — most commonly dark mode:
+
+```bash
+bl media --color-scheme dark        # force prefers-color-scheme: dark
+bl media --reduced-motion reduce    # force prefers-reduced-motion: reduce
+bl media --media print              # render as for printing
+bl media --color-scheme light --forced-colors active   # override several at once
+```
+
+Supported features: `--color-scheme` (`light`/`dark`/`no-preference`),
+`--reduced-motion` (`reduce`/`no-preference`), `--forced-colors`
+(`active`/`none`), `--contrast` (`more`/`less`/`no-preference`), and `--media`
+(`screen`/`print`).
+
+This pairs naturally with capture — force dark mode, then screenshot:
+
+```bash
+bl go https://example.com
+bl media --color-scheme dark
+bl screenshot -o dark.png
+```
+
+## Geolocation
+
+Override the browser's reported location to test location-aware pages:
+
+```bash
+bl geolocation 40.7128 -74.006              # latitude, longitude (New York City)
+bl geolocation 51.5074 -0.1278 --accuracy 10   # London, with 10m accuracy
+```
+
+The page's `navigator.geolocation` calls now resolve to the coordinates you set.
+`--accuracy` (in meters) controls the reported precision.
+
+## Related
+
+- [`bl viewport`](/cli-reference/browser-state/viewport),
+  [`bl window`](/cli-reference/browser-state/window),
+  [`bl media`](/cli-reference/browser-state/media), and
+  [`bl geolocation`](/cli-reference/browser-state/geolocation) in the CLI reference.
+- [Screenshots & PDFs](/guides/screenshots-and-pdfs) — capture the emulated page.

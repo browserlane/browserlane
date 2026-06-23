@@ -1,0 +1,14 @@
+{
+  "title": "Guides",
+  "pages": [
+    "fill-and-submit-a-form",
+    "scrape-structured-data",
+    "screenshots-and-pdfs",
+    "dialogs-and-downloads",
+    "emulate-device-and-environment",
+    "persist-a-login",
+    "record-a-session",
+    "remote-and-multi-page",
+    "agent-recipes"
+  ]
+}

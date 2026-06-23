@@ -1,0 +1,9 @@
+{
+  "title": "Session & daemon",
+  "pages": [
+    "start",
+    "stop",
+    "page",
+    "daemon"
+  ]
+}

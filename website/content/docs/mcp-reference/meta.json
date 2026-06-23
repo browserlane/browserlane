@@ -1,0 +1,14 @@
+{
+  "title": "MCP reference",
+  "pages": [
+    "index",
+    "navigation",
+    "interaction",
+    "inspect-page",
+    "capture",
+    "browser-state",
+    "scripting",
+    "session",
+    "page-clock"
+  ]
+}

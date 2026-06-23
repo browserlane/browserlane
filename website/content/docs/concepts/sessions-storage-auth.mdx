@@ -1,0 +1,81 @@
+---
+title: Sessions, storage & auth
+description: Starting and stopping browser sessions, persisting auth state, and connecting to a remote browser.
+---
+
+A *session* is browserlane's connection to a browser. Most of the time you don't
+manage it explicitly — a browser command starts one for you. But controlling the
+session directly is useful for remote browsers and for persisting login state.
+
+## Starting and stopping a session
+
+```bash
+bl start    # start a local browser session
+bl stop     # stop the browser session (and the daemon)
+```
+
+You rarely need `bl start` for local work, since any browser command launches a
+session on demand. It matters when you want to connect somewhere specific —
+see [Remote browser](#remote-browser) below — or control the session lifecycle
+yourself.
+
+## Persisting auth across sessions
+
+Logging in every run is slow. `bl storage` exports the browser's **cookies,
+localStorage, and sessionStorage** to JSON, and `bl storage restore` loads them
+back — so you can authenticate once and reuse that state later.
+
+```bash
+# Log in once, then save the resulting state
+bl go https://app.example.com/login
+bl fill "input[name=email]" "user@example.com"
+bl fill "input[name=password]" "secret"
+bl click "button[type=submit]"
+bl wait url "/dashboard"
+bl storage -o auth.json
+```
+
+```bash
+# In a later run, restore the state and skip the login
+bl storage restore auth.json
+bl go https://app.example.com/dashboard
+```
+
+Without `-o`, `bl storage` prints the state as JSON to stdout, so you can capture
+it however you like.
+
+<Callout type="warn" title="Treat saved state as a secret">
+  An exported state file contains live session cookies and tokens — anyone with
+  the file can act as the logged-in user. Store it securely and don't commit it.
+</Callout>
+
+## Remote browser
+
+`bl start` with a URL connects to a remote browser over a BiDi WebSocket
+endpoint instead of launching one locally:
+
+```bash
+bl start ws://remote-host:9515/session
+bl go https://example.com
+bl map
+bl stop
+```
+
+If you don't pass a URL, `bl start` checks the `BROWSERLANE_CONNECT_URL`
+environment variable before falling back to a local launch. Set
+`BROWSERLANE_CONNECT_API_KEY` to send an `Authorization: Bearer` header with the
+connection:
+
+```bash
+export BROWSERLANE_CONNECT_URL=wss://cloud.example.com/session
+export BROWSERLANE_CONNECT_API_KEY=my-api-key
+bl start    # connects using the env vars
+```
+
+## Related
+
+- [`bl start`](/cli-reference/session-daemon/start),
+  [`bl stop`](/cli-reference/session-daemon/stop), and
+  [`bl storage`](/cli-reference/browser-state/storage) in the CLI reference.
+- [The daemon & the visible browser](/concepts/daemon-and-visible-browser) — how
+  the browser stays warm across commands.

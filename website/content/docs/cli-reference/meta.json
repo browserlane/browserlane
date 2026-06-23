@@ -1,0 +1,17 @@
+{
+  "title": "CLI reference",
+  "pages": [
+    "index",
+    "cli-mcp-mapping",
+    "navigation",
+    "interaction",
+    "inspect-page",
+    "capture",
+    "browser-state",
+    "scripting",
+    "session-daemon",
+    "agent-mcp",
+    "setup",
+    "advanced"
+  ]
+}

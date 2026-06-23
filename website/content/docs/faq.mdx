@@ -1,0 +1,138 @@
+---
+title: FAQ
+description: Answers to common questions about browserlane — positioning, scope, and day-to-day use.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+Answers to the questions people ask most often about browserlane.
+
+## Why not Playwright or Puppeteer?
+
+For many teams, Playwright is the right answer. It is mature, has a large
+ecosystem, and is the better choice if you want a full testing framework today.
+
+browserlane is a different shape: one Rust binary that exposes both a CLI and an
+MCP server, with no Node or Python stack to set up. It drives Chrome over
+WebDriver BiDi and can be wired into a coding agent with one command. If you have
+a stable Playwright setup, there is no reason to throw it away. Reach for
+browserlane when you want a small single binary that **humans and agents can both
+talk to**.
+
+## How is this different from Playwright MCP servers?
+
+The difference is the shape and the protocol. browserlane is one binary with both
+the human CLI and the MCP server running on the same engine:
+
+```bash
+bl go https://example.com
+bl screenshot -o page.png
+```
+
+or point your agent at:
+
+```bash
+bl mcp
+```
+
+Most agent-facing browser tools — including Playwright-based MCP servers — drive
+Chrome over the **Chrome DevTools Protocol (CDP)**, Chrome's vendor-specific
+side-channel. browserlane instead speaks
+[WebDriver BiDi](https://w3c.github.io/webdriver-bidi/), the bidirectional,
+W3C-standard protocol the browser vendors are converging toward. Playwright-based
+servers inherit Playwright's maturity and ecosystem; browserlane is smaller,
+younger, and focused on a Rust-native CLI plus MCP over the standard protocol.
+
+## Does it only support Chrome?
+
+Yes — Chrome only, for now. browserlane drives Chrome for Testing over WebDriver
+BiDi. We would rather be clear about that than make the scope sound broader than
+it is.
+
+## Why Rust?
+
+Mainly distribution. A single static binary is a great shape for a developer tool
+— and for an MCP server that an agent needs to launch locally — because there is
+no language runtime to ship alongside it. Rust also fits the long-running daemon
+path well: predictable performance, memory safety, and clean cross-platform
+builds.
+
+## Is it production-ready?
+
+<Callout type="warn">
+  browserlane is **v0.1** and under active development. It is a great fit for
+  experiments, internal scripts, demos, and agent workflows where you can
+  tolerate the occasional rough edge and report issues. It is not yet positioned
+  as a drop-in replacement for a mature production test stack.
+</Callout>
+
+## How do I install it?
+
+One line, on macOS or Linux:
+
+```bash
+curl -fsSL https://browserlane.com/install.sh | sh
+```
+
+On Windows (PowerShell):
+
+```powershell
+irm https://browserlane.com/install.ps1 | iex
+```
+
+The installer detects your platform, verifies the download's checksum, installs
+the `bl` binary, and puts it on your `PATH`. You can also grab a signed,
+notarized archive from the
+[latest release](https://github.com/browserlane/browserlane/releases/latest) and
+put `bl` on your `PATH` yourself. See [Install](/getting-started/install) for
+details.
+
+## How do I update?
+
+Re-run the installer — it always fetches the latest release:
+
+```bash
+curl -fsSL https://browserlane.com/install.sh | sh
+```
+
+It overwrites the existing `bl` in place. Check what you are on with
+`bl --version`.
+
+## Does it run headless?
+
+Yes. The browser is **visible by default** so you can watch automation happen.
+Pass the global `--headless` flag on any command to hide the window:
+
+```bash
+bl --headless go https://example.com
+bl --headless screenshot -o page.png
+```
+
+## Which agents can I wire up?
+
+Run `bl add-mcp --list` to see every supported client. Today that is Claude Code,
+Claude Desktop, Cursor, VS Code, and the OpenAI Codex CLI:
+
+```bash
+bl add-mcp claude          # Claude Code
+bl add-mcp cursor          # Cursor
+bl add-mcp --list          # show every supported client
+```
+
+`bl add-mcp` registers the server by absolute path, so it works regardless of
+`PATH`. Add `--stdout` to print the config snippet instead of writing it. See
+[Wire up an agent](/getting-started/wire-up-an-agent-mcp) for the full walkthrough.
+
+## How do I make repeated commands faster?
+
+Start the daemon. `bl daemon start` keeps Chrome warm across CLI invocations, so
+each command starts in well under a second instead of relaunching the browser:
+
+```bash
+bl daemon start
+bl go https://example.com
+bl title
+bl daemon stop
+```
+
+See [`bl daemon`](/cli-reference/session-daemon/daemon) for the subcommands.

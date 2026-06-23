@@ -1,0 +1,100 @@
+---
+title: Record a session
+description: Record a sequence of actions to a Playwright-compatible trace you can replay and inspect.
+---
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+`bl record` captures everything that happens between a start and a stop — the
+actions, screenshots after each step, and optionally HTML snapshots — into a
+single ZIP. The output is a **Playwright-compatible trace**, so you can open it
+in the [Playwright trace viewer](https://trace.playwright.dev) and step through
+the run frame by frame.
+
+## Record, act, stop
+
+<Steps>
+  <Step>
+    ### Start recording
+
+    ```bash
+    bl record start --name "Login flow"
+    ```
+
+    Recording begins and captures a screenshot after each action by default.
+  </Step>
+  <Step>
+    ### Run your actions
+
+    Anything you do now is captured — navigation, clicks, fills, the lot:
+
+    ```bash
+    bl go https://app.example.com/login
+    bl fill "input[name=email]" "user@example.com"
+    bl fill "input[name=password]" "secret"
+    bl click "button[type=submit]"
+    bl wait url "/dashboard"
+    ```
+  </Step>
+  <Step>
+    ### Stop and save the trace
+
+    ```bash
+    bl record stop -o trace.zip
+    ```
+
+    Without `-o`, the trace is saved to `record.zip` in the current directory.
+  </Step>
+</Steps>
+
+## Open the trace
+
+Drag the resulting `trace.zip` onto [trace.playwright.dev](https://trace.playwright.dev),
+or open it with the Playwright CLI if you have it installed:
+
+```bash
+npx playwright show-trace trace.zip
+```
+
+You get a timeline of every action with the screenshot captured after it — handy
+for debugging a flow or sharing a repro.
+
+## Recording options
+
+Set these on `bl record start`:
+
+| Flag | What it does |
+| --- | --- |
+| `--name <name>` | Name for the recording. |
+| `--title <title>` | Title shown in the trace viewer (defaults to the name). |
+| `--screenshots` | Capture a screenshot after each action. **On by default** — pass `--screenshots=false` to turn it off. |
+| `--snapshots` | Also capture HTML snapshots of the DOM at each step. |
+| `--format <fmt>` | Screenshot format: `jpeg` (default) or `png` (larger, lossless). |
+| `--quality <0.0–1.0>` | JPEG quality (default `0.5`; ignored for PNG). |
+| `--sources` | Include source information in the trace. |
+
+A more configured example — DOM snapshots, lossless PNG screenshots, a custom
+viewer title:
+
+```bash
+bl record start --name "checkout" --title "Checkout end-to-end" --snapshots --format png
+# ... run actions ...
+bl record stop -o checkout-trace.zip
+```
+
+<Callout title="Snapshots add weight">
+  `--snapshots` captures the full DOM at every step, which makes traces much
+  richer to inspect but considerably larger. Leave it off for quick captures;
+  turn it on when you need to see exactly what the page looked like at each step.
+</Callout>
+
+<Callout type="warn" title="Recordings capture whatever you type">
+  Screenshots and snapshots include the page as rendered — values you fill into
+  forms, including credentials, can end up in the trace. Treat trace files like
+  the screenshots they contain and don't share them carelessly.
+</Callout>
+
+## Related
+
+- [`bl record`](/cli-reference/capture/record) in the CLI reference.
+- [Screenshots & PDFs](/guides/screenshots-and-pdfs) — capture a single frame instead of a whole session.

@@ -1,0 +1,118 @@
+---
+title: Scrape structured data
+description: Pull clean, structured data off a page with bl eval — inline, from a heredoc, or as JSON.
+---
+
+When you need *data* rather than a screenshot, `bl eval` is the tool. It runs
+JavaScript in the page and prints whatever the final expression evaluates to.
+Build an array of plain objects, `JSON.stringify` it, and you have a clean
+record set you can pipe straight into `jq`, a file, or your program.
+
+## The pattern
+
+Query the DOM, map each node to an object, stringify the array:
+
+```bash
+bl go https://example.com
+bl eval "JSON.stringify([...document.querySelectorAll('a')].map(a => ({ text: a.textContent.trim(), href: a.href })))"
+```
+
+That prints a JSON array of `{ text, href }` for every link on the page.
+
+<Callout title="Make the last expression your data">
+  `bl eval` returns the value of the final expression. If your script ends on a
+  statement that doesn't produce a value, you'll get `null`. Always finish with
+  the `JSON.stringify(...)` (or the value) you actually want back.
+</Callout>
+
+## Longer scripts: `--stdin` with a heredoc
+
+Inline one-liners get unreadable fast, and shell quoting fights you. For
+anything non-trivial, pipe the script in with `--stdin` and a quoted heredoc —
+the `'EOF'` quoting stops the shell from touching `$`, backticks, or quotes
+inside:
+
+```bash
+bl eval --stdin <<'EOF'
+const rows = [...document.querySelectorAll('table tbody tr')];
+JSON.stringify(rows.map(r => {
+  const cells = r.querySelectorAll('td');
+  return {
+    name:  cells[0].textContent.trim(),
+    price: cells[1].textContent.trim(),
+  };
+}));
+EOF
+```
+
+You can also pipe a script file in the same way:
+
+```bash
+bl eval --stdin < scrape.js
+```
+
+## Machine-readable output: `--json`
+
+By default `bl eval` prints the raw result. Add the global `--json` flag for
+machine-readable output, which is handy when a program is parsing the result and
+wants a consistent shape:
+
+```bash
+bl eval --json "JSON.stringify({ url: location.href, title: document.title })"
+```
+
+Since the result is already valid JSON, you can pipe it into `jq`:
+
+```bash
+bl eval "JSON.stringify([...document.querySelectorAll('.product')].map(p => ({
+  name:  p.querySelector('.name')?.textContent.trim(),
+  price: p.querySelector('.price')?.textContent.trim(),
+})))" | jq '.[] | select(.price != null)'
+```
+
+## Scrape across multiple pages
+
+When the data spans paginated or linked pages, drive navigation between evals.
+Re-run the extraction after each `bl go`:
+
+```bash
+bl go "https://example.com/list?page=1"
+bl eval --stdin <<'EOF' > page1.json
+JSON.stringify([...document.querySelectorAll('.item')].map(el => el.textContent.trim()));
+EOF
+
+bl go "https://example.com/list?page=2"
+bl eval --stdin <<'EOF' > page2.json
+JSON.stringify([...document.querySelectorAll('.item')].map(el => el.textContent.trim()));
+EOF
+```
+
+If items load lazily, wait for them before extracting:
+
+```bash
+bl go https://example.com/feed
+bl wait ".item"          # wait for the first item to attach
+bl scroll down --amount 5
+bl wait text "Load more"
+bl eval "JSON.stringify([...document.querySelectorAll('.item')].map(el => el.textContent.trim()))"
+```
+
+## When you just need text, not structure
+
+If you only want a section's text — not structured records — skip `eval` and
+read it directly. This is cheaper and avoids writing any JavaScript:
+
+```bash
+bl text "article"        # text of one element
+bl text                  # all page text
+bl count ".result"       # how many matched
+bl attr "a.download" "href"
+```
+
+## Related
+
+- [`bl eval`](/cli-reference/scripting/eval), [`bl text`](/cli-reference/inspect-page/text),
+  [`bl count`](/cli-reference/inspect-page/count), and
+  [`bl attr`](/cli-reference/inspect-page/attr) in the CLI reference.
+- [JSON output & exit codes](/concepts/json-output-and-exit-codes) — what `--json` wraps your result in.
+- [Auto-waiting vs. explicit waits](/concepts/auto-waiting-vs-explicit-waits) — handling lazily-loaded content.

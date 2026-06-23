@@ -1,0 +1,58 @@
+---
+title: "CLI vs MCP: two surfaces"
+description: One browser engine exposed two ways — the human CLI and the agent-facing MCP server — and when to use each.
+---
+
+browserlane is **one engine behind two surfaces**. The same browser automation
+core is exposed as a human-facing CLI and as an MCP server for agents. They
+drive Chrome the same way; they differ only in how you talk to them.
+
+## The two surfaces
+
+| | CLI | MCP server |
+| --- | --- | --- |
+| Who uses it | People and shell scripts | AI agents |
+| How you invoke it | `bl <command> …` | `bl mcp` (JSON-RPC 2.0 over stdio) |
+| How you target work | You type commands | The agent calls tools from prompts |
+
+The CLI is what you've seen throughout these docs: `bl go`, `bl map`,
+`bl click`, and the rest. The MCP server, started with `bl mcp`, exposes
+equivalent capability as a catalog of tools an agent can call — you register it
+once with `bl add-mcp` (see [Wire up an agent](/getting-started/wire-up-an-agent-mcp)).
+
+## When to use which
+
+**Reach for the CLI when** you're driving the browser yourself, scripting a
+repeatable task, wiring automation into CI, or prototyping a flow you'll later
+hand to an agent.
+
+**Reach for the MCP when** an AI agent should drive the browser from
+natural-language instructions — exploring a page, filling a form, or extracting
+data as part of a larger agent task.
+
+Because both surfaces share one engine, a flow you work out by hand on the CLI
+behaves the same when an agent runs it through the MCP.
+
+## The surfaces are not 1:1
+
+The MCP tools cover the same engine, but they are **not a one-to-one mirror** of
+the CLI commands:
+
+- Some verbs are **renamed** — `bl go` is `browser_navigate` on the MCP side.
+- Some single commands **split** into get/set tool pairs — `bl viewport` becomes
+  `browser_get_viewport` plus `browser_set_viewport`.
+- A few capabilities (like the page-clock controls) are **MCP-only**.
+- The setup, daemon, and agent-wiring plumbing (`bl install`, `bl daemon`,
+  `bl add-mcp`) is **CLI-only**.
+
+<Callout title="See the exact correspondence">
+  The [CLI ↔ MCP mapping](/cli-reference/cli-mcp-mapping) lists how every `bl`
+  command lines up with the MCP tools, including the renames and the
+  CLI-only / MCP-only cases.
+</Callout>
+
+## Related
+
+- [Wire up an agent (MCP)](/getting-started/wire-up-an-agent-mcp).
+- [MCP reference](/mcp-reference) — the full tool catalog.
+- [`bl mcp`](/cli-reference/agent-mcp/mcp) in the CLI reference.

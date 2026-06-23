@@ -1,0 +1,85 @@
+---
+title: Wire up an agent (MCP)
+description: Register the browserlane MCP server with your coding agent and drive Chrome with prompts.
+---
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+This is the agent on-ramp. `bl mcp` is an **MCP server** (JSON-RPC 2.0 over
+stdio) that exposes browser automation as a catalog of tools. Once it's
+registered with your agent, you drive Chrome with natural-language prompts and
+the agent calls the tools for you.
+
+<Steps>
+  <Step>
+    ### Install Chrome once
+
+    ```bash
+    bl install
+    ```
+
+    This downloads Chrome for Testing up front so the agent's first browser
+    action doesn't stall on the download.
+  </Step>
+  <Step>
+    ### Register the MCP server
+
+    Wire `bl mcp` into your agent with a single command. `bl` registers itself
+    by **absolute path**, so it works regardless of `PATH`:
+
+    ```bash
+    bl add-mcp claude          # Claude Code
+    bl add-mcp claude-desktop  # Claude Desktop
+    bl add-mcp cursor          # Cursor
+    bl add-mcp vscode          # VS Code (.vscode/mcp.json, current project)
+    bl add-mcp codex           # OpenAI Codex CLI
+    ```
+
+    Run `bl add-mcp --list` to see the supported clients. Add `--stdout` to
+    **print** the config snippet instead of writing the client's config file —
+    useful when you want to drop it in by hand or wire up a client that isn't
+    listed.
+  </Step>
+  <Step>
+    ### (Claude Code) Install the browser skill
+
+    ```bash
+    bl add-skill
+    ```
+
+    For Claude Code, `bl add-skill` installs a browser skill that teaches the
+    agent browserlane's workflow. Add `--stdout` to print the skill content
+    instead of installing it.
+  </Step>
+</Steps>
+
+<Callout title="The MCP and CLI are not 1:1">
+  The MCP tools cover the same engine as the CLI, but the surfaces differ — some
+  verbs are renamed and a few tools are MCP-only. See the
+  [CLI ↔ MCP mapping](/cli-reference/cli-mcp-mapping) for the full correspondence,
+  and the [MCP reference](/mcp-reference) for the tool catalog.
+</Callout>
+
+## Prompt the agent
+
+Once it's wired up, just describe what you want. The agent maps the page, acts on
+elements, and re-maps as the page changes:
+
+> Open example.com, then click the "More information" link and tell me where it
+> goes.
+
+> Go to my app's login page, fill in the email and password fields, submit, and
+> screenshot the dashboard.
+
+> Open this product page and extract every item's name and price as JSON.
+
+Under the hood the agent follows the same **map → act → re-map** loop you'd use
+by hand. To understand that loop, read
+[Selectors, refs, and the map/act/re-map loop](/concepts/selectors-vs-refs-map-act-remap).
+
+## Where to go next
+
+- [CLI vs. MCP — two surfaces](/concepts/cli-vs-mcp-two-surfaces)
+- [MCP reference](/mcp-reference) — the full tool catalog.
+- [`bl add-mcp`](/cli-reference/agent-mcp/add-mcp) and
+  [`bl add-skill`](/cli-reference/agent-mcp/add-skill) in the CLI reference.

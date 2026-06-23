@@ -1,0 +1,181 @@
+---
+title: Agent recipes
+description: A playbook for driving browserlane from an AI agent — the map/act/re-map loop, ref hygiene, token-efficient reading, and verification.
+---
+
+This is the field guide for an agent driving browserlane — whether you call the
+`bl` CLI directly or go through the MCP server. The commands below are written as
+CLI verbs, but each one **corresponds to an MCP tool** (for example `bl map` →
+`browser_map`, `bl go` → `browser_navigate`). If you're connected over MCP, use
+the tool; the patterns are identical. See the
+[CLI ↔ MCP mapping](/cli-reference/cli-mcp-mapping) for the full correspondence
+and the [MCP reference](/mcp-reference) for every tool's parameters.
+
+## The core loop: map → act → re-map
+
+Almost every task is this loop. Don't act blind — discover the page first, act on
+what you found, then re-discover after the page changes.
+
+1. **Map** — `bl map` lists interactive elements as refs (`@e1`, `@e2`, …).
+2. **Act** — use a ref: `bl click @e1`, `bl fill @e2 "text"`.
+3. **Re-map** — after the page changes, `bl map` again for fresh refs.
+
+```bash
+bl go https://example.com
+bl map            # → @e1, @e2, ...
+bl click @e1
+bl map            # re-map: the previous refs no longer apply
+```
+
+## Ref hygiene: refs go stale
+
+Refs point at a snapshot of the page. They are **invalidated** by navigation,
+form submission, and dynamic content (dropdowns, modals, client-side renders).
+The single most common agent mistake is reusing a ref across a page change.
+
+<Callout type="warn" title="Re-map after anything that changes the page">
+  Always run `bl map` again after: clicking a link or button that navigates,
+  submitting a form, or any interaction that loads or replaces content. A ref
+  from before the change may now point at the wrong element — or nothing.
+</Callout>
+
+CSS selectors and `bl find` are re-evaluated every time you use them, so they
+don't go stale the way refs do. When a page is volatile, preferring `bl find` /
+selectors over cached refs is more robust.
+
+## Chaining: `&&` vs separate commands
+
+Use `&&` to run a known sequence back-to-back; the chain stops on the first
+error:
+
+```bash
+bl go https://example.com && bl map && bl click @e1 && bl diff map
+```
+
+**Don't chain a command whose next step depends on reading the output.** If you
+need to look at `bl map` to decide which ref to click, run it on its own, read
+the result, then issue the click. Chaining past a decision point means acting on
+guesses.
+
+- **Chain:** navigate → act → verify, when each step is predetermined.
+- **Separate:** anything where you must parse output before the next move
+  (reading a map, extracting data, branching on page state).
+
+## Read token-efficiently
+
+Pulling the entire page is expensive and noisy. Read the *minimum* that answers
+the question:
+
+```bash
+bl text "main"          # text of one region, not the whole page
+bl map --selector "nav" # map only the elements inside <nav>
+bl a11y-tree            # compact structural view, no visual rendering
+```
+
+- `bl text "<selector>"` scopes reading to one element — far cheaper than
+  `bl text` on the whole document.
+- `bl map --selector "<css>"` cuts a large page's map down to the subtree you
+  care about (`form`, `#sidebar`, `nav`).
+- `bl a11y-tree` gives you the page's structure and roles without the markup —
+  often the cheapest way to understand a page's shape.
+- Prefer `bl count "<selector>"` or `bl attr` when you need one number or one
+  attribute rather than a block of text.
+
+## Prefer semantic `bl find` for reliability
+
+When you can describe an element the way a person would, `bl find` is more robust
+than a brittle CSS selector — and it returns a ref you act on like any other:
+
+```bash
+bl find text "Sign In"          # → @e1 [button] "Sign In"
+bl find label "Email"           # → @e1 [input]
+bl find role button --name "Submit"
+bl click @e1
+```
+
+`bl find` also matches `placeholder`, `testid`, `alt`, `title`, and `xpath`. Reach
+for it before resorting to a hand-built CSS selector.
+
+## Verify your actions worked
+
+Don't assume an action succeeded — check. `bl diff map` shows what changed
+between the last map and now, which is the quickest confirmation that a click did
+something:
+
+```bash
+bl map
+bl click @e3
+bl diff map      # see exactly what changed on the page
+```
+
+Other cheap verifications:
+
+```bash
+bl wait url "/dashboard"   # confirm a navigation actually happened
+bl wait text "Success"     # confirm a confirmation message appeared
+bl is checked "#terms"     # confirm a checkbox is in the expected state
+bl value "input[name=q]"   # read a field back to confirm it filled
+```
+
+## `bl eval` is the escape hatch
+
+When no command fits — a complex DOM query, a computed value, a bit of
+mutation — drop into JavaScript with `bl eval`. Make the final expression the
+value you want back:
+
+```bash
+bl eval "document.querySelectorAll('li').length"
+bl eval "JSON.stringify([...document.querySelectorAll('a')].map(a => ({ text: a.textContent.trim(), href: a.href })))"
+```
+
+For longer scripts, pipe them in with `--stdin` to dodge shell-quoting issues —
+see [Scrape structured data](/guides/scrape-structured-data) for the heredoc
+form.
+
+## Persist auth instead of logging in every run
+
+Logging in on every task is slow and flaky. Authenticate once, save the state,
+and restore it next time:
+
+```bash
+# Once: log in, then snapshot cookies + localStorage + sessionStorage
+bl go https://app.example.com/login
+bl fill "input[name=email]" "user@example.com"
+bl fill "input[name=password]" "secret"
+bl click "button[type=submit]"
+bl wait url "/dashboard"
+bl storage -o auth.json
+
+# Later: restore and skip the login entirely
+bl storage restore auth.json
+bl go https://app.example.com/dashboard
+```
+
+See [Persist a login](/guides/persist-a-login) for the full workflow and the
+security caveats around the state file.
+
+## A complete recipe, end to end
+
+Navigate, read to decide, act, and verify — with re-maps at every page change:
+
+```bash
+bl go https://app.example.com/search
+bl find label "Search"          # → @e1
+bl fill @e1 "wireless headphones"
+bl keys Enter
+bl wait text "results"          # results loaded
+bl map                          # re-map: the page changed
+# read the map output, pick the first result's ref, then:
+bl click @e1
+bl wait load
+bl diff map                     # confirm we landed on a product page
+bl text "h1"                    # read the product title
+```
+
+## Related
+
+- [CLI ↔ MCP mapping](/cli-reference/cli-mcp-mapping) — which MCP tool each `bl` verb corresponds to.
+- [MCP reference](/mcp-reference) — every tool and its parameters.
+- [Wire up an agent (MCP)](/getting-started/wire-up-an-agent-mcp) — point your agent at the MCP server.
+- [Selectors vs @refs & the map → act → re-map loop](/concepts/selectors-vs-refs-map-act-remap) and
+  [Auto-waiting vs. explicit waits](/concepts/auto-waiting-vs-explicit-waits).

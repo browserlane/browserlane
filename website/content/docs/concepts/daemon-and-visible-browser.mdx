@@ -1,0 +1,54 @@
+---
+title: The daemon & the visible browser
+description: Why the browser is visible by default, how to hide it, and how the daemon keeps Chrome warm.
+---
+
+browserlane drives a **real Chrome window** — by default, one you can see.
+
+## Visible by default
+
+When you run a browser command, `bl` opens a visible Chrome for Testing window
+and performs the action there. This is deliberate: watching automation happen
+makes it far easier to understand and debug than staring at headless logs.
+
+To hide the window, pass the global `--headless` flag:
+
+```bash
+bl go https://example.com --headless
+```
+
+`--headless` is a global flag, so it works on any command. Use it on servers, in
+CI, or whenever you don't need to watch.
+
+## The daemon keeps Chrome warm
+
+Launching Chrome takes a moment. If every `bl` command had to start a fresh
+browser, a sequence of commands would be slow. The **daemon** solves this: it
+keeps a browser process running in the background so subsequent commands attach
+to the already-warm browser and return in well under a second.
+
+```bash
+bl daemon start    # start the background browser process
+bl daemon status   # check whether it's running
+bl daemon stop     # stop it
+```
+
+With the daemon running, commands like `bl go`, `bl map`, and `bl click` reuse
+the same warm browser instead of relaunching per command.
+
+<Callout title="Platform detail">
+  The daemon's IPC uses a Unix-domain socket on macOS and Linux, and a named
+  pipe (`\\.\pipe\browserlane`) on Windows.
+</Callout>
+
+## Sessions vs. the daemon
+
+The daemon is about **keeping the browser warm across commands**. A *session* is
+the browser connection itself — see
+[Sessions, storage & auth](/concepts/sessions-storage-auth) for `bl start` /
+`bl stop` and connecting to a remote browser.
+
+## Related
+
+- [`bl daemon`](/cli-reference/session-daemon/daemon) in the CLI reference.
+- [Your first automation (CLI)](/getting-started/first-automation-cli).

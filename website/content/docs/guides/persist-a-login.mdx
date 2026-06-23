@@ -1,0 +1,95 @@
+---
+title: Persist a login
+description: Log in once, save the browser state to a file, and restore it later to skip the login entirely.
+---
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+Logging in on every run is slow and fragile. Instead, authenticate **once**,
+export the resulting browser state to a file, and restore that state in later
+runs — you land already logged in. `bl storage` exports cookies, localStorage,
+and sessionStorage; `bl storage restore` loads them back.
+
+## Log in once and save the state
+
+<Steps>
+  <Step>
+    ### Authenticate
+
+    Drive the login form like any other — fill the fields and submit:
+
+    ```bash
+    bl go https://app.example.com/login
+    bl fill "input[name=email]" "user@example.com"
+    bl fill "input[name=password]" "secret"
+    bl click "button[type=submit]"
+    bl wait url "/dashboard"
+    ```
+
+    The `bl wait url` is important: it confirms the login actually completed
+    before you snapshot the state.
+  </Step>
+  <Step>
+    ### Export the state
+
+    ```bash
+    bl storage -o auth.json
+    ```
+
+    This writes the browser's cookies, localStorage, and sessionStorage to
+    `auth.json`. Without `-o`, `bl storage` prints the state as JSON to stdout
+    instead, so you can capture it however you like.
+  </Step>
+</Steps>
+
+## Restore it later and skip the login
+
+In a future run, restore the state and go straight to an authenticated page —
+no login form needed:
+
+```bash
+bl storage restore auth.json
+bl go https://app.example.com/dashboard
+```
+
+That's the whole payoff: every subsequent run starts from a logged-in browser.
+
+<Callout type="warn" title="Treat the state file as a secret">
+  `auth.json` contains live session cookies and tokens — anyone with the file
+  can act as the logged-in user. Store it securely, keep it out of version
+  control (add it to `.gitignore`), and rotate it if it leaks.
+</Callout>
+
+## When the saved session expires
+
+Sessions don't last forever — cookies expire and tokens get revoked. When a
+restored session no longer works (you get bounced back to the login page), just
+re-run the login-and-save step to refresh `auth.json`. A simple guard is to
+restore, hit a protected page, and check where you ended up:
+
+```bash
+bl storage restore auth.json
+bl go https://app.example.com/dashboard
+bl url    # if this is the login page, the session expired — re-authenticate
+```
+
+## Cookies only
+
+If you only need to set or read individual cookies — rather than the full
+storage state — use `bl cookies`:
+
+```bash
+bl cookies                       # list all cookies
+bl cookies "session" "abc123"    # set a single cookie
+bl cookies clear                 # clear them all
+```
+
+For persisting a real login, prefer `bl storage`: many apps keep auth in
+localStorage or sessionStorage too, which `bl cookies` doesn't touch.
+
+## Related
+
+- [`bl storage`](/cli-reference/browser-state/storage) and
+  [`bl cookies`](/cli-reference/browser-state/cookies) in the CLI reference.
+- [Sessions, storage & auth](/concepts/sessions-storage-auth) — the concept behind this workflow.
+- [Fill & submit a form](/guides/fill-and-submit-a-form) — the login step in more detail.
