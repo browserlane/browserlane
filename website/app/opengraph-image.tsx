@@ -17,8 +17,8 @@ export default function OpengraphImage() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          background: '#0B0D12',
-          color: '#F5F7FA',
+          background: '#191919',
+          color: '#FAFAF7',
           padding: '72px',
           fontFamily: 'monospace',
         }}
@@ -29,7 +29,8 @@ export default function OpengraphImage() {
               width: '96px',
               height: '96px',
               borderRadius: '20px',
-              border: '3px solid #2B6CF6',
+              background: '#CC785C',
+              color: '#FFFFFF',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -46,12 +47,12 @@ export default function OpengraphImage() {
           <div style={{ fontSize: '62px', fontWeight: 700, lineHeight: 1.1 }}>
             Browser automation for humans and AI agents
           </div>
-          <div style={{ fontSize: '34px', color: '#9AA4B2', lineHeight: 1.3 }}>
+          <div style={{ fontSize: '34px', color: '#BFBFBA', lineHeight: 1.3 }}>
             One Rust binary — a CLI and an MCP server — driving Chrome over
             WebDriver BiDi.
           </div>
         </div>
-        <div style={{ fontSize: '30px', color: '#2B6CF6' }}>
+        <div style={{ fontSize: '30px', color: '#CC785C' }}>
           docs.browserlane.com
         </div>
       </div>
