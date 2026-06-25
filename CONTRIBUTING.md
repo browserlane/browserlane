@@ -29,7 +29,7 @@ New commands and tools go in `src/ext/`, behind the seam:
 | `ext::register_mcp_tools(&mut tools)` | called from `agent::schema` | add MCP tools |
 | `ext::dispatch_mcp_tool(name, args)` | called from `agent::handlers` | handle them |
 
-See `src/ext/cli.rs` and `src/ext/mcp.rs` — the `bl inspect` command is a worked
+See `src/ext/cli.rs` and `src/ext/mcp.rs` — the `bl add-mcp` command is a worked
 example. You can also edit the core directly; the seam is just a convenient,
 cleanly-separated home for additions.
 

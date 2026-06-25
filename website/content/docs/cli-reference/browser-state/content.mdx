@@ -10,22 +10,28 @@ Replace the page HTML content
 **Usage**
 
 ```bash
-bl content [html] [flags]
+bl content [html] [OPTIONS]
 ```
 
-**Flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
+| --- | --- |
+| `[html]` | HTML to set as the page content |
+
+**Options**
+
+| Option | Description |
 | --- | --- |
 | `--stdin` | Read HTML from stdin |
 
-**Global flags**
+**Global options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 

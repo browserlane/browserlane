@@ -10,16 +10,22 @@ Press a key on a specific element or the focused element
 **Usage**
 
 ```bash
-bl press [key] [selector] [flags]
+bl press <args...>
 ```
 
-**Global flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
+| --- | --- |
+| `&lt;args...&gt;` | key [selector] — the key (or combo) to press, optionally on a specific element |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 

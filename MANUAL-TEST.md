@@ -1,7 +1,7 @@
 # Pre-publish manual test checklist (v0.1.0)
 
 Tick this off **on both macOS and Windows** before flipping the repo public.
-Linux is covered by CI's `--version` + `inspect` smoke. The browser is visible
+Linux is covered by CI's `--version` smoke. The browser is visible
 by default; the daemon auto-starts; close it
 between sections with `bl daemon stop` if anything misbehaves.
 
@@ -25,7 +25,6 @@ OS under test: **____________**     `bl --version`: **____________**
 ### 1. Foundations
 - [ ] `bl --version` → `bl v0.1.0`
 - [ ] `bl --help` lists ~67 commands, no errors
-- [ ] `bl inspect` → JSON with `target_os` and `target_arch` matching this machine
 - [ ] `bl paths` prints platform-appropriate cache/screenshot dirs
 - [ ] `bl is-installed` → exit 0 (after `bl install`)
 

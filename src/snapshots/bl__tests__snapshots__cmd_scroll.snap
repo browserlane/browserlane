@@ -1,0 +1,35 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Scroll the page or an element
+
+Usage: bl scroll [OPTIONS] [direction] [COMMAND]
+
+Commands:
+  into-view  Scroll an element into view
+  help       Print this message or the help of the given subcommand(s)
+
+Arguments:
+  [direction]  Scroll direction: up or down (default down)
+
+Options:
+      --amount <amount>      Number of scroll increments [default: 3]
+  -v, --verbose              Enable debug logging
+      --selector <selector>  CSS selector for element to scroll to [default: ""]
+      --headless             Hide browser window (visible by default)
+      --json                 Output as JSON
+  -h, --help                 Print help
+
+Examples:
+  bl scroll
+  # Scroll down by default
+
+  bl scroll up
+  # Scroll up
+
+  bl scroll down --amount 5
+  # Scroll down 5 increments
+
+  bl scroll down --selector "div.content"
+  # Scroll within a specific element

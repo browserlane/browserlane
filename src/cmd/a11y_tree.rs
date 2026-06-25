@@ -2,6 +2,7 @@ use clap::{Arg, ArgAction, ArgMatches, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn a11y_tree_command() -> Command {
@@ -13,6 +14,16 @@ pub fn a11y_tree_command() -> Command {
                 .action(ArgAction::SetTrue)
                 .help("Show all nodes including generic containers"),
         )
+        .after_help(examples(&[
+            (
+                "a11y-tree",
+                "Print the accessibility tree (interesting nodes only)",
+            ),
+            (
+                "a11y-tree --everything",
+                "Include all nodes (generic containers, etc.)",
+            ),
+        ]))
 }
 
 pub async fn run_a11y_tree(matches: &ArgMatches, headless: bool, json_output: bool) {

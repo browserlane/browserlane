@@ -10,17 +10,17 @@ Handle browser dialogs (alert, confirm, prompt)
 **Usage**
 
 ```bash
-bl dialog [flags]
-bl dialog [command]
+bl dialog
+bl dialog <command>
 ```
 
-**Global flags**
+**Global options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 ### `bl dialog accept`
 
@@ -29,16 +29,22 @@ Accept a dialog (optionally with prompt text)
 **Usage**
 
 ```bash
-bl dialog accept [text] [flags]
+bl dialog accept [text]
 ```
 
-**Global flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
+| --- | --- |
+| `[text]` | Text to enter into a prompt dialog before accepting |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 
@@ -57,16 +63,16 @@ Dismiss a dialog
 **Usage**
 
 ```bash
-bl dialog dismiss [flags]
+bl dialog dismiss
 ```
 
-**Global flags**
+**Global options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 

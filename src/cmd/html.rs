@@ -2,19 +2,33 @@ use clap::{Arg, ArgAction, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::find::is_url;
 use super::output::{print_error, print_result};
 
 pub fn html_command() -> Command {
     Command::new("html")
         .about("Get HTML content of the page or an element")
-        .arg(Arg::new("args").num_args(0..=2))
+        .arg(
+            Arg::new("args")
+                .num_args(0..=2)
+                .help("CSS selector, or a URL to navigate to first (optionally followed by a selector)"),
+        )
         .arg(
             Arg::new("outer")
                 .long("outer")
                 .action(ArgAction::SetTrue)
                 .help("Return outerHTML instead of innerHTML"),
         )
+        .after_help(examples(&[
+            ("html", "Get full page HTML"),
+            ("html \"div.content\"", "Get innerHTML of a specific element"),
+            (
+                "html \"div.content\" --outer",
+                "Get outerHTML of a specific element",
+            ),
+            ("html https://example.com \"h1\"", "Navigate then get element HTML"),
+        ]))
 }
 
 pub async fn run_html(args: Vec<String>, outer: bool, headless: bool, json_output: bool) {

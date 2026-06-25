@@ -1,0 +1,57 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Start the Model Context Protocol (MCP) server.
+
+This runs a JSON-RPC 2.0 server over stdin/stdout, designed for integration
+with LLM agents like Claude Code.
+
+The server provides browser automation tools:
+  - browser_start: Start a browser session
+  - browser_navigate: Go to a URL
+  - browser_click: Click an element
+  - browser_type: Type into an element
+  - browser_screenshot: Capture the page
+  - browser_find: Find element info
+  - browser_evaluate: Execute JavaScript
+  - browser_stop: Stop the browser
+  - browser_get_text: Get page/element text
+  - browser_get_url: Get current URL
+  - browser_get_title: Get page title
+  - browser_get_html: Get page/element HTML
+  - browser_find_all: Find all matching elements
+  - browser_wait: Wait for element state
+  - browser_hover: Hover over an element
+  - browser_select: Select a dropdown option
+  - browser_scroll: Scroll the page
+  - browser_keys: Press keys
+  - browser_new_page: Open a new page
+  - browser_list_pages: List open pages
+  - browser_switch_page: Switch pages
+  - browser_close_page: Close a page
+
+Usage: bl mcp [OPTIONS]
+
+Options:
+      --screenshot-dir <screenshot-dir>
+          Directory for saving screenshots (default: ~/Pictures/browserlane, use "" to disable)
+
+  -v, --verbose
+          Enable debug logging
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+Examples:
+  bl mcp
+  # Run directly for testing (configure in Claude Code via: claude mcp add ...)
+
+  bl mcp --screenshot-dir ./screenshots
+  # Custom screenshot directory
+
+  bl mcp --screenshot-dir ""
+  # Disable screenshot file saving (inline only)
+
+  echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"capabilities":{}}}' | bl mcp
+  # Test with echo

@@ -2,12 +2,26 @@ use clap::{Arg, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn press_command() -> Command {
     Command::new("press")
         .about("Press a key on a specific element or the focused element")
-        .arg(Arg::new("args").required(true).num_args(1..=2))
+        .arg(
+            Arg::new("args")
+                .required(true)
+                .num_args(1..=2)
+                .help("key [selector] — the key (or combo) to press, optionally on a specific element"),
+        )
+        .after_help(examples(&[
+            ("press Enter", "Press Enter on the currently focused element"),
+            (
+                "press Enter \"input[name=search]\"",
+                "Click to focus the input, then press Enter",
+            ),
+            ("press \"Control+a\"", "Select all"),
+        ]))
 }
 
 pub async fn run_press(args: Vec<String>, headless: bool, json_output: bool) {

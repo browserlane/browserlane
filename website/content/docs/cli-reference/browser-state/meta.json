@@ -2,14 +2,14 @@
   "title": "Browser state & emulation",
   "pages": [
     "cookies",
-    "storage",
-    "download",
     "dialog",
-    "content",
+    "download",
     "diff",
     "viewport",
     "window",
-    "media",
-    "geolocation"
+    "storage",
+    "geolocation",
+    "content",
+    "media"
   ]
 }

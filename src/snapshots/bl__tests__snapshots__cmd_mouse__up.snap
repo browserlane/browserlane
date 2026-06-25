@@ -1,0 +1,21 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Release a mouse button
+
+Usage: bl mouse up [OPTIONS]
+
+Options:
+      --button <button>  Mouse button (0=left, 1=middle, 2=right) [default: 0]
+  -v, --verbose          Enable debug logging
+      --headless         Hide browser window (visible by default)
+      --json             Output as JSON
+  -h, --help             Print help
+
+Examples:
+  bl mouse up
+  # Release left mouse button
+
+  bl mouse up --button 2
+  # Release right mouse button

@@ -3,18 +3,35 @@ use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
 use super::daemon_cmd::parse_duration_flag;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn type_command() -> Command {
     Command::new("type")
         .about("Type text into an element (optionally navigate to URL first)")
-        .arg(Arg::new("args").required(true).num_args(2..=3))
+        .arg(
+            Arg::new("args")
+                .required(true)
+                .num_args(2..=3)
+                .help("[url] selector text — optional URL to navigate first, then the selector and the text to type"),
+        )
         .arg(
             Arg::new("timeout")
                 .long("timeout")
                 .default_value("30s")
                 .help("Timeout for actionability checks (e.g., 5s, 30s)"),
         )
+        .after_help(examples(&[
+            ("type \"input\" \"12345\"", "Types on current page"),
+            (
+                "type https://the-internet.herokuapp.com/inputs \"input\" \"12345\"",
+                "Navigates to URL first, then types",
+            ),
+            (
+                "type https://the-internet.herokuapp.com/inputs \"input\" \"12345\" --timeout 5s",
+                "Custom timeout for actionability checks",
+            ),
+        ]))
 }
 
 pub async fn run_type(args: Vec<String>, timeout: String, headless: bool, json_output: bool) {

@@ -1,0 +1,20 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Find element by data-testid attribute
+
+Usage: bl find testid [OPTIONS] <testid>
+
+Arguments:
+  <testid>  Find element by data-testid attribute
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl find testid "submit-btn"
+  # → @e1 [button] data-testid="submit-btn"

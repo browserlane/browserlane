@@ -2,10 +2,13 @@ use clap::Command;
 use serde_json::Map;
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn reload_command() -> Command {
-    Command::new("reload").about("Reload the current page")
+    Command::new("reload")
+        .about("Reload the current page")
+        .after_help(examples(&[("reload", "Reload the current page")]))
 }
 
 pub async fn run_reload(headless: bool, json_output: bool) {

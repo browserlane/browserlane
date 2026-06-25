@@ -3,6 +3,7 @@ use serde::Deserialize;
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::helpers::print_check;
 use super::output::{print_error, print_result};
 use crate::agent::ToolsCallResult;
@@ -10,26 +11,41 @@ use crate::agent::ToolsCallResult;
 pub fn is_command() -> Command {
     Command::new("is")
         .about("Check element state (visible, enabled, checked, actionable)")
+        // No subcommand prints this parent's help natively (cobra's `cmd.Help()`).
+        .arg_required_else_help(true)
         .subcommand(
             Command::new("visible")
                 .about("Check if an element is visible on the page")
-                .arg(Arg::new("selector").required(true).num_args(1)),
+                .arg(Arg::new("selector").required(true).num_args(1).help("CSS selector of the element to check"))
+                .after_help(examples(&[("is visible \"h1\"", "Prints true or false")])),
         )
         .subcommand(
             Command::new("enabled")
                 .about("Check if an element is enabled")
-                .arg(Arg::new("selector").required(true).num_args(1)),
+                .arg(Arg::new("selector").required(true).num_args(1).help("CSS selector of the element to check"))
+                .after_help(examples(&[(
+                    "is enabled \"button[type=submit]\"",
+                    "Prints true or false",
+                )])),
         )
         .subcommand(
             Command::new("checked")
                 .about("Check if a checkbox or radio is checked")
-                .arg(Arg::new("selector").required(true).num_args(1)),
+                .arg(Arg::new("selector").required(true).num_args(1).help("CSS selector of the checkbox or radio to check"))
+                .after_help(examples(&[(
+                    "is checked \"input[type=checkbox]\"",
+                    "Prints true or false",
+                )])),
         )
         .subcommand(
             Command::new("actionable")
                 .about("Check actionability of an element (Visible, Stable, ReceivesEvents, Enabled, Editable)")
-                .arg(Arg::new("url").required(true).num_args(1))
-                .arg(Arg::new("selector").required(true).num_args(1)),
+                .arg(Arg::new("url").required(true).num_args(1).help("URL to navigate to before checking"))
+                .arg(Arg::new("selector").required(true).num_args(1).help("CSS selector of the element to check"))
+                .after_help(examples(&[(
+                    "is actionable https://example.com \"a\"",
+                    "Output:\n  # Checking actionability for selector: a\n  # ✓ Visible: true\n  # ✓ Stable: true\n  # ✓ ReceivesEvents: true\n  # ✓ Enabled: true\n  # ✗ Editable: false",
+                )])),
         )
 }
 

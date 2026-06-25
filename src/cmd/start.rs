@@ -7,6 +7,7 @@ use tokio::time::sleep;
 
 use super::daemon_cmd::wait_for_socket;
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 use crate::{daemon, paths};
 
@@ -25,7 +26,22 @@ If no URL is given, checks BROWSERLANE_CONNECT_URL env var before falling\n\
 back to a local browser launch.\n\n\
 Set BROWSERLANE_CONNECT_API_KEY to send an Authorization: Bearer header.",
         )
-        .arg(Arg::new("url").num_args(0..=1))
+        .arg(
+            Arg::new("url")
+                .num_args(0..=1)
+                .help("Remote BiDi WebSocket URL to connect to (omit to launch a local browser)"),
+        )
+        .after_help(examples(&[
+            ("start", "Start with a local browser"),
+            (
+                "start ws://remote:9515/session",
+                "Connect to a remote browser",
+            ),
+            (
+                "start",
+                "Connect using env vars (export BROWSERLANE_CONNECT_URL and BROWSERLANE_CONNECT_API_KEY first)",
+            ),
+        ]))
 }
 
 pub async fn run_start(url: Option<String>, headless: bool, json_output: bool) {

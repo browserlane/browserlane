@@ -2,6 +2,7 @@ use clap::{Arg, ArgMatches, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{extract_text, print_error, print_result};
 
 pub fn storage_command() -> Command {
@@ -13,10 +14,23 @@ pub fn storage_command() -> Command {
                 .short('o')
                 .help("Output file path"),
         )
+        .after_help(examples(&[
+            ("storage", "Print state as JSON"),
+            ("storage -o state.json", "Save state to file"),
+        ]))
         .subcommand(
             Command::new("restore")
                 .about("Restore browser state from a JSON file")
-                .arg(Arg::new("path").required(true).num_args(1)),
+                .arg(
+                    Arg::new("path")
+                        .required(true)
+                        .num_args(1)
+                        .help("Path to a JSON state file to restore"),
+                )
+                .after_help(examples(&[(
+                    "storage restore state.json",
+                    "Restore cookies and storage from saved state",
+                )])),
         )
 }
 

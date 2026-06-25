@@ -2,12 +2,13 @@ use clap::{Arg, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn pdf_command() -> Command {
     Command::new("pdf")
         .about("Save page as PDF")
-        .arg(Arg::new("url").num_args(0..=1))
+        .arg(Arg::new("url").num_args(0..=1).help("URL to navigate to before saving"))
         .arg(
             Arg::new("output")
                 .long("output")
@@ -15,6 +16,13 @@ pub fn pdf_command() -> Command {
                 .default_value("page.pdf")
                 .help("Output file path"),
         )
+        .after_help(examples(&[
+            ("pdf -o page.pdf", "Save current page as PDF"),
+            (
+                "pdf https://example.com -o page.pdf",
+                "Navigate to URL first, then save as PDF",
+            ),
+        ]))
 }
 
 pub async fn run_pdf(url: Option<String>, output: String, headless: bool, json_output: bool) {

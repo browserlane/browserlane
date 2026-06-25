@@ -10,24 +10,30 @@ Wait for an element, URL, text, page load, or JS condition
 **Usage**
 
 ```bash
-bl wait [selector] [flags]
-bl wait [command]
+bl wait [selector] [OPTIONS]
+bl wait <command>
 ```
 
-**Flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
 | --- | --- |
-| `--state string` | State to wait for: attached, visible, hidden (default "attached") |
-| `--timeout int` | Timeout in milliseconds (default 30000) |
+| `[selector]` | CSS selector of the element to wait for |
 
-**Global flags**
+**Options**
 
-| Flag | Description |
+| Option | Description |
+| --- | --- |
+| `--state <value>` | State to wait for: attached, visible, hidden (default attached) |
+| `--timeout <value>` | Timeout in milliseconds (default 30000) |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 
@@ -42,71 +48,43 @@ bl wait "div.spinner" --state hidden --timeout 5000
 # Wait for spinner to disappear
 ```
 
-### `bl wait fn`
+### `bl wait url`
 
-Wait until a JS expression returns truthy
-
-**Usage**
-
-```bash
-bl wait fn [expression] [flags]
-```
-
-**Flags**
-
-| Flag | Description |
-| --- | --- |
-| `--timeout float` | Timeout in milliseconds (default 30000) |
-
-**Global flags**
-
-| Flag | Description |
-| --- | --- |
-| `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
-| `-v, --verbose` | Enable debug logging |
-
-**Examples**
-
-```bash
-bl wait fn "document.readyState === 'complete'"
-# Wait for page to be fully loaded
-
-bl wait fn "window.ready === true" --timeout 10000
-# Wait for custom condition with timeout
-```
-
-### `bl wait load`
-
-Wait until the page is fully loaded
+Wait until the page URL contains a substring
 
 **Usage**
 
 ```bash
-bl wait load [flags]
+bl wait url <pattern> [OPTIONS]
 ```
 
-**Flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
 | --- | --- |
-| `--timeout int` | Timeout in milliseconds (default 30000) |
+| `&lt;pattern&gt;` | Substring the URL must contain |
 
-**Global flags**
+**Options**
 
-| Flag | Description |
+| Option | Description |
+| --- | --- |
+| `--timeout <value>` | Timeout in milliseconds (default 30000) |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 
 ```bash
-bl wait load
-# Wait until document.readyState is "complete"
+bl wait url "/dashboard"
+# Wait until URL contains "/dashboard"
 
-bl wait load --timeout 10000
+bl wait url "success" --timeout 10000
 # Wait up to 10 seconds
 ```
 
@@ -117,22 +95,28 @@ Wait until text appears on the page
 **Usage**
 
 ```bash
-bl wait text [text] [flags]
+bl wait text <text> [OPTIONS]
 ```
 
-**Flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
 | --- | --- |
-| `--timeout float` | Timeout in milliseconds (default 30000) |
+| `&lt;text&gt;` | Text to wait for on the page |
 
-**Global flags**
+**Options**
 
-| Flag | Description |
+| Option | Description |
+| --- | --- |
+| `--timeout <value>` | Timeout in milliseconds (default 30000) |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 
@@ -144,36 +128,76 @@ bl wait text "Success" --timeout 10000
 # Wait with custom timeout (10 seconds)
 ```
 
-### `bl wait url`
+### `bl wait load`
 
-Wait until the page URL contains a substring
+Wait until the page is fully loaded
 
 **Usage**
 
 ```bash
-bl wait url [pattern] [flags]
+bl wait load [OPTIONS]
 ```
 
-**Flags**
+**Options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
-| `--timeout int` | Timeout in milliseconds (default 30000) |
+| `--timeout <value>` | Timeout in milliseconds (default 30000) |
 
-**Global flags**
+**Global options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 
 ```bash
-bl wait url "/dashboard"
-# Wait until URL contains "/dashboard"
+bl wait load
+# Wait until document.readyState is "complete"
 
-bl wait url "success" --timeout 10000
+bl wait load --timeout 10000
 # Wait up to 10 seconds
+```
+
+### `bl wait fn`
+
+Wait until a JS expression returns truthy
+
+**Usage**
+
+```bash
+bl wait fn <expression> [OPTIONS]
+```
+
+**Arguments**
+
+| Argument | Description |
+| --- | --- |
+| `&lt;expression&gt;` | JS expression to evaluate until truthy |
+
+**Options**
+
+| Option | Description |
+| --- | --- |
+| `--timeout <value>` | Timeout in milliseconds (default 30000) |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `--headless` | Hide browser window (visible by default) |
+| `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
+
+**Examples**
+
+```bash
+bl wait fn "document.readyState === 'complete'"
+# Wait for page to be fully loaded
+
+bl wait fn "window.ready === true" --timeout 10000
+# Wait for custom condition with timeout
 ```

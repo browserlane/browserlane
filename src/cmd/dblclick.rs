@@ -2,12 +2,22 @@ use clap::{Arg, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn dblclick_command() -> Command {
     Command::new("dblclick")
         .about("Double-click an element")
-        .arg(Arg::new("selector").required(true).num_args(1))
+        .arg(
+            Arg::new("selector")
+                .required(true)
+                .num_args(1)
+                .help("CSS selector or @ref of the element to double-click"),
+        )
+        .after_help(examples(&[
+            ("dblclick \"td.cell\"", "Double-click to edit a table cell"),
+            ("dblclick @e2", "Double-click element from map"),
+        ]))
 }
 
 pub async fn run_dblclick(selector: String, headless: bool, json_output: bool) {

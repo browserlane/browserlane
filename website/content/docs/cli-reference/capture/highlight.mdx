@@ -10,16 +10,22 @@ Highlight an element with a red outline for 3 seconds
 **Usage**
 
 ```bash
-bl highlight [selector] [flags]
+bl highlight <selector>
 ```
 
-**Global flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
+| --- | --- |
+| `&lt;selector&gt;` | CSS selector or @-reference of the element to highlight |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 

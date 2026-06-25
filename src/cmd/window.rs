@@ -2,17 +2,28 @@ use clap::{Arg, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn window_command() -> Command {
     Command::new("window")
         .about("Get or set the OS browser window size, position, or state")
-        .arg(Arg::new("args").num_args(0..=4))
+        .arg(
+            Arg::new("args")
+                .num_args(0..=4)
+                .help("Width and height, optionally followed by x and y position (omit all to print the current window)"),
+        )
         .arg(
             Arg::new("state")
                 .long("state")
                 .help("Window state: normal, maximized, minimized, fullscreen"),
         )
+        .after_help(examples(&[
+            ("window", "{\"state\":\"normal\",\"x\":0,\"y\":25,\"width\":1280,\"height\":720}"),
+            ("window 1920 1080", "Set window to 1920x1080"),
+            ("window 1920 1080 0 0", "Set window to 1920x1080 at position (0, 0)"),
+            ("window --state maximized", "Maximize the window"),
+        ]))
 }
 
 pub async fn run_window(args: Vec<String>, state: Option<String>, headless: bool, json_output: bool) {

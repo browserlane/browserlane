@@ -1,0 +1,24 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Wait until a JS expression returns truthy
+
+Usage: bl wait fn [OPTIONS] <expression>
+
+Arguments:
+  <expression>  JS expression to evaluate until truthy
+
+Options:
+      --timeout <timeout>  Timeout in milliseconds [default: 30000]
+  -v, --verbose            Enable debug logging
+      --headless           Hide browser window (visible by default)
+      --json               Output as JSON
+  -h, --help               Print help
+
+Examples:
+  bl wait fn "document.readyState === 'complete'"
+  # Wait for page to be fully loaded
+
+  bl wait fn "window.ready === true" --timeout 10000
+  # Wait for custom condition with timeout

@@ -1,0 +1,19 @@
+---
+source: src/tests.rs
+expression: "normalize_prog(&cmd::dashboard_plain())"
+---
+
+  _     _
+ | |__ | |   browserlane
+ | '_ \| |   browser automation for humans and AI agents
+ | |_) | |   one binary · CLI + MCP · over WebDriver BiDi
+ |_.__/|_|   v0.1.1
+
+  Get started
+    bl install                  download Chrome for Testing (run once)
+    bl go https://example.com   open a URL
+    bl screenshot -o page.png   capture the current page
+    bl find role button         find elements semantically
+    bl add-mcp claude           connect the MCP server to your agent
+
+  Run bl --help to see every command, or bl <command> --help for details.

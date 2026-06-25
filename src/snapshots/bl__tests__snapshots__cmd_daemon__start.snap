@@ -1,0 +1,38 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Start the browserlane daemon
+
+Usage: bl daemon start [OPTIONS]
+
+Options:
+      --foreground
+          Run daemon in foreground (for debugging)
+  -v, --verbose
+          Enable debug logging
+      --idle-timeout <idle-timeout>
+          Shutdown after this duration of inactivity (0 to disable) [default: 30m]
+      --connect <connect>
+          Connect to a remote BiDi WebSocket URL instead of launching a local browser [default: ""]
+      --connect-header <connect-header>
+          HTTP header for WebSocket connect (repeatable, format: "Key: Value")
+      --headless
+          Hide browser window (visible by default)
+      --json
+          Output as JSON
+  -h, --help
+          Print help
+
+Examples:
+  bl daemon start
+  # Starts daemon in background
+
+  bl daemon start --foreground
+  # Starts daemon in foreground (for debugging)
+
+  bl daemon start --idle-timeout 30m
+  # Auto-shutdown after 30 minutes of inactivity
+
+  bl daemon start --connect ws://remote:9515/session
+  # Connect to a remote browser instead of launching a local one

@@ -1,0 +1,21 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Select an option in a <select> element
+
+Usage: bl select [OPTIONS] <selector> <value>
+
+Arguments:
+  <selector>  CSS selector or @ref of the <select> element
+  <value>     Value of the option to select
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl select "select#color" "blue"
+  # Select "blue" in the color dropdown

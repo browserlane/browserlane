@@ -10,45 +10,17 @@ Manage browser pages (new, close, switch)
 **Usage**
 
 ```bash
-bl page [flags]
-bl page [command]
+bl page
+bl page <command>
 ```
 
-**Global flags**
+**Global options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
-
-### `bl page close`
-
-Close a browser page by index (default: current page)
-
-**Usage**
-
-```bash
-bl page close [index] [flags]
-```
-
-**Global flags**
-
-| Flag | Description |
-| --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `--json` | Output as JSON |
-| `-v, --verbose` | Enable debug logging |
-
-**Examples**
-
-```bash
-bl page close
-# Close current page (index 0)
-
-bl page close 1
-# Close page at index 1
-```
 
 ### `bl page new`
 
@@ -57,16 +29,22 @@ Open a new browser page
 **Usage**
 
 ```bash
-bl page new [url] [flags]
+bl page new [url]
 ```
 
-**Global flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
+| --- | --- |
+| `[url]` | URL to navigate the new page to (omit for a blank page) |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 
@@ -78,6 +56,40 @@ bl page new https://example.com
 # Open a new page and navigate to URL
 ```
 
+### `bl page close`
+
+Close a browser page by index (default: current page)
+
+**Usage**
+
+```bash
+bl page close [index]
+```
+
+**Arguments**
+
+| Argument | Description |
+| --- | --- |
+| `[index]` | Index of the page to close (default: current page) |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `--headless` | Hide browser window (visible by default) |
+| `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
+
+**Examples**
+
+```bash
+bl page close
+# Close current page (index 0)
+
+bl page close 1
+# Close page at index 1
+```
+
 ### `bl page switch`
 
 Switch to a browser page by index or URL substring
@@ -85,16 +97,22 @@ Switch to a browser page by index or URL substring
 **Usage**
 
 ```bash
-bl page switch [index or url] [flags]
+bl page switch <target>
 ```
 
-**Global flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
+| --- | --- |
+| `&lt;target&gt;` | Page index, or a substring to match against page URLs |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 

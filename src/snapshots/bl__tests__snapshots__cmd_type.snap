@@ -1,0 +1,27 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Type text into an element (optionally navigate to URL first)
+
+Usage: bl type [OPTIONS] <args> <args>...
+
+Arguments:
+  <args> <args>...  [url] selector text — optional URL to navigate first, then the selector and the text to type
+
+Options:
+      --timeout <timeout>  Timeout for actionability checks (e.g., 5s, 30s) [default: 30s]
+  -v, --verbose            Enable debug logging
+      --headless           Hide browser window (visible by default)
+      --json               Output as JSON
+  -h, --help               Print help
+
+Examples:
+  bl type "input" "12345"
+  # Types on current page
+
+  bl type https://the-internet.herokuapp.com/inputs "input" "12345"
+  # Navigates to URL first, then types
+
+  bl type https://the-internet.herokuapp.com/inputs "input" "12345" --timeout 5s
+  # Custom timeout for actionability checks

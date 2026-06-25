@@ -2,6 +2,7 @@ use clap::{Arg, ArgAction, ArgMatches, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn record_command() -> Command {
@@ -52,26 +53,64 @@ pub fn record_command() -> Command {
                 .value_parser(clap::value_parser!(f64))
                 .default_value("0.5")
                 .help("JPEG quality 0.0-1.0 (ignored for png)"),
-        );
+        )
+        .after_help(examples(&[
+            ("record start", "Start recording with screenshots (default)"),
+            ("record start --screenshots=false", "Record without screenshots"),
+            (
+                "record start --snapshots",
+                "Record with screenshots and HTML snapshots",
+            ),
+            (
+                "record start --format png",
+                "Use PNG format instead of JPEG (larger files, lossless)",
+            ),
+            (
+                "record start --quality 0.1",
+                "Lower JPEG quality for smaller recording files",
+            ),
+            (
+                "record start --title \"Login Flow\"",
+                "Set a title shown in the trace viewer",
+            ),
+        ]));
 
-    let stop = Command::new("stop").about("Stop recording and save").arg(
-        Arg::new("output")
-            .long("output")
-            .short('o')
-            .help("Output file path (default: record.zip)"),
-    );
+    let stop = Command::new("stop")
+        .about("Stop recording and save")
+        .arg(
+            Arg::new("output")
+                .long("output")
+                .short('o')
+                .help("Output file path (default: record.zip)"),
+        )
+        .after_help(examples(&[
+            ("record stop", "Save recording to record.zip"),
+            ("record stop -o my-recording.zip", "Save recording to custom path"),
+        ]));
 
     let group = Command::new("group")
         .about("Manage recording groups")
+        // No subcommand prints this sub-parent's help natively (cobra's `cmd.Help()`).
+        .arg_required_else_help(true)
         .subcommand(
             Command::new("start")
                 .about("Start a named group in the recording")
-                .arg(Arg::new("name").required(true)),
+                .arg(Arg::new("name").required(true).help("Name for the group"))
+                .after_help(examples(&[(
+                    "record group start \"Login\"",
+                    "Groups nest actions in the trace viewer",
+                )])),
         )
-        .subcommand(Command::new("stop").about("End the current recording group"));
+        .subcommand(
+            Command::new("stop")
+                .about("End the current recording group")
+                .after_help(examples(&[("record group stop", "")])),
+        );
 
     let chunk = Command::new("chunk")
         .about("Manage recording chunks")
+        // No subcommand prints this sub-parent's help natively (cobra's `cmd.Help()`).
+        .arg_required_else_help(true)
         .subcommand(
             Command::new("start")
                 .about("Start a new chunk within the current recording")
@@ -80,7 +119,17 @@ pub fn record_command() -> Command {
                     Arg::new("title")
                         .long("title")
                         .help("Title shown in trace viewer"),
-                ),
+                )
+                .after_help(examples(&[
+                    (
+                        "record chunk start",
+                        "Start a new chunk (for splitting long recordings)",
+                    ),
+                    (
+                        "record chunk start --name \"part2\" --title \"Checkout Flow\"",
+                        "",
+                    ),
+                ])),
         )
         .subcommand(
             Command::new("stop")
@@ -90,11 +139,17 @@ pub fn record_command() -> Command {
                         .long("output")
                         .short('o')
                         .help("Output file path (default: chunk.zip)"),
-                ),
+                )
+                .after_help(examples(&[
+                    ("record chunk stop", "Save chunk to chunk.zip"),
+                    ("record chunk stop -o part1.zip", ""),
+                ])),
         );
 
     Command::new("record")
         .about("Record browser sessions (screenshots and snapshots)")
+        // No subcommand prints this parent's help natively (cobra's `cmd.Help()`).
+        .arg_required_else_help(true)
         .subcommand(start)
         .subcommand(stop)
         .subcommand(group)

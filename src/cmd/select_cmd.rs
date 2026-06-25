@@ -2,13 +2,28 @@ use clap::{Arg, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn select_command() -> Command {
     Command::new("select")
         .about("Select an option in a <select> element")
-        .arg(Arg::new("selector").required(true).num_args(1))
-        .arg(Arg::new("value").required(true).num_args(1))
+        .arg(
+            Arg::new("selector")
+                .required(true)
+                .num_args(1)
+                .help("CSS selector or @ref of the <select> element"),
+        )
+        .arg(
+            Arg::new("value")
+                .required(true)
+                .num_args(1)
+                .help("Value of the option to select"),
+        )
+        .after_help(examples(&[(
+            "select \"select#color\" \"blue\"",
+            "Select \"blue\" in the color dropdown",
+        )]))
 }
 
 pub async fn run_select(selector: String, value: String, headless: bool, json_output: bool) {

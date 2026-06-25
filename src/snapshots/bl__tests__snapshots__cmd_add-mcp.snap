@@ -1,0 +1,26 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Register the browserlane MCP server with a coding agent (claude, claude-desktop, cursor, vscode, codex)
+
+Usage: bl add-mcp [OPTIONS] [client]
+
+Arguments:
+  [client]  Target client: claude | claude-desktop | cursor | vscode | codex
+
+Options:
+      --list     List the supported clients
+  -v, --verbose  Enable debug logging
+      --stdout   Print the config snippet instead of writing it
+  -h, --help     Print help
+
+Examples:
+  bl add-mcp
+  # List the supported clients
+
+  bl add-mcp claude
+  # Register the MCP server with Claude Code
+
+  bl add-mcp cursor --stdout
+  # Print the Cursor config snippet instead of writing it

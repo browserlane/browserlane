@@ -10,7 +10,7 @@ Register the browserlane MCP server with a coding agent (claude, claude-desktop,
 **Usage**
 
 ```bash
-bl add-mcp [OPTIONS] [client]
+bl add-mcp [client] [OPTIONS]
 ```
 
 **Arguments**
@@ -19,12 +19,30 @@ bl add-mcp [OPTIONS] [client]
 | --- | --- |
 | `[client]` | Target client: claude \| claude-desktop \| cursor \| vscode \| codex |
 
-**Flags**
+**Options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `--list` | List the supported clients |
 | `--stdout` | Print the config snippet instead of writing it |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Examples**
+
+```bash
+bl add-mcp
+# List the supported clients
+
+bl add-mcp claude
+# Register the MCP server with Claude Code
+
+bl add-mcp cursor --stdout
+# Print the Cursor config snippet instead of writing it
+```

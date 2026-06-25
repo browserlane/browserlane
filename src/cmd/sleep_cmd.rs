@@ -2,12 +2,22 @@ use clap::{Arg, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn sleep_command() -> Command {
     Command::new("sleep")
         .about("Pause execution for a number of milliseconds")
-        .arg(Arg::new("ms").required(true).num_args(1))
+        .arg(
+            Arg::new("ms")
+                .required(true)
+                .num_args(1)
+                .help("Number of milliseconds to pause"),
+        )
+        .after_help(examples(&[
+            ("sleep 1000", "Wait 1 second"),
+            ("sleep 500", "Wait 500ms"),
+        ]))
 }
 
 pub async fn run_sleep(ms_arg: String, headless: bool, json_output: bool) {

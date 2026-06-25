@@ -1,0 +1,23 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Double-click an element
+
+Usage: bl dblclick [OPTIONS] <selector>
+
+Arguments:
+  <selector>  CSS selector or @ref of the element to double-click
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl dblclick "td.cell"
+  # Double-click to edit a table cell
+
+  bl dblclick @e2
+  # Double-click element from map

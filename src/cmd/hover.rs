@@ -2,12 +2,22 @@ use clap::{Arg, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn hover_command() -> Command {
     Command::new("hover")
         .about("Hover over an element by CSS selector")
-        .arg(Arg::new("args").required(true).num_args(1..=2))
+        .arg(
+            Arg::new("args")
+                .required(true)
+                .num_args(1..=2)
+                .help("[url] selector — optional URL to navigate first, then the selector to hover"),
+        )
+        .after_help(examples(&[
+            ("hover \"a\"", "Hover over first link"),
+            ("hover https://example.com \"a\"", "Navigate then hover"),
+        ]))
 }
 
 pub async fn run_hover(args: Vec<String>, headless: bool, json_output: bool) {

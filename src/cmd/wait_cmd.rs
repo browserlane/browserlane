@@ -2,6 +2,7 @@ use clap::{Arg, ArgMatches, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn wait_command() -> Command {
@@ -25,7 +26,7 @@ pub fn wait_command() -> Command {
 
     Command::new("wait")
         .about("Wait for an element, URL, text, page load, or JS condition")
-        .arg(Arg::new("selector").num_args(0..=1))
+        .arg(Arg::new("selector").num_args(0..=1).help("CSS selector of the element to wait for"))
         .arg(
             Arg::new("state")
                 .long("state")
@@ -33,28 +34,64 @@ pub fn wait_command() -> Command {
                 .help("State to wait for: attached, visible, hidden"),
         )
         .arg(timeout_int())
+        .after_help(examples(&[
+            ("wait \"div.loaded\"", "Wait for element to exist in DOM"),
+            (
+                "wait \"div.loaded\" --state visible",
+                "Wait for element to be visible",
+            ),
+            (
+                "wait \"div.spinner\" --state hidden --timeout 5000",
+                "Wait for spinner to disappear",
+            ),
+        ]))
         .subcommand(
             Command::new("url")
                 .about("Wait until the page URL contains a substring")
-                .arg(Arg::new("pattern").required(true).num_args(1))
-                .arg(timeout_int()),
+                .arg(Arg::new("pattern").required(true).num_args(1).help("Substring the URL must contain"))
+                .arg(timeout_int())
+                .after_help(examples(&[
+                    ("wait url \"/dashboard\"", "Wait until URL contains \"/dashboard\""),
+                    ("wait url \"success\" --timeout 10000", "Wait up to 10 seconds"),
+                ])),
         )
         .subcommand(
             Command::new("text")
                 .about("Wait until text appears on the page")
-                .arg(Arg::new("text").required(true).num_args(1))
-                .arg(timeout_float()),
+                .arg(Arg::new("text").required(true).num_args(1).help("Text to wait for on the page"))
+                .arg(timeout_float())
+                .after_help(examples(&[
+                    ("wait text \"Welcome\"", "Waits until \"Welcome\" appears on the page"),
+                    (
+                        "wait text \"Success\" --timeout 10000",
+                        "Wait with custom timeout (10 seconds)",
+                    ),
+                ])),
         )
         .subcommand(
             Command::new("load")
                 .about("Wait until the page is fully loaded")
-                .arg(timeout_int()),
+                .arg(timeout_int())
+                .after_help(examples(&[
+                    ("wait load", "Wait until document.readyState is \"complete\""),
+                    ("wait load --timeout 10000", "Wait up to 10 seconds"),
+                ])),
         )
         .subcommand(
             Command::new("fn")
                 .about("Wait until a JS expression returns truthy")
-                .arg(Arg::new("expression").required(true).num_args(1))
-                .arg(timeout_float()),
+                .arg(Arg::new("expression").required(true).num_args(1).help("JS expression to evaluate until truthy"))
+                .arg(timeout_float())
+                .after_help(examples(&[
+                    (
+                        "wait fn \"document.readyState === 'complete'\"",
+                        "Wait for page to be fully loaded",
+                    ),
+                    (
+                        "wait fn \"window.ready === true\" --timeout 10000",
+                        "Wait for custom condition with timeout",
+                    ),
+                ])),
         )
 }
 

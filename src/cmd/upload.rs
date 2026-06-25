@@ -2,18 +2,34 @@ use clap::{Arg, ArgAction, ArgMatches, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn upload_command() -> Command {
     Command::new("upload")
         .about("Set files on an input[type=file] element")
-        .arg(Arg::new("selector").required(true))
+        .arg(
+            Arg::new("selector")
+                .required(true)
+                .help("CSS selector (or map ref) for the input[type=file] element"),
+        )
         .arg(
             Arg::new("files")
                 .required(true)
                 .num_args(1..)
-                .action(ArgAction::Append),
+                .action(ArgAction::Append)
+                .help("One or more file paths to set on the input"),
         )
+        .after_help(examples(&[
+            (
+                "upload \"input[type=file]\" ./photo.jpg",
+                "Upload a single file",
+            ),
+            (
+                "upload \"#file-input\" ./photo.jpg ./doc.pdf",
+                "Upload multiple files",
+            ),
+        ]))
 }
 
 pub async fn run_upload(matches: &ArgMatches, headless: bool, json_output: bool) {

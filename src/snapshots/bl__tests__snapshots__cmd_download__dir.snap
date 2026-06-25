@@ -1,0 +1,20 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Set the download directory
+
+Usage: bl download dir [OPTIONS] <path>
+
+Arguments:
+  <path>  Directory to save downloads into
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl download dir ./downloads
+  # Set download directory to ./downloads

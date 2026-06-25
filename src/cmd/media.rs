@@ -2,6 +2,7 @@ use clap::{Arg, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn media_command() -> Command {
@@ -32,6 +33,14 @@ pub fn media_command() -> Command {
                 .long("media")
                 .help("Media type: screen, print"),
         )
+        .after_help(examples(&[
+            ("media --color-scheme dark", "Enable dark mode"),
+            ("media --reduced-motion reduce", "Reduce motion"),
+            (
+                "media --color-scheme light --forced-colors active",
+                "Override multiple features",
+            ),
+        ]))
 }
 
 pub async fn run_media(

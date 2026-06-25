@@ -2,10 +2,13 @@ use clap::Command;
 use serde_json::Map;
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn stop_command() -> Command {
-    Command::new("stop").about("Stop the browser session")
+    Command::new("stop")
+        .about("Stop the browser session")
+        .after_help(examples(&[("stop", "Stop the browser and daemon")]))
 }
 
 pub async fn run_stop(headless: bool, json_output: bool) {

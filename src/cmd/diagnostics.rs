@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use clap::{Arg, Command};
+use serde_json::json;
 use tokio::io::AsyncBufReadExt;
 
 use crate::bidi;
@@ -8,16 +9,33 @@ use crate::browser;
 use crate::paths;
 use crate::process;
 
-/// Returns the program name (basename of argv0), matching Go's
-/// `filepath.Base(os.Args[0])`.
+use super::output::print_json_value;
+
+/// Returns the program name shown in help, usage, and the launch screen.
+///
+/// This is the basename of argv0 (like Go's `filepath.Base(os.Args[0])`), but
+/// lowercased and with a trailing `.exe` removed: on case-insensitive
+/// filesystems (macOS, Windows) the one real `bl` binary is reachable as `BL`,
+/// `Bl`, `bL`, … and argv0 preserves whatever the user typed. Lowercasing
+/// collapses those back to the canonical `bl` so the UI never echoes a mis-cased
+/// name. A genuinely different basename (a rename or symlink, only possible on a
+/// case-sensitive filesystem) is still reflected.
+///
+/// On Windows the `.exe` suffix is stripped so the name renders as `bl` no matter
+/// how the binary was invoked: PowerShell passes argv0 with the extension
+/// (`bl.exe`) while cmd passes it bare (`bl`). Only `.exe` is removed, so a
+/// genuine dotted rename is left intact.
 pub fn prog_name() -> String {
     std::env::args()
         .next()
         .map(|arg0| {
             std::path::Path::new(&arg0)
                 .file_name()
-                .map(|f| f.to_string_lossy().into_owned())
-                .unwrap_or(arg0)
+                .map(|f| {
+                    let name = f.to_string_lossy().to_lowercase();
+                    name.strip_suffix(".exe").map(str::to_string).unwrap_or(name)
+                })
+                .unwrap_or_else(|| arg0.to_lowercase())
         })
         .unwrap_or_default()
 }
@@ -57,36 +75,100 @@ pub fn bidi_test_command() -> Command {
 
 // ---- command runners ----
 
-pub fn run_version() {
+pub fn run_version(json_output: bool) {
+    if json_output {
+        print_json_value(&json!({ "version": crate::VERSION }));
+        return;
+    }
     println!("{} v{}", prog_name(), crate::VERSION);
 }
 
-pub fn run_paths() {
-    match paths::get_cache_dir() {
+pub fn run_paths(json_output: bool) {
+    let cache = paths::get_cache_dir();
+    let chrome = paths::get_chrome_executable();
+    let chromedriver = paths::get_chromedriver_path();
+
+    if json_output {
+        // Unresolved paths serialize as `null` (e.g. Chrome not yet installed),
+        // so a consumer can distinguish "present" from "missing" structurally.
+        print_json_value(&json!({
+            "cache_dir": cache.as_ref().ok().map(|p| p.display().to_string()),
+            "chrome": chrome.as_ref().ok().map(|p| p.display().to_string()),
+            "chromedriver": chromedriver.as_ref().ok().map(|p| p.display().to_string()),
+        }));
+        return;
+    }
+
+    match cache {
         Ok(dir) => println!("Cache directory: {}", dir.display()),
         Err(e) => println!("Cache directory: error: {e}"),
     }
-
-    match paths::get_chrome_executable() {
+    match chrome {
         Ok(p) => println!("Chrome: {}", p.display()),
         Err(_) => println!("Chrome: not found"),
     }
-
-    match paths::get_chromedriver_path() {
+    match chromedriver {
         Ok(p) => println!("Chromedriver: {}", p.display()),
         Err(_) => println!("Chromedriver: not found"),
     }
 }
 
-pub fn run_is_installed() {
-    if !browser::is_installed() {
+pub fn run_is_installed(json_output: bool) {
+    let status = browser::install_status();
+    let chromedriver = status.chromedriver;
+    let version = status.chrome_version; // Option<String>; consumed below.
+    let chrome = version.is_some();
+    let installed = chrome && chromedriver;
+
+    if json_output {
+        // Enriched for agents: per-binary presence plus Chrome's version (`null`
+        // when Chrome is absent). `installed` stays the top-level yes/no, so
+        // existing consumers reading just that key are unaffected.
+        print_json_value(&json!({
+            "installed": installed,
+            "chrome": chrome,
+            "chromedriver": chromedriver,
+            "version": version,
+        }));
+    } else {
+        // Humans were left with a silent prompt and only the exit code to read;
+        // give them a precise answer — the version when present, and exactly
+        // which binary is missing otherwise. Agents/scripts use --json or `$?`.
+        let p = prog_name();
+        match (version, chromedriver) {
+            (Some(v), true) if !v.is_empty() => {
+                println!("Chrome {v} and chromedriver are installed.")
+            }
+            (Some(_), true) => println!("Chrome and chromedriver are installed."),
+            (Some(_), false) => println!(
+                "Chrome is installed, but chromedriver is not. Run \"{p} install\" to download it."
+            ),
+            (None, true) => println!(
+                "chromedriver is installed, but Chrome is not. Run \"{p} install\" to download it."
+            ),
+            (None, false) => println!(
+                "Chrome and chromedriver are not installed. Run \"{p} install\" to download them."
+            ),
+        }
+    }
+
+    // Exit-code contract is unchanged: 0 = installed, 1 = not.
+    if !installed {
         std::process::exit(1);
     }
 }
 
-pub async fn run_install() {
+pub async fn run_install(json_output: bool) {
     match browser::install().await {
         Ok(result) => {
+            if json_output {
+                print_json_value(&json!({
+                    "chrome": result.chrome_path,
+                    "chromedriver": result.chromedriver_path,
+                    "version": result.version,
+                }));
+                return;
+            }
             println!("Installation complete!");
             println!("Chrome: {}", result.chrome_path);
             println!("Chromedriver: {}", result.chromedriver_path);

@@ -1,0 +1,27 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Evaluate a JavaScript expression (optionally navigate to URL first)
+
+Usage: bl eval [OPTIONS] [args]...
+
+Arguments:
+  [args]...  [url] expression — JS to evaluate, optionally preceded by a URL to navigate first
+
+Options:
+      --stdin     Read expression from stdin
+  -v, --verbose   Enable debug logging
+      --headless  Hide browser window (visible by default)
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl eval "document.title"
+  # Evaluates on current page
+
+  bl eval https://example.com "document.title"
+  # Navigates to URL first, then evaluates
+
+  bl eval --stdin
+  # Read expression from stdin, e.g. echo 'document.title' | ... (avoids shell quoting issues)

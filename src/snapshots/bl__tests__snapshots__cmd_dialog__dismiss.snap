@@ -1,0 +1,17 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Dismiss a dialog
+
+Usage: bl dialog dismiss [OPTIONS]
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl dialog dismiss
+  # Dismiss/cancel a dialog

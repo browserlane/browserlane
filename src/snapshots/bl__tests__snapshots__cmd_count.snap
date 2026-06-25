@@ -1,0 +1,23 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Count matching elements
+
+Usage: bl count [OPTIONS] <selector>
+
+Arguments:
+  <selector>  CSS selector to count matches for
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl count "a"
+  # Print number of links on the page
+
+  bl count "li.item"
+  # Count list items

@@ -17,16 +17,22 @@ Set BROWSERLANE_CONNECT_API_KEY to send an Authorization: Bearer header.
 **Usage**
 
 ```bash
-bl start [url] [flags]
+bl start [url]
 ```
 
-**Global flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
+| --- | --- |
+| `[url]` | Remote BiDi WebSocket URL to connect to (omit to launch a local browser) |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 
@@ -37,8 +43,6 @@ bl start
 bl start ws://remote:9515/session
 # Connect to a remote browser
 
-export BROWSERLANE_CONNECT_URL=wss://cloud.example.com/session
-export BROWSERLANE_CONNECT_API_KEY=my-api-key
 bl start
-# Connect using env vars
+# Connect using env vars (export BROWSERLANE_CONNECT_URL and BROWSERLANE_CONNECT_API_KEY first)
 ```

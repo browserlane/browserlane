@@ -10,22 +10,28 @@ Evaluate a JavaScript expression (optionally navigate to URL first)
 **Usage**
 
 ```bash
-bl eval [url] [expression] [flags]
+bl eval [args...] [OPTIONS]
 ```
 
-**Flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
+| --- | --- |
+| `[args...]` | [url] expression — JS to evaluate, optionally preceded by a URL to navigate first |
+
+**Options**
+
+| Option | Description |
 | --- | --- |
 | `--stdin` | Read expression from stdin |
 
-**Global flags**
+**Global options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 
@@ -36,6 +42,6 @@ bl eval "document.title"
 bl eval https://example.com "document.title"
 # Navigates to URL first, then evaluates
 
-echo 'document.title' | bl eval --stdin
-# Read expression from stdin (avoids shell quoting issues)
+bl eval --stdin
+# Read expression from stdin, e.g. echo 'document.title' | ... (avoids shell quoting issues)
 ```

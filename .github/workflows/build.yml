@@ -3,7 +3,11 @@ name: build (macOS / Linux / Windows)
 # Cross-platform build gate. We pin the toolchain so clippy lints don't drift
 # out from under us on @stable bumps.
 on:
-  push: {}
+  # Build main post-merge, and validate every PR. Scoping push to `main` (rather
+  # than `{}`) stops a PR branch from building twice — once for its push event
+  # and once for the pull_request event.
+  push:
+    branches: [main]
   pull_request: {}
   workflow_dispatch: {}
 
@@ -36,4 +40,5 @@ jobs:
           BIN="target/release/bl"
           [[ "${{ runner.os }}" == "Windows" ]] && BIN="target/release/bl.exe"
           "$BIN" --version
-          "$BIN" inspect
+          "$BIN" paths
+          "$BIN" --help >/dev/null

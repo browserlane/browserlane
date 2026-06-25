@@ -1,0 +1,22 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Map interactive page elements with @refs
+
+Usage: bl map [OPTIONS]
+
+Options:
+      --selector <selector>  Scope to elements within this CSS selector
+  -v, --verbose              Enable debug logging
+      --headless             Hide browser window (visible by default)
+      --json                 Output as JSON
+  -h, --help                 Print help
+
+Examples:
+  bl map
+  # Lists interactive elements with refs like @e1, @e2
+  # Use refs with other commands: bl click @e1
+
+  bl map --selector "nav"
+  # Only map elements inside the <nav> element

@@ -10,17 +10,17 @@ Manage the browserlane daemon (background browser process)
 **Usage**
 
 ```bash
-bl daemon [flags]
-bl daemon [command]
+bl daemon
+bl daemon <command>
 ```
 
-**Global flags**
+**Global options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 ### `bl daemon start`
 
@@ -29,25 +29,25 @@ Start the browserlane daemon
 **Usage**
 
 ```bash
-bl daemon start [flags]
+bl daemon start [OPTIONS]
 ```
 
-**Flags**
+**Options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
-| `--connect string` | Connect to a remote BiDi WebSocket URL instead of launching a local browser |
-| `--connect-header stringArray` | HTTP header for WebSocket connect (repeatable, format: "Key: Value") |
 | `--foreground` | Run daemon in foreground (for debugging) |
-| `--idle-timeout duration` | Shutdown after this duration of inactivity (0 to disable) (default 30m0s) |
+| `--idle-timeout <value>` | Shutdown after this duration of inactivity (0 to disable) (default 30m) |
+| `--connect <value>` | Connect to a remote BiDi WebSocket URL instead of launching a local browser |
+| `--connect-header <value>` | HTTP header for WebSocket connect (repeatable, format: "Key: Value") |
 
-**Global flags**
+**Global options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 
@@ -65,24 +65,6 @@ bl daemon start --connect ws://remote:9515/session
 # Connect to a remote browser instead of launching a local one
 ```
 
-### `bl daemon status`
-
-Show daemon status
-
-**Usage**
-
-```bash
-bl daemon status [flags]
-```
-
-**Global flags**
-
-| Flag | Description |
-| --- | --- |
-| `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
-| `-v, --verbose` | Enable debug logging |
-
 ### `bl daemon stop`
 
 Stop the browserlane daemon
@@ -90,13 +72,31 @@ Stop the browserlane daemon
 **Usage**
 
 ```bash
-bl daemon stop [flags]
+bl daemon stop
 ```
 
-**Global flags**
+**Global options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
+
+### `bl daemon status`
+
+Show daemon status
+
+**Usage**
+
+```bash
+bl daemon status
+```
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `--headless` | Hide browser window (visible by default) |
+| `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |

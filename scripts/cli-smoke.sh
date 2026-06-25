@@ -43,7 +43,9 @@ if [ -z "$BL_BIN" ] || [ ! -x "$BL_BIN" ]; then
 fi
 bl() { "$BL_BIN" "$@"; }
 
-# headless unless BL_VISIBLE is set; applied to the daemon-starting command.
+# headless unless BL_VISIBLE is set; passed to the daemon-starting command. Note:
+# --headless is a per-command flag (not global), so it must come AFTER the
+# subcommand — `bl daemon start --headless`, not `bl --headless daemon start`.
 G="--headless"; [ -n "${BL_VISIBLE:-}" ] && G=""
 
 # ---- colours / bookkeeping --------------------------------------------------
@@ -135,24 +137,39 @@ echo "browserlane CLI smoke — binary: $BL_BIN  mode: $([ -n "$G" ] && echo hea
 # ===========================================================================
 phase "1 · meta (no browser)"
 check AUTO version  "v"                  -- bl version
-check AUTO inspect  "browserlane"        -- bl inspect
+check AUTO version  '{"version"'         -- bl version --json       # --json variant
 check AUTO paths    ""                   -- bl paths
+check AUTO paths    '"cache_dir"'        -- bl paths --json         # --json variant
 check AUTO is-installed ""               -- bl is-installed
-check AUTO help     "Available Commands" -- bl --help
+check AUTO is-installed '"installed"'    -- bl is-installed --json  # --json variant
+# Help is clap-native now; exact help bytes are pinned by the `cargo test` insta
+# snapshots (the help safety net), so here we only assert `--help` runs (exit 0)
+# and prints the program — not its precise layout.
+check AUTO help     "bl"                 -- bl --help
 check AUTO "completion bash"       "complete"                   -- bl completion bash
 check AUTO "completion zsh"        "compdef"                    -- bl completion zsh
 check AUTO "completion fish"       "complete"                   -- bl completion fish
 check AUTO "completion powershell" "Register-ArgumentCompleter" -- bl completion powershell
 check AUTO add-skill ""                  -- bl add-skill --stdout
 check AUTO add-mcp   "claude"            -- bl add-mcp --list   # ext: lists MCP clients
-check AUTO _err:suggest "Did you mean"   -- bl clik       # cobra-exact suggestion
-check AUTO _err:unknown "unknown command" -- bl zzzznope  # cobra-exact unknown cmd
+# Error handling is clap-native now: a near-miss suggests the closest command and
+# an unknown one is reported as "unrecognized subcommand"; both exit 2 (clap's
+# usage-error code) where cobra used 1. Assert the message AND the exit code.
+err_exit2() {  # err_exit2 PATH want-substr -- cmd...   (assert substr in output + exit 2)
+  local path="$1" want="$2"; shift 2; [ "$1" = "--" ] && shift
+  add_cov "$path"
+  local out rc; out="$("$@" 2>&1)"; rc=$?
+  if grep -qiF -- "$want" <<<"$out" && [ "$rc" -eq 2 ]; then ok AUTO "$path"
+  else no AUTO "$path" "want '$want' & exit 2, got exit $rc: '$(printf '%s' "$out" | head -1 | cut -c1-50)'"; fi
+}
+err_exit2 _err:suggest "similar subcommand" -- bl clik       # clap suggests 'click'
+err_exit2 _err:unknown "unrecognized subcommand" -- bl zzzznope  # clap unknown cmd
 manual install "run once; state verified by is-installed"
 
 # ===========================================================================
 phase "2 · daemon (headless start → reused as the session)"
 bl daemon stop >/dev/null 2>&1; sleep 1   # let any prior daemon fully exit
-check AUTO "daemon start"  "" -- bl $G daemon start
+check AUTO "daemon start"  "" -- bl daemon start $G
 # `daemon start` can return before its socket is serving — wait for readiness
 # before asserting status (otherwise the first status races a half-open daemon).
 for i in $(seq 1 20); do dstat="$(bl daemon status 2>&1)"; grep -qi running <<<"$dstat" && break; sleep 0.3; done
@@ -253,14 +270,16 @@ check AUTO cookies "" -- bl cookies
 check AUTO "cookies clear" "" -- bl cookies clear
 artifact storage "$OUT/state.json" json -- bl storage -o "$OUT/state.json"
 check AUTO "storage restore" "" -- bl storage restore "$OUT/state.json"
-check AUTO diff "" -- bl diff
+# `bl diff` is a subcommand-required parent now (bare → clap usage error, exit 2);
+# its behaviour is exercised via `diff map`, which also covers the `diff` path.
 check AUTO "diff map" "" -- bl diff map
 
 # ===========================================================================
 phase "9 · stateful (upload / download / record / eval)"
 goto
 proxy upload "1" "document.getElementById('file').files.length" -- bl upload "#file" "$FIX"
-check AUTO download "" -- bl download
+# `bl download` is a subcommand-required parent now (bare → clap usage error,
+# exit 2); `download dir` exercises it and covers the `download` path.
 check AUTO "download dir" "" -- bl download dir "$OUT"
 # chunks and groups nest INSIDE an active recording; record stop closes it.
 check AUTO "record start" "" -- bl record start --name r1 --format png --screenshots
@@ -335,11 +354,19 @@ $COV
 EOF
   return 1
 }
-# The root help groups commands under section headers (Navigation:, Interaction:,
-# ...); subcommand helps list them flat. Either way commands are "  <lowercase>"
-# lines between "Available Commands:" and the "Flags:" section — headers sit at
-# column 0 so they're skipped, and we stop at Flags: (not at every "Heading:").
-subcmds() { bl $1 --help 2>&1 | awk '/^Available Commands:/{f=1;next} f&&/^Flags:/{f=0} f&&/^  [a-z]/{print $1}'; }
+# Enumerate a command's subcommands from its --help. The root and clap-native
+# subcommand help share the same headings: a "Commands:" block closed by the next
+# section ("Arguments:" or "Options:"). The root additionally interleaves category
+# headers (Navigation:, Interaction: … at column 0) and blank lines between the
+# command rows; those are tolerated because a "  <lowercase>" command row is the
+# only thing we print. Start the list at "Commands:", end it at a known closer.
+subcmds() {
+  bl $1 --help 2>&1 | awk '
+    /^Commands:/                 { f=1; next }
+    f && /^(Options|Arguments):/ { f=0 }   # block closers
+    f && /^  [a-z]/              { print $1 }
+  '
+}
 Q=(""); ALLPATHS=()
 while [ ${#Q[@]} -gt 0 ]; do
   cur="${Q[0]}"; Q=("${Q[@]:1}")

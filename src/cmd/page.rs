@@ -2,25 +2,59 @@ use clap::{Arg, ArgMatches, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn page_command() -> Command {
     Command::new("page")
         .about("Manage browser pages (new, close, switch)")
+        // No subcommand prints this parent's help natively (cobra's `cmd.Help()`).
+        .arg_required_else_help(true)
         .subcommand(
             Command::new("new")
                 .about("Open a new browser page")
-                .arg(Arg::new("url").num_args(0..=1)),
+                .arg(
+                    Arg::new("url")
+                        .num_args(0..=1)
+                        .help("URL to navigate the new page to (omit for a blank page)"),
+                )
+                .after_help(examples(&[
+                    ("page new", "Open a blank new page"),
+                    (
+                        "page new https://example.com",
+                        "Open a new page and navigate to URL",
+                    ),
+                ])),
         )
         .subcommand(
             Command::new("close")
                 .about("Close a browser page by index (default: current page)")
-                .arg(Arg::new("index").num_args(0..=1)),
+                .arg(
+                    Arg::new("index")
+                        .num_args(0..=1)
+                        .help("Index of the page to close (default: current page)"),
+                )
+                .after_help(examples(&[
+                    ("page close", "Close current page (index 0)"),
+                    ("page close 1", "Close page at index 1"),
+                ])),
         )
         .subcommand(
             Command::new("switch")
                 .about("Switch to a browser page by index or URL substring")
-                .arg(Arg::new("target").required(true).num_args(1)),
+                .arg(
+                    Arg::new("target")
+                        .required(true)
+                        .num_args(1)
+                        .help("Page index, or a substring to match against page URLs"),
+                )
+                .after_help(examples(&[
+                    ("page switch 1", "Switch to page at index 1"),
+                    (
+                        "page switch google.com",
+                        "Switch to page containing \"google.com\" in URL",
+                    ),
+                ])),
         )
 }
 

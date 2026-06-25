@@ -3,18 +3,35 @@ use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
 use super::daemon_cmd::parse_duration_flag;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn click_command() -> Command {
     Command::new("click")
         .about("Click an element (optionally navigate to URL first)")
-        .arg(Arg::new("args").required(true).num_args(1..=2))
+        .arg(
+            Arg::new("args")
+                .required(true)
+                .num_args(1..=2)
+                .help("[url] selector — optional URL to navigate first, then the selector to click"),
+        )
         .arg(
             Arg::new("timeout")
                 .long("timeout")
                 .default_value("30s")
                 .help("Timeout for actionability checks (e.g., 5s, 30s)"),
         )
+        .after_help(examples(&[
+            ("click \"a\"", "Clicks on current page"),
+            (
+                "click https://example.com \"a\"",
+                "Navigates to URL first, then clicks",
+            ),
+            (
+                "click https://example.com \"a\" --timeout 5s",
+                "Custom timeout for actionability checks",
+            ),
+        ]))
 }
 
 pub async fn run_click(args: Vec<String>, timeout: String, headless: bool, json_output: bool) {

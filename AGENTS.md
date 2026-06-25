@@ -43,7 +43,7 @@ hooks (each tagged `// ext-seam`):
 | `src/agent/schema.rs` (`get_tool_schemas`) | `ext::register_mcp_tools(&mut tools)` | add MCP tools |
 | `src/agent/handlers.rs` (`dispatch`) | `ext::dispatch_mcp_tool(name, args)` | handle them |
 
-`src/ext/cli.rs` (the `bl inspect` command) is a worked example. The seam is a
+`src/ext/cli.rs` (the `bl add-mcp` command) is a worked example. The seam is a
 convenience for cleanly-separated additions — you can also edit the core
 directly.
 

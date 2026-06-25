@@ -1,0 +1,24 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Set files on an input[type=file] element
+
+Usage: bl upload [OPTIONS] <selector> <files>...
+
+Arguments:
+  <selector>  CSS selector (or map ref) for the input[type=file] element
+  <files>...  One or more file paths to set on the input
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl upload "input[type=file]" ./photo.jpg
+  # Upload a single file
+
+  bl upload "#file-input" ./photo.jpg ./doc.pdf
+  # Upload multiple files

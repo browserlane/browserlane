@@ -10,17 +10,17 @@ Manage browser downloads
 **Usage**
 
 ```bash
-bl download [flags]
-bl download [command]
+bl download
+bl download <command>
 ```
 
-**Global flags**
+**Global options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 ### `bl download dir`
 
@@ -29,16 +29,22 @@ Set the download directory
 **Usage**
 
 ```bash
-bl download dir [path] [flags]
+bl download dir <path>
 ```
 
-**Global flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
+| --- | --- |
+| `&lt;path&gt;` | Directory to save downloads into |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 

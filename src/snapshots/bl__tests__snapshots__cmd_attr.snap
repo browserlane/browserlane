@@ -1,0 +1,24 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Get an HTML attribute value from an element
+
+Usage: bl attr [OPTIONS] <selector> <attribute>
+
+Arguments:
+  <selector>   CSS selector for the element
+  <attribute>  Attribute name to read (e.g. href, src)
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl attr "a" "href"
+  # Get the href of the first link
+
+  bl attr "img" "src"
+  # Get the image source URL

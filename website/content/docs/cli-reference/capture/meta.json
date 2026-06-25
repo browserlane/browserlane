@@ -2,8 +2,8 @@
   "title": "Capture",
   "pages": [
     "screenshot",
-    "pdf",
     "record",
+    "pdf",
     "highlight"
   ]
 }

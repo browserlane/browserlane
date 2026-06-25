@@ -1,0 +1,24 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Replace the page HTML content
+
+Usage: bl content [OPTIONS] [html]
+
+Arguments:
+  [html]  HTML to set as the page content
+
+Options:
+      --stdin     Read HTML from stdin
+  -v, --verbose   Enable debug logging
+      --headless  Hide browser window (visible by default)
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl content "<h1>Hello World</h1>"
+  # Set page content directly
+
+  echo "<h1>Hello</h1>" | bl content --stdin
+  # Set page content from stdin
