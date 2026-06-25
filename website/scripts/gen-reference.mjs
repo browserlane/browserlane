@@ -863,7 +863,8 @@ function emitCli(tree, version) {
   );
   const pages = ['index', 'cli-mcp-mapping', ...orderedGroupSlugs];
   if (advancedPages.length) pages.push(ADVANCED_SLUG);
-  writeMeta(CLI_DIR, { title: 'CLI reference', pages });
+  // root: true makes this folder a top-level tab in the docs layout.
+  writeMeta(CLI_DIR, { title: 'CLI reference', root: true, pages });
 
   return { totalCommands };
 }
@@ -1123,7 +1124,8 @@ function emitMcp(tools, version) {
     [indexBody.join('\n\n')],
   );
 
-  writeMeta(MCP_DIR, { title: 'MCP reference', pages: pageSlugs });
+  // root: true makes this folder a top-level tab in the docs layout.
+  writeMeta(MCP_DIR, { title: 'MCP reference', root: true, pages: pageSlugs });
 
   return { byGroup, ungrouped };
 }

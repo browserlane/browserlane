@@ -1,5 +1,6 @@
 {
   "title": "MCP reference",
+  "root": true,
   "pages": [
     "index",
     "navigation",
