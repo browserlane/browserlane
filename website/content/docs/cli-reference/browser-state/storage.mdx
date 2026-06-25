@@ -10,23 +10,23 @@ Export or restore browser state (cookies, localStorage, sessionStorage)
 **Usage**
 
 ```bash
-bl storage [flags]
-bl storage [command]
+bl storage [OPTIONS]
+bl storage <command>
 ```
 
-**Flags**
+**Options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
-| `-o, --output string` | Output file path |
+| `-o, --output <value>` | Output file path |
 
-**Global flags**
+**Global options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 
@@ -45,16 +45,22 @@ Restore browser state from a JSON file
 **Usage**
 
 ```bash
-bl storage restore [path] [flags]
+bl storage restore <path>
 ```
 
-**Global flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
+| --- | --- |
+| `&lt;path&gt;` | Path to a JSON state file to restore |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 

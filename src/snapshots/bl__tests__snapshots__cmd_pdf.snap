@@ -1,0 +1,24 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Save page as PDF
+
+Usage: bl pdf [OPTIONS] [url]
+
+Arguments:
+  [url]  URL to navigate to before saving
+
+Options:
+  -o, --output <output>  Output file path [default: page.pdf]
+  -v, --verbose          Enable debug logging
+      --headless         Hide browser window (visible by default)
+      --json             Output as JSON
+  -h, --help             Print help
+
+Examples:
+  bl pdf -o page.pdf
+  # Save current page as PDF
+
+  bl pdf https://example.com -o page.pdf
+  # Navigate to URL first, then save as PDF

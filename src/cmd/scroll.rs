@@ -2,12 +2,17 @@ use clap::{Arg, ArgMatches, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn scroll_command() -> Command {
     Command::new("scroll")
         .about("Scroll the page or an element")
-        .arg(Arg::new("direction").num_args(0..=1))
+        .arg(
+            Arg::new("direction")
+                .num_args(0..=1)
+                .help("Scroll direction: up or down (default down)"),
+        )
         .arg(
             Arg::new("amount")
                 .long("amount")
@@ -21,10 +26,28 @@ pub fn scroll_command() -> Command {
                 .default_value("")
                 .help("CSS selector for element to scroll to"),
         )
+        .after_help(examples(&[
+            ("scroll", "Scroll down by default"),
+            ("scroll up", "Scroll up"),
+            ("scroll down --amount 5", "Scroll down 5 increments"),
+            (
+                "scroll down --selector \"div.content\"",
+                "Scroll within a specific element",
+            ),
+        ]))
         .subcommand(
             Command::new("into-view")
                 .about("Scroll an element into view")
-                .arg(Arg::new("selector").required(true).num_args(1)),
+                .arg(
+                    Arg::new("selector")
+                        .required(true)
+                        .num_args(1)
+                        .help("CSS selector (or map ref) for the element to scroll into view"),
+                )
+                .after_help(examples(&[(
+                    "scroll into-view \"#footer\"",
+                    "Scroll the footer element into view (centered on screen)",
+                )])),
         )
 }
 

@@ -7,7 +7,7 @@ use super::output::{print_error, print_result};
 pub fn navigate_command() -> Command {
     Command::new("go")
         .about("Go to a URL and print page info")
-        .arg(Arg::new("url").required(true).num_args(1))
+        .arg(Arg::new("url").required(true).num_args(1).help("URL to navigate to"))
 }
 
 pub async fn run_navigate(url: String, headless: bool, json_output: bool) {

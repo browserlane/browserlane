@@ -1,0 +1,17 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Navigate forward in browser history
+
+Usage: bl forward [OPTIONS]
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl forward
+  # Go forward one page (like clicking the forward button)

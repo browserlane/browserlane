@@ -10,16 +10,23 @@ Set files on an input[type=file] element
 **Usage**
 
 ```bash
-bl upload [selector] [files...] [flags]
+bl upload <selector> <files>
 ```
 
-**Global flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
+| --- | --- |
+| `&lt;selector&gt;` | CSS selector (or map ref) for the input[type=file] element |
+| `&lt;files&gt;` | One or more file paths to set on the input |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 

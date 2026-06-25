@@ -2,18 +2,30 @@ use clap::{Arg, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::{examples, PROG};
 use super::output::{print_error, print_result};
 
 pub fn content_command() -> Command {
     Command::new("content")
         .about("Replace the page HTML content")
-        .arg(Arg::new("html").num_args(0..=1))
+        .arg(
+            Arg::new("html")
+                .num_args(0..=1)
+                .help("HTML to set as the page content"),
+        )
         .arg(
             Arg::new("stdin")
                 .long("stdin")
                 .action(clap::ArgAction::SetTrue)
                 .help("Read HTML from stdin"),
         )
+        .after_help(examples(&[
+            ("content \"<h1>Hello World</h1>\"", "Set page content directly"),
+            (
+                &format!("echo \"<h1>Hello</h1>\" | {PROG} content --stdin"),
+                "Set page content from stdin",
+            ),
+        ]))
 }
 
 pub async fn run_content(html_arg: Option<String>, use_stdin: bool, headless: bool, json_output: bool) {

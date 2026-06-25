@@ -1,0 +1,20 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Restore browser state from a JSON file
+
+Usage: bl storage restore [OPTIONS] <path>
+
+Arguments:
+  <path>  Path to a JSON state file to restore
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl storage restore state.json
+  # Restore cookies and storage from saved state

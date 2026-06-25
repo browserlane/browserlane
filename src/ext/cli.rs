@@ -9,10 +9,12 @@ use clap::{Arg, ArgAction, ArgMatches, Command};
 
 /// Register all browserlane-specific subcommands on the root CLI.
 pub fn register(cli: Command) -> Command {
+    // These ext-seam commands are clap-native already (no help_text.rs entry).
+    // We only add the `Examples:` after_help block, built to match the shared
+    // cmd::examples helper's layout. That helper lives in a private module we
+    // can't reach from here, so `examples()` below reproduces its format using
+    // the re-exported crate::cmd::prog_name().
     cli.subcommand(
-        Command::new("inspect").about("Print browserlane build + identity metadata as JSON"),
-    )
-    .subcommand(
         Command::new("add-mcp")
             .about("Register the browserlane MCP server with a coding agent (claude, claude-desktop, cursor, vscode, codex)")
             .arg(
@@ -31,37 +33,52 @@ pub fn register(cli: Command) -> Command {
                     .long("stdout")
                     .action(ArgAction::SetTrue)
                     .help("Print the config snippet instead of writing it"),
-            ),
+            )
+            .after_help(examples(&[
+                ("add-mcp", "List the supported clients"),
+                ("add-mcp claude", "Register the MCP server with Claude Code"),
+                (
+                    "add-mcp cursor --stdout",
+                    "Print the Cursor config snippet instead of writing it",
+                ),
+            ])),
     )
+}
+
+/// Builds an `Examples:` after_help block matching the shared `cmd::examples`
+/// helper's layout (which is in a private module unreachable from the ext seam).
+/// Each `(snippet, comment)` renders as `  <prog> <snippet>` then `  # <comment>`,
+/// with the live program name from `crate::cmd::prog_name()`.
+fn examples(pairs: &[(&str, &str)]) -> String {
+    let prog = crate::cmd::prog_name();
+    let mut out = String::from("Examples:");
+    for (i, (snippet, comment)) in pairs.iter().enumerate() {
+        if i > 0 {
+            out.push('\n');
+        }
+        out.push_str("\n  ");
+        out.push_str(&prog);
+        if !snippet.is_empty() {
+            out.push(' ');
+            out.push_str(snippet);
+        }
+        if !comment.is_empty() {
+            out.push_str("\n  # ");
+            out.push_str(comment);
+        }
+    }
+    out
 }
 
 /// Dispatch a browserlane-specific subcommand. Returns `true` if handled.
 pub async fn dispatch(name: &str, sub: &ArgMatches, _headless: bool, _json_output: bool) -> bool {
     match name {
-        "inspect" => {
-            run_inspect();
-            true
-        }
         "add-mcp" => {
             run_add_mcp(sub);
             true
         }
         _ => false,
     }
-}
-
-fn run_inspect() {
-    let info = serde_json::json!({
-        "name": "browserlane",
-        "binary": "bl",
-        "version": crate::VERSION,
-        "target_os": std::env::consts::OS,
-        "target_arch": std::env::consts::ARCH,
-    });
-    println!(
-        "{}",
-        serde_json::to_string_pretty(&info).unwrap_or_else(|_| info.to_string())
-    );
 }
 
 fn run_add_mcp(sub: &ArgMatches) {

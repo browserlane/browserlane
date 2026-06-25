@@ -2,19 +2,19 @@
   "title": "Interaction",
   "pages": [
     "click",
-    "dblclick",
-    "hover",
     "type",
+    "hover",
+    "select",
+    "scroll",
+    "keys",
     "fill",
     "press",
-    "keys",
-    "select",
     "check",
     "uncheck",
+    "dblclick",
     "focus",
-    "scroll",
+    "upload",
     "drag",
-    "mouse",
-    "upload"
+    "mouse"
   ]
 }

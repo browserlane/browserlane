@@ -10,22 +10,29 @@ Override the browser geolocation
 **Usage**
 
 ```bash
-bl geolocation [latitude] [longitude] [flags]
+bl geolocation <latitude> <longitude> [OPTIONS]
 ```
 
-**Flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
 | --- | --- |
-| `--accuracy float` | Accuracy in meters (default: 1) |
+| `&lt;latitude&gt;` | Latitude in decimal degrees |
+| `&lt;longitude&gt;` | Longitude in decimal degrees |
 
-**Global flags**
+**Options**
 
-| Flag | Description |
+| Option | Description |
+| --- | --- |
+| `--accuracy <value>` | Accuracy in meters (default: 1) |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 

@@ -1,0 +1,24 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Clear an input field and type new text
+
+Usage: bl fill [OPTIONS] <selector> <text>
+
+Arguments:
+  <selector>  CSS selector or @ref of the input field
+  <text>      Text to type into the field after clearing it
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl fill "input[name=email]" "user@example.com"
+  # Clear the field and type new value
+
+  bl fill "#search" "browserlane"
+  # Replace search field contents

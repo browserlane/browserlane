@@ -2,38 +2,119 @@ use clap::{Arg, ArgAction, ArgMatches, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn find_command() -> Command {
-    let semantic = |name: &'static str, arg: &'static str, about: &'static str| {
+    let semantic = |name: &'static str,
+                    arg: &'static str,
+                    about: &'static str,
+                    example: (&'static str, &'static str)| {
         Command::new(name)
             .about(about)
-            .arg(Arg::new(arg).required(true).num_args(1))
+            .arg(Arg::new(arg).required(true).num_args(1).help(about))
+            .after_help(examples(&[example]))
     };
 
     Command::new("find")
         .about("Find elements by CSS selector or semantic locator")
-        .arg(Arg::new("selector").num_args(0..=2))
-        .arg(Arg::new("all").long("all").action(ArgAction::SetTrue))
+        .arg(
+            Arg::new("selector")
+                .num_args(0..=2)
+                .help("CSS selector (optionally preceded by a URL to navigate first)"),
+        )
+        .arg(
+            Arg::new("all")
+                .long("all")
+                .action(ArgAction::SetTrue)
+                .help("Find all matching elements"),
+        )
         .arg(
             Arg::new("limit")
                 .long("limit")
                 .default_value("10")
-                .value_parser(clap::value_parser!(i64)),
+                .value_parser(clap::value_parser!(i64))
+                .help("Maximum number of elements to return (with --all)"),
         )
-        .subcommand(semantic("text", "text", "Find element by text content"))
+        .after_help(examples(&[
+            ("find \"a\"", "→ @e1 [a] \"More information...\""),
+            ("find \"a\" --all", "→ @e1 [a] \"Home\"  @e2 [a] \"About\"  ..."),
+            ("find text \"Sign In\"", "→ @e1 [button] \"Sign In\""),
+            ("find role button", "→ @e1 [button] \"Submit\""),
+            (
+                "find role heading --name \"Example\"",
+                "Find heading with accessible name \"Example\"",
+            ),
+        ]))
+        .subcommand(semantic(
+            "text",
+            "text",
+            "Find element by text content",
+            ("find text \"Sign In\"", "→ @e1 [button] \"Sign In\""),
+        ))
         .subcommand(
             Command::new("role")
                 .about("Find element by ARIA role")
-                .arg(Arg::new("role").required(true).num_args(1))
-                .arg(Arg::new("name").long("name").default_value("")),
+                .arg(Arg::new("role").required(true).num_args(1).help("ARIA role to match"))
+                .arg(
+                    Arg::new("name")
+                        .long("name")
+                        .default_value("")
+                        .help("Accessible name filter"),
+                )
+                .after_help(examples(&[
+                    ("find role button", "→ @e1 [button] \"Submit\""),
+                    (
+                        "find role heading --name \"Example\"",
+                        "Find heading with accessible name \"Example\"",
+                    ),
+                ])),
         )
-        .subcommand(semantic("label", "label", "Find input by associated label text"))
-        .subcommand(semantic("placeholder", "placeholder", "Find element by placeholder attribute"))
-        .subcommand(semantic("testid", "testid", "Find element by data-testid attribute"))
-        .subcommand(semantic("xpath", "expression", "Find element by XPath expression"))
-        .subcommand(semantic("alt", "alt", "Find element by alt attribute"))
-        .subcommand(semantic("title", "title", "Find element by title attribute"))
+        .subcommand(semantic(
+            "label",
+            "label",
+            "Find input by associated label text",
+            (
+                "find label \"Email\"",
+                "→ @e1 [input type=\"email\"] placeholder=\"Email\"",
+            ),
+        ))
+        .subcommand(semantic(
+            "placeholder",
+            "placeholder",
+            "Find element by placeholder attribute",
+            (
+                "find placeholder \"Search...\"",
+                "→ @e1 [input] placeholder=\"Search...\"",
+            ),
+        ))
+        .subcommand(semantic(
+            "testid",
+            "testid",
+            "Find element by data-testid attribute",
+            (
+                "find testid \"submit-btn\"",
+                "→ @e1 [button] data-testid=\"submit-btn\"",
+            ),
+        ))
+        .subcommand(semantic(
+            "xpath",
+            "expression",
+            "Find element by XPath expression",
+            ("find xpath \"//div[@class='main']\"", "→ @e1 [div.main] ..."),
+        ))
+        .subcommand(semantic(
+            "alt",
+            "alt",
+            "Find element by alt attribute",
+            ("find alt \"Logo\"", ""),
+        ))
+        .subcommand(semantic(
+            "title",
+            "title",
+            "Find element by title attribute",
+            ("find title \"Close\"", ""),
+        ))
 }
 
 pub async fn run_find(matches: &ArgMatches, headless: bool, json_output: bool) {

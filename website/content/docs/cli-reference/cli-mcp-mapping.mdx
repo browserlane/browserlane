@@ -12,81 +12,81 @@ browserlane is one engine behind two surfaces: the human `bl` CLI and the agent-
 | CLI command | MCP tool(s) |
 | --- | --- |
 | `bl go` | `browser_navigate` |
+| `bl wait` | `browser_wait` |
+| `bl wait url` | `browser_wait_for_url` |
+| `bl wait text` | `browser_wait_for_text` |
+| `bl wait load` | `browser_wait_for_load` |
+| `bl wait fn` | `browser_wait_for_fn` |
 | `bl back` | `browser_back` |
 | `bl forward` | `browser_forward` |
 | `bl reload` | `browser_reload` |
-| `bl wait` | `browser_wait` |
-| `bl wait fn` | `browser_wait_for_fn` |
-| `bl wait load` | `browser_wait_for_load` |
-| `bl wait text` | `browser_wait_for_text` |
-| `bl wait url` | `browser_wait_for_url` |
 | `bl click` | `browser_click` |
-| `bl dblclick` | `browser_dblclick` |
-| `bl hover` | `browser_hover` |
 | `bl type` | `browser_type` |
-| `bl fill` | `browser_fill` |
-| `bl press` | `browser_press` |
-| `bl keys` | `browser_keys` |
+| `bl hover` | `browser_hover` |
 | `bl select` | `browser_select` |
-| `bl check` | `browser_check` |
-| `bl uncheck` | `browser_uncheck` |
-| `bl focus` | `browser_focus` |
 | `bl scroll` | `browser_scroll` |
 | `bl scroll into-view` | `browser_scroll_into_view` |
+| `bl keys` | `browser_keys` |
+| `bl fill` | `browser_fill` |
+| `bl press` | `browser_press` |
+| `bl check` | `browser_check` |
+| `bl uncheck` | `browser_uncheck` |
+| `bl dblclick` | `browser_dblclick` |
+| `bl focus` | `browser_focus` |
+| `bl upload` | `browser_upload` |
 | `bl drag` | `browser_drag` |
 | `bl mouse click` | `browser_mouse_click` |
-| `bl mouse down` | `browser_mouse_down` |
 | `bl mouse move` | `browser_mouse_move` |
+| `bl mouse down` | `browser_mouse_down` |
 | `bl mouse up` | `browser_mouse_up` |
-| `bl upload` | `browser_upload` |
+| `bl a11y-tree` | `browser_a11y_tree` |
+| `bl text` | `browser_get_text` |
 | `bl url` | `browser_get_url` |
 | `bl title` | `browser_get_title` |
-| `bl text` | `browser_get_text` |
 | `bl html` | `browser_get_html` |
-| `bl attr` | `browser_get_attribute` |
+| `bl pages` | `browser_list_pages` |
+| `bl frame` | `browser_frame` |
+| `bl frames` | `browser_frames` |
+| `bl map` | `browser_map` |
 | `bl value` | `browser_get_value` |
-| `bl count` | `browser_count` |
+| `bl attr` | `browser_get_attribute` |
 | `bl find` | `browser_find`, `browser_find_all` |
-| `bl find alt` | `browser_find` |
+| `bl find text` | `browser_find` |
+| `bl find role` | `browser_find` |
 | `bl find label` | `browser_find` |
 | `bl find placeholder` | `browser_find` |
-| `bl find role` | `browser_find` |
 | `bl find testid` | `browser_find` |
-| `bl find text` | `browser_find` |
-| `bl find title` | `browser_find` |
 | `bl find xpath` | `browser_find` |
-| `bl map` | `browser_map` |
-| `bl a11y-tree` | `browser_a11y_tree` |
-| `bl is checked` | `browser_is_checked` |
-| `bl is enabled` | `browser_is_enabled` |
+| `bl find alt` | `browser_find` |
+| `bl find title` | `browser_find` |
+| `bl count` | `browser_count` |
 | `bl is visible` | `browser_is_visible` |
-| `bl pages` | `browser_list_pages` |
-| `bl frames` | `browser_frames` |
-| `bl frame` | `browser_frame` |
+| `bl is enabled` | `browser_is_enabled` |
+| `bl is checked` | `browser_is_checked` |
 | `bl screenshot` | `browser_screenshot` |
-| `bl pdf` | `browser_pdf` |
 | `bl record start` | `browser_record_start` |
 | `bl record stop` | `browser_record_stop` |
+| `bl pdf` | `browser_pdf` |
 | `bl highlight` | `browser_highlight` |
 | `bl cookies` | `browser_get_cookies`, `browser_set_cookie` |
 | `bl cookies clear` | `browser_delete_cookies` |
-| `bl storage` | `browser_storage_state` |
-| `bl storage restore` | `browser_restore_storage` |
-| `bl download dir` | `browser_download_set_dir` |
 | `bl dialog accept` | `browser_dialog_accept` |
 | `bl dialog dismiss` | `browser_dialog_dismiss` |
-| `bl content` | `browser_set_content` |
+| `bl download dir` | `browser_download_set_dir` |
 | `bl diff map` | `browser_diff_map` |
 | `bl viewport` | `browser_get_viewport`, `browser_set_viewport` |
 | `bl window` | `browser_get_window`, `browser_set_window` |
-| `bl media` | `browser_emulate_media` |
+| `bl storage` | `browser_storage_state` |
+| `bl storage restore` | `browser_restore_storage` |
 | `bl geolocation` | `browser_set_geolocation` |
+| `bl content` | `browser_set_content` |
+| `bl media` | `browser_emulate_media` |
 | `bl eval` | `browser_evaluate` |
 | `bl sleep` | `browser_sleep` |
 | `bl start` | `browser_start` |
 | `bl stop` | `browser_stop` |
-| `bl page close` | `browser_close_page` |
 | `bl page new` | `browser_new_page` |
+| `bl page close` | `browser_close_page` |
 | `bl page switch` | `browser_switch_page` |
 
 ## MCP-only (no CLI command)
@@ -124,6 +124,7 @@ These commands exist only in the CLI — installation, diagnostics, the daemon, 
 
 A few leaf commands also have no direct tool:
 
+- `bl inspect`
 - `bl is actionable`
 - `bl mcp`
 - `bl record chunk start`

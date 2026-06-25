@@ -2,9 +2,9 @@
   "title": "Navigation",
   "pages": [
     "go",
+    "wait",
     "back",
     "forward",
-    "reload",
-    "wait"
+    "reload"
   ]
 }

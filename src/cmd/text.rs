@@ -2,13 +2,27 @@ use clap::{Arg, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::find::is_url;
 use super::output::{print_error, print_result};
 
 pub fn text_command() -> Command {
     Command::new("text")
         .about("Get text content of the page or an element")
-        .arg(Arg::new("args").num_args(0..=2))
+        .arg(
+            Arg::new("args")
+                .num_args(0..=2)
+                .help("CSS selector, or a URL to navigate to first (optionally followed by a selector)"),
+        )
+        .after_help(examples(&[
+            ("text", "Get all page text"),
+            ("text \"h1\"", "Get text of a specific element"),
+            ("text https://example.com", "Navigate then get all page text"),
+            (
+                "text https://example.com \"h1\"",
+                "Navigate then get element text",
+            ),
+        ]))
 }
 
 pub async fn run_text(args: Vec<String>, headless: bool, json_output: bool) {

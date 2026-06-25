@@ -1,0 +1,17 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Stop the browser session
+
+Usage: bl stop [OPTIONS]
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl stop
+  # Stop the browser and daemon

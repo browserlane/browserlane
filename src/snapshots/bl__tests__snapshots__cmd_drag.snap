@@ -1,0 +1,24 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Drag from one element to another
+
+Usage: bl drag [OPTIONS] <source> <target>
+
+Arguments:
+  <source>  CSS selector (or map ref) for the element to drag
+  <target>  CSS selector (or map ref) for the drop target
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl drag ".draggable" ".dropzone"
+  # Drag element to drop target
+
+  bl drag @e1 @e3
+  # Drag using map refs

@@ -2,10 +2,16 @@ use clap::Command;
 use serde_json::Map;
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn frames_command() -> Command {
-    Command::new("frames").about("List all child frames (iframes) on the page")
+    Command::new("frames").about("List all child frames (iframes) on the page").after_help(
+        examples(&[(
+            "frames",
+            "[{\"context\":\"abc\",\"url\":\"https://example.com/frame\",\"name\":\"myFrame\"}]",
+        )]),
+    )
 }
 
 pub async fn run_frames(headless: bool, json_output: bool) {

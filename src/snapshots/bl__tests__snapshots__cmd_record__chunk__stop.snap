@@ -1,0 +1,20 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Package current chunk into a ZIP file (recording stays active)
+
+Usage: bl record chunk stop [OPTIONS]
+
+Options:
+  -o, --output <output>  Output file path (default: chunk.zip)
+  -v, --verbose          Enable debug logging
+      --headless         Hide browser window (visible by default)
+      --json             Output as JSON
+  -h, --help             Print help
+
+Examples:
+  bl record chunk stop
+  # Save chunk to chunk.zip
+
+  bl record chunk stop -o part1.zip

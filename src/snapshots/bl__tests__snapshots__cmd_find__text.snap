@@ -1,0 +1,20 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Find element by text content
+
+Usage: bl find text [OPTIONS] <text>
+
+Arguments:
+  <text>  Find element by text content
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl find text "Sign In"
+  # → @e1 [button] "Sign In"

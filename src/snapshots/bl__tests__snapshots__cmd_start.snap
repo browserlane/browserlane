@@ -1,0 +1,40 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Start a browser session. Without arguments, launches a local browser.
+With a URL argument, connects to a remote BiDi WebSocket endpoint.
+
+If no URL is given, checks BROWSERLANE_CONNECT_URL env var before falling
+back to a local browser launch.
+
+Set BROWSERLANE_CONNECT_API_KEY to send an Authorization: Bearer header.
+
+Usage: bl start [OPTIONS] [url]
+
+Arguments:
+  [url]
+          Remote BiDi WebSocket URL to connect to (omit to launch a local browser)
+
+Options:
+      --headless
+          Hide browser window (visible by default)
+
+  -v, --verbose
+          Enable debug logging
+
+      --json
+          Output as JSON
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+Examples:
+  bl start
+  # Start with a local browser
+
+  bl start ws://remote:9515/session
+  # Connect to a remote browser
+
+  bl start
+  # Connect using env vars (export BROWSERLANE_CONNECT_URL and BROWSERLANE_CONNECT_API_KEY first)

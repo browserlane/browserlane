@@ -1,0 +1,29 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Capture a screenshot (optionally navigate to URL first)
+
+Usage: bl screenshot [OPTIONS] [url]
+
+Arguments:
+  [url]  URL to navigate to before capturing
+
+Options:
+  -o, --output <output>  Output file path [default: screenshot.png]
+  -v, --verbose          Enable debug logging
+      --full-page        Capture the full page instead of just the viewport
+      --annotate         Annotate interactive elements with numbered labels
+      --headless         Hide browser window (visible by default)
+      --json             Output as JSON
+  -h, --help             Print help
+
+Examples:
+  bl screenshot -o shot.png
+  # Screenshots the current page
+
+  bl screenshot https://example.com -o shot.png
+  # Navigates to URL first, then screenshots
+
+  bl screenshot -o full.png --full-page
+  # Capture the entire page (not just the viewport)

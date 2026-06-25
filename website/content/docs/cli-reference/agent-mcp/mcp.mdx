@@ -39,38 +39,35 @@ The server provides browser automation tools:
 **Usage**
 
 ```bash
-bl mcp [flags]
+bl mcp [OPTIONS]
 ```
 
-**Flags**
+**Options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
-| `--screenshot-dir string` | Directory for saving screenshots (default: ~/Pictures/browserlane, use "" to disable) |
+| `--screenshot-dir <value>` | Directory for saving screenshots (default: ~/Pictures/browserlane, use "" to disable) |
 
-**Global flags**
+**Global options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 
 ```bash
-# Run directly (for testing)
 bl mcp
+# Run directly for testing (configure in Claude Code via: claude mcp add ...)
 
-# Configure in Claude Code
-claude mcp add bl -- bl mcp
-
-# Custom screenshot directory
 bl mcp --screenshot-dir ./screenshots
+# Custom screenshot directory
 
-# Disable screenshot file saving (inline only)
 bl mcp --screenshot-dir ""
+# Disable screenshot file saving (inline only)
 
-# Test with echo
 echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"capabilities":{}}}' | bl mcp
+# Test with echo
 ```

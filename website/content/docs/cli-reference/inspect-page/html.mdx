@@ -10,22 +10,28 @@ Get HTML content of the page or an element
 **Usage**
 
 ```bash
-bl html [selector] [flags]
+bl html [args...] [OPTIONS]
 ```
 
-**Flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
+| --- | --- |
+| `[args...]` | CSS selector, or a URL to navigate to first (optionally followed by a selector) |
+
+**Options**
+
+| Option | Description |
 | --- | --- |
 | `--outer` | Return outerHTML instead of innerHTML |
 
-**Global flags**
+**Global options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 

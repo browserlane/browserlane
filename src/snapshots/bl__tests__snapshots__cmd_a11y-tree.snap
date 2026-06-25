@@ -1,0 +1,21 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Get the accessibility tree of the current page
+
+Usage: bl a11y-tree [OPTIONS]
+
+Options:
+      --everything  Show all nodes including generic containers
+  -v, --verbose     Enable debug logging
+      --headless    Hide browser window (visible by default)
+      --json        Output as JSON
+  -h, --help        Print help
+
+Examples:
+  bl a11y-tree
+  # Print the accessibility tree (interesting nodes only)
+
+  bl a11y-tree --everything
+  # Include all nodes (generic containers, etc.)

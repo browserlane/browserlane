@@ -14,14 +14,37 @@ mod ext;
 mod log;
 mod paths;
 mod process;
+#[cfg(test)]
+mod tests;
 
 use std::io::IsTerminal;
+use std::io::Write as _;
 
+use anstyle::{AnsiColor, Color, Style};
+use clap::builder::Styles;
 use clap::{Arg, ArgAction, ArgMatches, Command};
 use tokio_tungstenite::tungstenite::http::{header::AUTHORIZATION, HeaderMap, HeaderValue};
 
 /// browserlane's own version (from Cargo.toml).
 pub(crate) const VERSION: &str = env!("CARGO_PKG_VERSION");
+
+/// Branded colour scheme for clap's own help/usage/error rendering, matching the
+/// dashboard's cyan accent. clap routes this through anstream, so it is stripped
+/// automatically on a non-TTY stream and under `NO_COLOR`.
+const HELP_STYLES: Styles = {
+    let bold_cyan = Style::new()
+        .bold()
+        .fg_color(Some(Color::Ansi(AnsiColor::Cyan)));
+    let cyan = Style::new().fg_color(Some(Color::Ansi(AnsiColor::Cyan)));
+    Styles::styled()
+        // Section headers ("Usage:", "Options:", "Commands:") and the usage line.
+        .header(bold_cyan)
+        .usage(bold_cyan)
+        // The things a user types: subcommand names, flags, the program name.
+        .literal(cyan)
+        // Value placeholders (<URL>, [OPTIONS]) stay de-emphasised.
+        .placeholder(Style::new().dimmed())
+};
 
 
 /// Reads BROWSERLANE_CONNECT_URL and BROWSERLANE_CONNECT_API_KEY from the environment.
@@ -70,15 +93,18 @@ fn build_cli() -> Command {
     let prog: &'static str = Box::leak(cmd::prog_name().into_boxed_str());
     let ver: &'static str = Box::leak(format!("v{VERSION}").into_boxed_str());
     let cli = Command::new(prog)
+        // Pin the displayed binary name. clap otherwise derives it from argv0 at
+        // runtime, so on case-insensitive filesystems a mis-cased invocation
+        // (`BL`, `Bl`, …) would leak into clap's own usage/error strings. `prog`
+        // is already normalized by prog_name(), keeping usage canonical.
+        .bin_name(prog)
         .about("Browser automation for AI agents and humans")
         .version(ver)
-        .arg(
-            Arg::new("headless")
-                .long("headless")
-                .action(ArgAction::SetTrue)
-                .global(true)
-                .help("Hide browser window (visible by default)"),
-        )
+        .styles(HELP_STYLES)
+        // `--verbose` is the only true global: it drives central logging and is
+        // honored by every command. `--headless` and `--json` are scoped
+        // per-command (attached below via `apply_caps`) so each command's help
+        // lists only the flags it actually consumes.
         .arg(
             Arg::new("verbose")
                 .long("verbose")
@@ -86,13 +112,6 @@ fn build_cli() -> Command {
                 .action(ArgAction::SetTrue)
                 .global(true)
                 .help("Enable debug logging"),
-        )
-        .arg(
-            Arg::new("json")
-                .long("json")
-                .action(ArgAction::SetTrue)
-                .global(true)
-                .help("Output as JSON"),
         )
         .subcommand(cmd::version_command())
         .subcommand(cmd::paths_command())
@@ -159,144 +178,123 @@ fn build_cli() -> Command {
         .subcommand(cmd::geolocation_command())
         .subcommand(cmd::content_command())
         .subcommand(cmd::media_command())
-        .subcommand(cmd::page_command());
+        .subcommand(cmd::page_command())
+        // Hidden, introspection-only: dumps the command tree as JSON for the
+        // docs generator. Registered last so it sits at the end of the tree and
+        // never perturbs the visible command order.
+        .subcommand(cmd::dump_command());
     // ext-seam (browserlane extension hook)
-    ext::register_cli(cli)
+    let cli = ext::register_cli(cli);
+
+    // Scope `--headless`/`--json` per command: attach each flag only where the
+    // command honors it (see `cmd::caps_for`). Done after ext registration so
+    // extension commands are covered too, and recursively so nested subcommand
+    // trees (daemon, cookies, find, …) get the flags at every level.
+    let sub_names: Vec<String> = cli
+        .get_subcommands()
+        .map(|c| c.get_name().to_string())
+        .collect();
+    let mut cli = cli;
+    for name in sub_names {
+        cli = cli.mut_subcommand(name, apply_caps);
+    }
+    cli
 }
 
-/// Returns the space-joined path of the deepest selected subcommand chain
-/// ("" if none), e.g. "mouse click" or "record group".
-fn selected_command_path(matches: &ArgMatches) -> String {
-    let mut parts = Vec::new();
-    let mut m = matches;
-    while let Some((name, sub)) = m.subcommand() {
-        parts.push(name.to_string());
-        m = sub;
+/// `--headless` as a per-command arg (not global), attached only to commands that
+/// launch a browser — so it appears in *their* `--help` and clap rejects it on
+/// commands that have no window to hide.
+fn headless_arg() -> Arg {
+    Arg::new("headless")
+        .long("headless")
+        .action(ArgAction::SetTrue)
+        .help("Hide browser window (visible by default)")
+}
+
+/// `--json` as a per-command arg (not global), attached only to commands that emit
+/// a structured result — so it advertises JSON only where the command honors it.
+fn json_arg() -> Arg {
+    Arg::new("json")
+        .long("json")
+        .action(ArgAction::SetTrue)
+        .help("Output as JSON")
+}
+
+/// Attaches the per-command `--headless`/`--json` flags to `cmd` (and, recursively,
+/// its nested subcommands) according to [`cmd::caps_for`]. The root keeps only the
+/// true global (`--verbose`); these two are intentionally per-command so help
+/// never lists a flag the command ignores.
+fn apply_caps(mut cmd: Command) -> Command {
+    let caps = cmd::caps_for(cmd.get_name());
+    if caps.headless {
+        cmd = cmd.arg(headless_arg());
     }
-    parts.join(" ")
+    if caps.json {
+        cmd = cmd.arg(json_arg());
+    }
+    let sub_names: Vec<String> = cmd
+        .get_subcommands()
+        .map(|c| c.get_name().to_string())
+        .collect();
+    for name in sub_names {
+        cmd = cmd.mut_subcommand(name, apply_caps);
+    }
+    cmd
 }
 
 /// Reads a global flag, falling back to the subcommand matches (clap stores
-/// global args wherever they were parsed).
+/// global args wherever they were parsed). Used for `--verbose`, the one flag
+/// that is still global.
 fn global_flag(root: &ArgMatches, sub: Option<&ArgMatches>, name: &str) -> bool {
     root.get_flag(name) || sub.map(|s| s.get_flag(name)).unwrap_or(false)
 }
 
-/// Root subcommands whose name is "close" to `typed`, mirroring cobra's
-/// `SuggestionsFor`: case-insensitive Levenshtein distance <= 2, OR the command
-/// name starts with the typed string. Hidden commands (e.g. pipe/serve) are
-/// excluded, and the order follows registration order.
-fn command_suggestions(typed: &str) -> Vec<String> {
-    let t = typed.to_lowercase();
-    build_cli()
-        .get_subcommands()
-        .filter(|c| !c.is_hide_set())
-        .map(|c| c.get_name().to_string())
-        .filter(|name| {
-            let n = name.to_lowercase();
-            n.starts_with(&t) || levenshtein(&t, &n) <= 2
-        })
-        .collect()
-}
-
-/// Case-sensitive Levenshtein edit distance (callers lowercase first).
-fn levenshtein(a: &str, b: &str) -> usize {
-    let a: Vec<char> = a.chars().collect();
-    let b: Vec<char> = b.chars().collect();
-    let mut prev: Vec<usize> = (0..=b.len()).collect();
-    let mut cur = vec![0usize; b.len() + 1];
-    for (i, ca) in a.iter().enumerate() {
-        cur[0] = i + 1;
-        for (j, cb) in b.iter().enumerate() {
-            let cost = usize::from(ca != cb);
-            cur[j + 1] = (prev[j + 1] + 1).min(cur[j] + 1).min(prev[j] + cost);
+/// Reads a per-command bool flag (`--headless`/`--json`) at any depth of the
+/// matched subcommand chain. Those flags are scoped per command (not global), and
+/// clap records each on whichever command scope parsed it, so `bl daemon --json
+/// status` and `bl daemon status --json` both register. `try_get_one` is the
+/// non-panicking accessor: on a command that never defines the flag it returns an
+/// error (treated as `false`) rather than panicking like `get_flag` would.
+fn cmd_flag(matches: &ArgMatches, name: &str) -> bool {
+    let mut m = matches;
+    loop {
+        if matches!(m.try_get_one::<bool>(name), Ok(Some(true))) {
+            return true;
         }
-        std::mem::swap(&mut prev, &mut cur);
-    }
-    prev[b.len()]
-}
-
-/// Handles a clap parse failure the way Go's cobra + `main()` do: `--help` and
-/// `--version` print to stdout and exit 0; every other parse error exits with
-/// code 1 (cobra), not clap's default 2. Unknown top-level commands are rendered
-/// byte-for-byte like cobra: `Error: unknown command "X" for "bl"`, then the
-/// usage hint, then the repeated message (mirroring `main()`'s
-/// `fmt.Fprintln(os.Stderr, err)`).
-fn handle_cli_parse_error(e: clap::Error) -> ! {
-    use clap::error::{ContextKind, ContextValue, ErrorKind};
-
-    match e.kind() {
-        ErrorKind::DisplayHelp
-        | ErrorKind::DisplayVersion
-        | ErrorKind::DisplayHelpOnMissingArgumentOrSubcommand => {
-            // clap writes help/version to stdout; cobra exits 0 for these.
-            let _ = e.print();
-            std::process::exit(0);
-        }
-        ErrorKind::InvalidSubcommand => {
-            let prog = cmd::prog_name();
-            let name = match e.get(ContextKind::InvalidSubcommand) {
-                Some(ContextValue::String(s)) => s.clone(),
-                _ => String::new(),
-            };
-            let msg = format!("unknown command {name:?} for {prog:?}");
-            let suggestions = command_suggestions(&name);
-            if suggestions.is_empty() {
-                // cobra: `Error: <msg>` + usage hint, then main() re-prints err.
-                eprintln!("Error: {msg}");
-                eprintln!("Run '{prog} --help' for usage.");
-                eprintln!("{msg}");
-            } else {
-                // cobra appends a "Did you mean this?" block (Levenshtein <= 2 or
-                // prefix matches) to the error message, prints `Error: <err>` + the
-                // usage hint, then main() re-prints the full err — so the suggestion
-                // block appears twice. Reproduced byte-for-byte.
-                let mut block = format!("{msg}\n\nDid you mean this?\n");
-                for s in &suggestions {
-                    block.push('\t');
-                    block.push_str(s);
-                    block.push('\n');
-                }
-                let out = format!("Error: {block}\nRun '{prog} --help' for usage.\n{block}\n");
-                eprint!("{out}");
-            }
-            std::process::exit(1);
-        }
-        _ => {
-            // Other parse errors keep clap's message for now (cobra-exact text +
-            // the full per-command usage dump land with the --help format work),
-            // but match cobra's exit code 1.
-            let _ = e.print();
-            std::process::exit(1);
+        match m.subcommand() {
+            Some((_, sub)) => m = sub,
+            None => return false,
         }
     }
 }
 
 #[tokio::main]
 async fn main() {
-    // cobra-faithful `--help`: serve the captured help text for the requested
-    // command (with the live program name substituted) and exit 0, before clap
-    // parses. clap's renderer cannot reproduce cobra's format, so we bypass it.
+    // Help/version/error handling is now clap-native (the captured-cobra help
+    // system was removed in the clap-help migration). One seam remains: the ROOT
+    // help is a grouped, category-bucketed layout that clap cannot render itself,
+    // so we intercept *only* the root `--help`/`-h` (no subcommand on the line)
+    // and hand it to `render_root_help`. Per-command `<cmd> --help`, `--version`,
+    // unknown-command "did you mean", and all argument errors flow through clap.
     let raw_args: Vec<String> = std::env::args().skip(1).collect();
-    if let Some(text) = cmd::intercept_help(&raw_args) {
-        print!("{text}");
+    let wants_help = raw_args.iter().any(|a| a == "--help" || a == "-h");
+    if wants_help && !raw_args.iter().any(|a| !a.starts_with('-')) {
+        // Root `--help` with no subcommand token: render the grouped layout from
+        // the live command tree and exit 0. Written through `anstream::stdout()`
+        // (like `print_dashboard` and clap's own help) so the branded ANSI is
+        // stripped on a non-TTY stream and under `NO_COLOR` — piped `bl --help`
+        // stays byte-for-byte plain.
+        let mut out = anstream::stdout();
+        let _ = write!(out, "{}", cmd::render_root_help(&build_cli()));
         std::process::exit(0);
     }
 
+    // Let clap parse; it prints help/version (exit 0) and errors (its own exit
+    // codes + native "did you mean" suggestions) directly via `Error::exit()`.
     let matches = match build_cli().try_get_matches() {
         Ok(m) => m,
-        Err(e) => handle_cli_parse_error(e),
+        Err(e) => e.exit(),
     };
-
-    // A parent command whose cobra Run is cmd.Help() prints its help when invoked
-    // with no subcommand. Serve the cobra-exact text instead of clap's renderer.
-    let selected = selected_command_path(&matches);
-    if cmd::shows_help_on_no_subcommand(&selected) {
-        if let Some(text) = cmd::command_help(&selected) {
-            print!("{text}");
-            return;
-        }
-    }
 
     let sub = matches.subcommand().map(|(_, m)| m);
 
@@ -304,15 +302,18 @@ async fn main() {
     if global_flag(&matches, sub, "verbose") {
         log::setup(log::Level::Verbose);
     }
-    let headless = global_flag(&matches, sub, "headless");
-    let json_output = global_flag(&matches, sub, "json");
+    let headless = cmd_flag(&matches, "headless");
+    let json_output = cmd_flag(&matches, "json");
 
     match matches.subcommand() {
-        Some(("version", _)) => cmd::run_version(),
-        Some(("paths", _)) => cmd::run_paths(),
+        // Hidden introspection command: emit the clap tree as JSON and return.
+        // Build a fresh tree to hand the renderer the full root command.
+        Some(("__dump", _)) => cmd::run_dump(&build_cli()),
+        Some(("version", _)) => cmd::run_version(json_output),
+        Some(("paths", _)) => cmd::run_paths(json_output),
         Some(("a11y-tree", sub)) => cmd::run_a11y_tree(sub, headless, json_output).await,
-        Some(("is-installed", _)) => cmd::run_is_installed(),
-        Some(("install", _)) => cmd::run_install().await,
+        Some(("is-installed", _)) => cmd::run_is_installed(json_output),
+        Some(("install", _)) => cmd::run_install(json_output).await,
         Some(("launch-test", _)) => cmd::run_launch_test(headless).await,
         Some(("ws-test", sub)) => {
             let url = sub.get_one::<String>("url").cloned().unwrap_or_default();
@@ -346,10 +347,12 @@ async fn main() {
         Some(("completion", sub)) => {
             let shell = sub.get_one::<String>("shell").map(String::as_str);
             // A valid shell emits the script (exit 0). A missing/unrecognized shell
-            // prints the completion help and exits 0, mirroring cobra.
+            // prints the completion command's help (clap-native) and exits 0,
+            // mirroring cobra.
             if !cmd::run_completion(shell, build_cli()) {
-                if let Some(text) = cmd::command_help("completion") {
-                    print!("{text}");
+                let mut cli = build_cli();
+                if let Some(sc) = cli.find_subcommand_mut("completion") {
+                    print!("{}", sc.render_help());
                 }
             }
         }
@@ -560,9 +563,14 @@ async fn main() {
         _ => {
             // No subcommand. On an interactive terminal, greet with the compact
             // branded launch screen; on a pipe/redirect or under --json, print the
-            // plain help so scripts and the smoke harness see unchanged bytes.
+            // grouped root help so scripts and the smoke harness get a stable,
+            // parseable command listing.
             if json_output || !std::io::stdout().is_terminal() {
-                print!("{}", cmd::root_help());
+                // Grouped root help, written through `anstream::stdout()` so its
+                // branded ANSI is stripped on the non-TTY / `--json` path (and
+                // honours `NO_COLOR`), exactly like `print_dashboard`.
+                let mut out = anstream::stdout();
+                let _ = write!(out, "{}", cmd::render_root_help(&build_cli()));
             } else {
                 cmd::print_dashboard();
             }

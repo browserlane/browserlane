@@ -10,22 +10,28 @@ Get or set the OS browser window size, position, or state
 **Usage**
 
 ```bash
-bl window [width] [height] [x] [y] [flags]
+bl window [args...] [OPTIONS]
 ```
 
-**Flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
 | --- | --- |
-| `--state string` | Window state: normal, maximized, minimized, fullscreen |
+| `[args...]` | Width and height, optionally followed by x and y position (omit all to print the current window) |
 
-**Global flags**
+**Options**
 
-| Flag | Description |
+| Option | Description |
+| --- | --- |
+| `--state <value>` | Window state: normal, maximized, minimized, fullscreen |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 

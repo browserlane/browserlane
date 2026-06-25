@@ -1,0 +1,17 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+List all child frames (iframes) on the page
+
+Usage: bl frames [OPTIONS]
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl frames
+  # [{"context":"abc","url":"https://example.com/frame","name":"myFrame"}]

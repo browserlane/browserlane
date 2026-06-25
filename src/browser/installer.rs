@@ -55,7 +55,9 @@ pub async fn install() -> anyhow::Result<InstallResult> {
             .map(|p| p.to_string_lossy().into_owned())
             .unwrap_or_default();
         let version = extract_version_from_path(&chrome_path);
-        println!("Chrome for Testing v{version} already installed.");
+        // Progress/status goes to stderr so stdout carries only the result — the
+        // human summary or, under `--json`, a clean machine-parseable object.
+        eprintln!("Chrome for Testing v{version} already installed.");
         return Ok(InstallResult {
             chrome_path,
             chromedriver_path,
@@ -69,7 +71,7 @@ pub async fn install() -> anyhow::Result<InstallResult> {
         .await
         .map_err(|e| anyhow!("failed to fetch version info: {e}"))?;
 
-    println!("Installing Chrome for Testing v{}...", version_info.version);
+    eprintln!("Installing Chrome for Testing v{}...", version_info.version);
 
     let cft_dir = paths::get_chrome_for_testing_dir().map_err(|e| anyhow!("failed to get cache dir: {e}"))?;
     let version_dir = cft_dir.join(&version_info.version);
@@ -77,14 +79,14 @@ pub async fn install() -> anyhow::Result<InstallResult> {
 
     let chrome_url = find_download_url(version_info.downloads.get("chrome"), &platform)
         .ok_or_else(|| anyhow!("no Chrome download available for platform {platform}"))?;
-    println!("Downloading Chrome from {chrome_url}...");
+    eprintln!("Downloading Chrome from {chrome_url}...");
     download_and_extract(&chrome_url, &version_dir)
         .await
         .map_err(|e| anyhow!("failed to install Chrome: {e}"))?;
 
     let chromedriver_url = find_download_url(version_info.downloads.get("chromedriver"), &platform)
         .ok_or_else(|| anyhow!("no chromedriver download available for platform {platform}"))?;
-    println!("Downloading chromedriver from {chromedriver_url}...");
+    eprintln!("Downloading chromedriver from {chromedriver_url}...");
     download_and_extract(&chromedriver_url, &version_dir)
         .await
         .map_err(|e| anyhow!("failed to install chromedriver: {e}"))?;
@@ -214,20 +216,44 @@ fn extract_zip(zip_path: &Path, dest_dir: &Path) -> anyhow::Result<()> {
 }
 
 /// Checks if Chrome for Testing and chromedriver are both installed.
-pub fn is_installed() -> bool {
-    let chrome_path = match paths::get_chrome_executable() {
-        Ok(p) => p,
-        Err(_) => return false,
-    };
-    if !chrome_path.exists() {
-        return false;
-    }
+/// Granular install state: Chrome's version (when its binary is present) and
+/// whether chromedriver is present, reported independently so callers can say
+/// *which* is missing. [`InstallStatus::installed`] collapses it back to the
+/// all-or-nothing answer the install gate relies on.
+pub struct InstallStatus {
+    /// `Some(version)` when the Chrome for Testing binary exists, `None` when it
+    /// is missing. The version is parsed from the cache path.
+    pub chrome_version: Option<String>,
+    /// Whether the chromedriver binary exists.
+    pub chromedriver: bool,
+}
 
-    let chromedriver_path = match paths::get_chromedriver_path() {
-        Ok(p) => p,
-        Err(_) => return false,
-    };
-    chromedriver_path.exists()
+impl InstallStatus {
+    /// True only when BOTH binaries are present — the contract `bl is-installed`
+    /// and the `install()` skip-check rely on.
+    pub fn installed(&self) -> bool {
+        self.chrome_version.is_some() && self.chromedriver
+    }
+}
+
+/// Inspects the cache for Chrome for Testing + chromedriver, reporting each
+/// independently (plus Chrome's version) so the CLI can give a precise answer.
+pub fn install_status() -> InstallStatus {
+    let chrome_version = paths::get_chrome_executable()
+        .ok()
+        .filter(|p| p.exists())
+        .map(|p| extract_version_from_path(&p.to_string_lossy()));
+    let chromedriver = paths::get_chromedriver_path()
+        .map(|p| p.exists())
+        .unwrap_or(false);
+    InstallStatus {
+        chrome_version,
+        chromedriver,
+    }
+}
+
+pub fn is_installed() -> bool {
+    install_status().installed()
 }
 
 /// Extracts the version number from a Chrome path, e.g.

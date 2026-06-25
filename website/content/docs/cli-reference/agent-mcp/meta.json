@@ -2,7 +2,7 @@
   "title": "Agent & MCP",
   "pages": [
     "mcp",
-    "add-mcp",
-    "add-skill"
+    "add-skill",
+    "add-mcp"
   ]
 }

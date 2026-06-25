@@ -1,0 +1,20 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Check a checkbox or radio button
+
+Usage: bl check [OPTIONS] <selector>
+
+Arguments:
+  <selector>  CSS selector (or map ref) for the checkbox or radio button
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl check "input[name=agree]"
+  # Check the "agree" checkbox (idempotent)

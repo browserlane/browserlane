@@ -1,0 +1,21 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Stop recording and save
+
+Usage: bl record stop [OPTIONS]
+
+Options:
+  -o, --output <output>  Output file path (default: record.zip)
+  -v, --verbose          Enable debug logging
+      --headless         Hide browser window (visible by default)
+      --json             Output as JSON
+  -h, --help             Print help
+
+Examples:
+  bl record stop
+  # Save recording to record.zip
+
+  bl record stop -o my-recording.zip
+  # Save recording to custom path

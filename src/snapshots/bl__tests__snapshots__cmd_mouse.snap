@@ -1,0 +1,20 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Mouse control (click, move, down, up)
+
+Usage: bl mouse [OPTIONS] [COMMAND]
+
+Commands:
+  click  Click at coordinates or current position
+  move   Move the mouse to coordinates
+  down   Press a mouse button down
+  up     Release a mouse button
+  help   Print this message or the help of the given subcommand(s)
+
+Options:
+  -v, --verbose   Enable debug logging
+      --headless  Hide browser window (visible by default)
+      --json      Output as JSON
+  -h, --help      Print help

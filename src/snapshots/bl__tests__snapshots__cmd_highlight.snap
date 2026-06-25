@@ -1,0 +1,23 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Highlight an element with a red outline for 3 seconds
+
+Usage: bl highlight [OPTIONS] <selector>
+
+Arguments:
+  <selector>  CSS selector or @-reference of the element to highlight
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl highlight "h1"
+  # Highlights the first h1 element
+
+  bl highlight @e1
+  # Highlights the element from map

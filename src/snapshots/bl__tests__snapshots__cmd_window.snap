@@ -1,0 +1,30 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Get or set the OS browser window size, position, or state
+
+Usage: bl window [OPTIONS] [args]...
+
+Arguments:
+  [args]...  Width and height, optionally followed by x and y position (omit all to print the current window)
+
+Options:
+      --state <state>  Window state: normal, maximized, minimized, fullscreen
+  -v, --verbose        Enable debug logging
+      --headless       Hide browser window (visible by default)
+      --json           Output as JSON
+  -h, --help           Print help
+
+Examples:
+  bl window
+  # {"state":"normal","x":0,"y":25,"width":1280,"height":720}
+
+  bl window 1920 1080
+  # Set window to 1920x1080
+
+  bl window 1920 1080 0 0
+  # Set window to 1920x1080 at position (0, 0)
+
+  bl window --state maximized
+  # Maximize the window

@@ -10,16 +10,23 @@ Clear an input field and type new text
 **Usage**
 
 ```bash
-bl fill [selector] [text] [flags]
+bl fill <selector> <text>
 ```
 
-**Global flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
+| --- | --- |
+| `&lt;selector&gt;` | CSS selector or @ref of the input field |
+| `&lt;text&gt;` | Text to type into the field after clearing it |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 

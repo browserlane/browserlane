@@ -1,0 +1,20 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Find input by associated label text
+
+Usage: bl find label [OPTIONS] <label>
+
+Arguments:
+  <label>  Find input by associated label text
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl find label "Email"
+  # → @e1 [input type="email"] placeholder="Email"

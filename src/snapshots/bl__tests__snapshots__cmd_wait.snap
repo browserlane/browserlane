@@ -1,0 +1,35 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Wait for an element, URL, text, page load, or JS condition
+
+Usage: bl wait [OPTIONS] [selector] [COMMAND]
+
+Commands:
+  url   Wait until the page URL contains a substring
+  text  Wait until text appears on the page
+  load  Wait until the page is fully loaded
+  fn    Wait until a JS expression returns truthy
+  help  Print this message or the help of the given subcommand(s)
+
+Arguments:
+  [selector]  CSS selector of the element to wait for
+
+Options:
+      --state <state>      State to wait for: attached, visible, hidden [default: attached]
+  -v, --verbose            Enable debug logging
+      --timeout <timeout>  Timeout in milliseconds [default: 30000]
+      --headless           Hide browser window (visible by default)
+      --json               Output as JSON
+  -h, --help               Print help
+
+Examples:
+  bl wait "div.loaded"
+  # Wait for element to exist in DOM
+
+  bl wait "div.loaded" --state visible
+  # Wait for element to be visible
+
+  bl wait "div.spinner" --state hidden --timeout 5000
+  # Wait for spinner to disappear

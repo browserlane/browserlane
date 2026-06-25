@@ -2,16 +2,26 @@ use clap::{Arg, ArgMatches, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn cookies_command() -> Command {
-    // cobra: `Use: "cookies [name] [value]"` + `Args: cobra.RangeArgs(0, 2)`.
-    // A single variadic positional matches that range; two adjacent
-    // variable-arity positionals trip clap's "must be required(true)" assertion.
     Command::new("cookies")
         .about("Manage browser cookies")
-        .arg(Arg::new("args").num_args(0..=2))
-        .subcommand(Command::new("clear").about("Clear all cookies"))
+        .arg(
+            Arg::new("args")
+                .num_args(0..=2)
+                .help("Cookie name and value to set (omit both to list all cookies)"),
+        )
+        .after_help(examples(&[
+            ("cookies", "List all cookies"),
+            ("cookies \"session\" \"abc123\"", "Set a cookie with name and value"),
+        ]))
+        .subcommand(
+            Command::new("clear")
+                .about("Clear all cookies")
+                .after_help(examples(&[("cookies clear", "Delete all cookies")])),
+        )
 }
 
 pub async fn run_cookies(matches: &ArgMatches, headless: bool, json_output: bool) {

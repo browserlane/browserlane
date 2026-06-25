@@ -10,22 +10,28 @@ Get or set the browser viewport size
 **Usage**
 
 ```bash
-bl viewport [width] [height] [flags]
+bl viewport [args...] [OPTIONS]
 ```
 
-**Flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
 | --- | --- |
-| `--dpr float` | Device pixel ratio (e.g., 2 for Retina) |
+| `[args...]` | Width and height to set (omit both to print the current viewport) |
 
-**Global flags**
+**Options**
 
-| Flag | Description |
+| Option | Description |
+| --- | --- |
+| `--dpr <value>` | Device pixel ratio (e.g., 2 for Retina) |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 

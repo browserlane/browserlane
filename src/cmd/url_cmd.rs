@@ -2,10 +2,13 @@ use clap::Command;
 use serde_json::Map;
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn url_command() -> Command {
-    Command::new("url").about("Get the current page URL")
+    Command::new("url")
+        .about("Get the current page URL")
+        .after_help(examples(&[("url", "Prints: https://example.com")]))
 }
 
 pub async fn run_url(headless: bool, json_output: bool) {

@@ -1,0 +1,33 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Generate the autocompletion script for bl for the specified shell.
+Run with one of: bash, zsh, fish, powershell.
+See the examples below for how to load the generated script.
+
+Usage: bl completion [OPTIONS] [shell]
+
+Arguments:
+  [shell]
+          Shell to generate the script for (bash, zsh, fish, powershell)
+
+Options:
+  -v, --verbose
+          Enable debug logging
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+Examples:
+  source <(bl completion bash)
+  # bash: load completions in the current shell
+
+  bl completion fish | source
+  # fish: load completions in the current shell
+
+  source <(bl completion zsh)
+  # zsh: load completions in the current shell (enable once with: echo "autoload -U compinit; compinit" >> ~/.zshrc)
+
+  bl completion powershell | Out-String | Invoke-Expression
+  # powershell: load completions in the current shell

@@ -2,6 +2,7 @@ use clap::{Arg, ArgMatches, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn mouse_command() -> Command {
@@ -15,19 +16,55 @@ pub fn mouse_command() -> Command {
 
     Command::new("mouse")
         .about("Mouse control (click, move, down, up)")
+        // No subcommand prints this parent's help natively (cobra's `cmd.Help()`).
+        .arg_required_else_help(true)
         .subcommand(
             Command::new("click")
                 .about("Click at coordinates or current position")
-                .arg(Arg::new("coords").num_args(0..=2))
-                .arg(button_arg()),
+                .arg(
+                    Arg::new("coords")
+                        .num_args(0..=2)
+                        .help("x and y coordinates (omit to click at the current position)"),
+                )
+                .arg(button_arg())
+                .after_help(examples(&[
+                    ("mouse click 100 200", "Left click at (100, 200)"),
+                    ("mouse click 100 200 --button 2", "Right click at (100, 200)"),
+                    ("mouse click", "Left click at current position"),
+                ])),
         )
         .subcommand(
             Command::new("move")
                 .about("Move the mouse to coordinates")
-                .arg(Arg::new("coords").required(true).num_args(2)),
+                .arg(
+                    Arg::new("coords")
+                        .required(true)
+                        .num_args(2)
+                        .help("x and y coordinates to move to"),
+                )
+                .after_help(examples(&[(
+                    "mouse move 100 200",
+                    "Move mouse to position (100, 200)",
+                )])),
         )
-        .subcommand(Command::new("down").about("Press a mouse button down").arg(button_arg()))
-        .subcommand(Command::new("up").about("Release a mouse button").arg(button_arg()))
+        .subcommand(
+            Command::new("down")
+                .about("Press a mouse button down")
+                .arg(button_arg())
+                .after_help(examples(&[
+                    ("mouse down", "Press left mouse button"),
+                    ("mouse down --button 2", "Press right mouse button"),
+                ])),
+        )
+        .subcommand(
+            Command::new("up")
+                .about("Release a mouse button")
+                .arg(button_arg())
+                .after_help(examples(&[
+                    ("mouse up", "Release left mouse button"),
+                    ("mouse up --button 2", "Release right mouse button"),
+                ])),
+        )
 }
 
 pub async fn run_mouse(matches: &ArgMatches, headless: bool, json_output: bool) {

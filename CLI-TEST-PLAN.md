@@ -89,10 +89,9 @@ order matters). Args/flag variants exercised are noted.
 | Path | Tier | Asserted |
 |---|---|---|
 | `version` / `--version` | AUTO | `bl v0.1.1` |
-| `inspect` *(ext)* | AUTO | JSON `name=browserlane` |
 | `paths` | AUTO | exit 0 |
 | `is-installed` | AUTO | exit 0 (Chrome present) |
-| `--help` / `help` | AUTO | lists `Available Commands` |
+| `--help` / `help` | AUTO | lists `Commands` |
 | `completion bash\|zsh\|fish\|powershell` | AUTO | shell-specific token present |
 | `add-skill` (`--stdout`) | AUTO | non-empty skill text |
 | `add-mcp` (`--list`) *(ext)* | AUTO | lists MCP clients (`claude`) |

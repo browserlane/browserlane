@@ -5,18 +5,34 @@ use clap::{Arg, ArgAction, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn eval_command() -> Command {
     Command::new("eval")
         .about("Evaluate a JavaScript expression (optionally navigate to URL first)")
-        .arg(Arg::new("args").num_args(0..=2))
+        .arg(
+            Arg::new("args")
+                .num_args(0..=2)
+                .help("[url] expression — JS to evaluate, optionally preceded by a URL to navigate first"),
+        )
         .arg(
             Arg::new("stdin")
                 .long("stdin")
                 .action(ArgAction::SetTrue)
                 .help("Read expression from stdin"),
         )
+        .after_help(examples(&[
+            ("eval \"document.title\"", "Evaluates on current page"),
+            (
+                "eval https://example.com \"document.title\"",
+                "Navigates to URL first, then evaluates",
+            ),
+            (
+                "eval --stdin",
+                "Read expression from stdin, e.g. echo 'document.title' | ... (avoids shell quoting issues)",
+            ),
+        ]))
 }
 
 pub async fn run_eval(args: Vec<String>, use_stdin: bool, headless: bool, json_output: bool) {

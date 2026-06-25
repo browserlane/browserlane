@@ -21,7 +21,7 @@ pub(crate) fn wait_signal() {
 
     // SAFETY: installing a trivial handler for SIGINT.
     unsafe {
-        libc::signal(libc::SIGINT, handler as libc::sighandler_t);
+        libc::signal(libc::SIGINT, handler as *const () as libc::sighandler_t);
     }
 
     while !SIGNALLED.load(Ordering::SeqCst) {

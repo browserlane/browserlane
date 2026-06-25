@@ -1,0 +1,24 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Wait until the page URL contains a substring
+
+Usage: bl wait url [OPTIONS] <pattern>
+
+Arguments:
+  <pattern>  Substring the URL must contain
+
+Options:
+      --timeout <timeout>  Timeout in milliseconds [default: 30000]
+  -v, --verbose            Enable debug logging
+      --headless           Hide browser window (visible by default)
+      --json               Output as JSON
+  -h, --help               Print help
+
+Examples:
+  bl wait url "/dashboard"
+  # Wait until URL contains "/dashboard"
+
+  bl wait url "success" --timeout 10000
+  # Wait up to 10 seconds

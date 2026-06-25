@@ -10,16 +10,23 @@ Select an option in a &lt;select&gt; element
 **Usage**
 
 ```bash
-bl select [selector] [value] [flags]
+bl select <selector> <value>
 ```
 
-**Global flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
+| --- | --- |
+| `&lt;selector&gt;` | CSS selector or @ref of the &lt;select&gt; element |
+| `&lt;value&gt;` | Value of the option to select |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 

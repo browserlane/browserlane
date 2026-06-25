@@ -2,12 +2,22 @@ use clap::{Arg, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn uncheck_command() -> Command {
     Command::new("uncheck")
         .about("Uncheck a checkbox")
-        .arg(Arg::new("selector").required(true).num_args(1))
+        .arg(
+            Arg::new("selector")
+                .required(true)
+                .num_args(1)
+                .help("CSS selector (or map ref) for the checkbox"),
+        )
+        .after_help(examples(&[(
+            "uncheck \"input[name=agree]\"",
+            "Uncheck the \"agree\" checkbox (idempotent)",
+        )]))
 }
 
 pub async fn run_uncheck(selector: String, headless: bool, json_output: bool) {

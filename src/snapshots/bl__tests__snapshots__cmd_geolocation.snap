@@ -1,0 +1,25 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Override the browser geolocation
+
+Usage: bl geolocation [OPTIONS] <latitude> <longitude>
+
+Arguments:
+  <latitude>   Latitude in decimal degrees
+  <longitude>  Longitude in decimal degrees
+
+Options:
+      --accuracy <accuracy>  Accuracy in meters (default: 1)
+  -v, --verbose              Enable debug logging
+      --headless             Hide browser window (visible by default)
+      --json                 Output as JSON
+  -h, --help                 Print help
+
+Examples:
+  bl geolocation 40.7128 -74.006
+  # Set location to New York City
+
+  bl geolocation 51.5074 -0.1278 --accuracy 10
+  # Set location to London with 10m accuracy

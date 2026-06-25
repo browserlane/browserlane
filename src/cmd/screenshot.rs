@@ -2,12 +2,13 @@ use clap::{Arg, ArgAction, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn screenshot_command() -> Command {
     Command::new("screenshot")
         .about("Capture a screenshot (optionally navigate to URL first)")
-        .arg(Arg::new("url").num_args(0..=1))
+        .arg(Arg::new("url").num_args(0..=1).help("URL to navigate to before capturing"))
         .arg(
             Arg::new("output")
                 .long("output")
@@ -27,6 +28,17 @@ pub fn screenshot_command() -> Command {
                 .action(ArgAction::SetTrue)
                 .help("Annotate interactive elements with numbered labels"),
         )
+        .after_help(examples(&[
+            ("screenshot -o shot.png", "Screenshots the current page"),
+            (
+                "screenshot https://example.com -o shot.png",
+                "Navigates to URL first, then screenshots",
+            ),
+            (
+                "screenshot -o full.png --full-page",
+                "Capture the entire page (not just the viewport)",
+            ),
+        ]))
 }
 
 pub async fn run_screenshot(

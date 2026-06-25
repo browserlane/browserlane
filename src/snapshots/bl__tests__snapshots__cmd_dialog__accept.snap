@@ -1,0 +1,23 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Accept a dialog (optionally with prompt text)
+
+Usage: bl dialog accept [OPTIONS] [text]
+
+Arguments:
+  [text]  Text to enter into a prompt dialog before accepting
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl dialog accept
+  # Accept an alert or confirm dialog
+
+  bl dialog accept "my input"
+  # Accept a prompt dialog with text

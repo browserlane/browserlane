@@ -1,0 +1,21 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Start a new chunk within the current recording
+
+Usage: bl record chunk start [OPTIONS]
+
+Options:
+      --name <name>    Name for the chunk
+  -v, --verbose        Enable debug logging
+      --title <title>  Title shown in trace viewer
+      --headless       Hide browser window (visible by default)
+      --json           Output as JSON
+  -h, --help           Print help
+
+Examples:
+  bl record chunk start
+  # Start a new chunk (for splitting long recordings)
+
+  bl record chunk start --name "part2" --title "Checkout Flow"

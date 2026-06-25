@@ -5,10 +5,11 @@
  * binary and emit MDX into content/docs/{cli-reference,mcp-reference}.
  *
  * Strategy
- *  - CLI: run `bl <cmd> --help` and recurse into "Available Commands".
- *    Most commands use Cobra help (Usage:/Flags:/Global Flags:/Examples:);
- *    `add-mcp` uses clap help (Usage: <one line>/Arguments:/Options:). Both
- *    are parsed.
+ *  - CLI: introspect the clap command tree via the hidden `bl __dump` JSON
+ *    command (program/version/about/global_args[]/commands[], each command
+ *    carrying name/path/about/long_about/after_help/category/args[]/
+ *    subcommands[] recursively). No help-text scraping — the JSON is the
+ *    contract, so the reference no longer depends on the help-text format.
  *  - MCP: spawn `bl mcp` (stdio JSON-RPC 2.0), initialize, then tools/list.
  *
  * Output is fully regenerated on every run (idempotent). The CLI/MCP reference
@@ -267,226 +268,241 @@ function blVersion() {
 }
 
 // ---------------------------------------------------------------------------
-// B. CLI help parsing (Cobra + clap)
+// B. CLI introspection (`bl __dump` JSON → command tree)
+//
+//   `bl __dump` is a hidden, offline introspection command that emits the full
+//   clap command tree as JSON. Shape:
+//     { program, version, about,
+//       global_args: [ arg, ... ],
+//       commands:    [ command, ... ] }
+//   each `command`:
+//     { name, path, about, long_about, after_help, category,
+//       args:        [ arg, ... ],         // flags AND positionals (see below)
+//       subcommands: [ command, ... ] }    // recursive
+//   each `arg`:
+//     { name, short, long, help, required, default: [...], num_args }
+//   - A flag has a non-null `long` (and/or `short`); a positional has
+//     `long === null && short === null`. `num_args` ({min,max}) describes a
+//     positional's arity (also used to detect required/variadic).
+//   - `category` only carries a meaningful top-level group on the top-level
+//     commands. Subcommands inherit their parent's group (their own `category`
+//     is a clap-derived default we ignore for page placement).
 // ---------------------------------------------------------------------------
 
-/** Run `bl <args> --help`, tolerating non-zero exit (help may exit 0/1). */
-function help(args) {
+/**
+ * Run `bl __dump` and parse its JSON command tree. Returns `null` (rather than
+ * throwing) when the binary does not support `__dump` — e.g. building against a
+ * released `bl` that predates the hidden introspection command — so the caller
+ * can keep the committed reference MDX instead of failing the whole build.
+ * A `__dump` that runs but emits unparseable/garbage JSON still throws.
+ */
+function loadDump() {
+  let raw;
   try {
-    return execFileSync(BL, [...args, '--help'], {
+    raw = execFileSync(BL, ['__dump'], {
       encoding: 'utf8',
-      maxBuffer: 16 * 1024 * 1024,
+      maxBuffer: 64 * 1024 * 1024,
     });
   } catch (e) {
-    return (e.stdout || '') + (e.stderr || '');
+    console.warn(
+      `[gen-reference] \`bl __dump\` unsupported by this binary ` +
+        `(${String(e.message).split('\n')[0]}). Keeping the committed reference; ` +
+        'it regenerates once a `bl` release that supports `__dump` ships.',
+    );
+    return null;
   }
+  let dump;
+  try {
+    dump = JSON.parse(raw);
+  } catch (e) {
+    throw new Error(`could not parse \`bl __dump\` JSON: ${e.message}`);
+  }
+  if (!dump || !Array.isArray(dump.commands)) {
+    throw new Error('`bl __dump` JSON is missing a `commands` array');
+  }
+  return dump;
 }
 
-// Section headers that terminate the "Available Commands" block (Cobra).
-const COBRA_TERMINATOR =
-  /^(Flags:|Global Flags:|Examples:|Usage:|Additional Commands:|Additional help topics:)/;
+/** Is this dump `arg` a flag (has a long/short) vs a bare positional? */
+function isFlagArg(a) {
+  return Boolean(a.long) || Boolean(a.short);
+}
+
+/** First element of a dump `default` array (clap emits defaults as a list). */
+function defaultValue(a) {
+  return Array.isArray(a.default) && a.default.length ? a.default[0] : undefined;
+}
 
 /**
- * Parse the leading description block of a Cobra help page: everything before
- * the first `Usage:` line. Collapses to a one-line summary + optional details.
+ * Render a positional's usage token. clap's own help wraps optional positionals
+ * in `[name]` and required ones in `<name>`; a variadic (max > 1) gets `...`.
+ * We mirror that so the synthesized usage line reads like clap's.
  */
-function parseDescription(text) {
-  const lines = text.split('\n');
-  const usageIdx = lines.findIndex((l) => /^Usage:/.test(l));
-  const head = (usageIdx >= 0 ? lines.slice(0, usageIdx) : lines.slice(0, 1))
-    .join('\n')
-    .trim();
-  if (!head) return { summary: '', details: '' };
-  const blocks = head.split(/\n\s*\n/);
+function positionalToken(a) {
+  const variadic = a.num_args && typeof a.num_args.max === 'number' && a.num_args.max > 1;
+  const name = a.name + (variadic ? '...' : '');
+  return a.required ? `<${name}>` : `[${name}]`;
+}
+
+/**
+ * Synthesize the `Usage:` line(s) for a command from its dump node. There is no
+ * usage string in `__dump`, so we build one from the path + positionals, in the
+ * clap style: `bl <path> [<positionals>] [OPTIONS]`, plus a `bl <path>
+ * <command>` line when the command has subcommands.
+ */
+function buildUsage(node) {
+  const positionals = node.args.filter((a) => !isFlagArg(a));
+  const hasFlags = node.args.some(isFlagArg);
+  const parts = [node.full];
+  for (const p of positionals) parts.push(positionalToken(p));
+  if (hasFlags) parts.push('[OPTIONS]');
+  const lines = [parts.join(' ')];
+  if (node.children.length) lines.push(`${node.full} <command>`);
+  return lines;
+}
+
+/**
+ * Format a flag arg into the generator's flag-row shape
+ * ({ short, long, arg, desc }). Whether the flag takes a value comes straight
+ * from `__dump`'s `takes_value` bool (Set/Append actions → true; the SetTrue/
+ * SetFalse/Count switches → false), so value-flags render `--name <value>` and
+ * pure switches stay bare. The default is appended to the help text as
+ * `(default X)`, matching how the reference has always shown defaults.
+ */
+function flagFromArg(a) {
+  const def = defaultValue(a);
+  // `takes_value` is the authoritative signal from the binary; fall back to the
+  // old default/arity heuristic only if an older dump omits the field.
+  const takesValue =
+    typeof a.takes_value === 'boolean'
+      ? a.takes_value
+      : (a.num_args && typeof a.num_args.max === 'number' && a.num_args.max >= 1) ||
+        (def !== undefined && def !== 'true' && def !== 'false');
+  let desc = a.help || '';
+  if (def !== undefined && def !== '' && def !== 'false') {
+    desc += `${desc ? ' ' : ''}(default ${def})`;
+  }
   return {
-    summary: blocks[0].replace(/\s+/g, ' ').trim(),
-    details: blocks.slice(1).join('\n\n').trim(),
+    short: a.short ? `-${a.short}` : '',
+    long: a.long ? `--${a.long}` : '',
+    arg: takesValue ? '<value>' : '',
+    desc: desc.trim(),
   };
 }
 
-/** Extract the `Usage:` lines (one or more). */
-function parseUsage(text) {
-  const lines = text.split('\n');
-  const i = lines.findIndex((l) => /^Usage:/.test(l));
-  if (i < 0) return [];
-  // clap: single-line "Usage: bl add-mcp [OPTIONS] [client]"
-  const inline = lines[i].replace(/^Usage:\s*/, '').trim();
-  if (inline) return [inline];
-  // Cobra: blank then indented usage lines until next blank/section
-  const out = [];
-  for (let j = i + 1; j < lines.length; j++) {
-    const l = lines[j];
-    if (l.trim() === '') break;
-    out.push(l.trim());
-  }
-  return out;
+/** Format a positional arg into the generator's clapArgs shape. */
+function clapArgFromArg(a) {
+  return { name: positionalToken(a), desc: (a.help || '').trim() };
 }
 
 /**
- * Parse "Examples:" into structured blocks. Cobra renders examples as groups
- * separated by blank lines, each a mix of command lines (`bl ...`) and comment
- * lines (`# ...` — often expected output, e.g. `# → @e1 [button] "Submit"`).
- * We keep the raw block text so the code fence preserves the worked examples.
+ * Split a dump command's `long_about` into a one-line summary + details block,
+ * mirroring how the reference rendered a Cobra `Long` description (first
+ * paragraph = summary, the rest = a verbatim details block). When there is no
+ * `long_about`, the short `about` is the summary and there are no details.
  */
-function parseExamples(text) {
-  const lines = text.split('\n');
-  const i = lines.findIndex((l) => /^Examples:/.test(l));
-  if (i < 0) return '';
-  const out = [];
-  for (let j = i + 1; j < lines.length; j++) {
-    const l = lines[j];
-    // Examples end at the next un-indented section header.
-    if (/^\S/.test(l) && l.trim() !== '') break;
-    out.push(l.replace(/^ {2}/, '')); // strip the common 2-space indent
+function describe(node) {
+  if (node.long_about) {
+    const blocks = node.long_about.split(/\n\s*\n/);
+    return {
+      summary: blocks[0].replace(/\s+/g, ' ').trim(),
+      details: blocks.slice(1).join('\n\n').trim(),
+    };
   }
-  // Trim leading/trailing blank lines.
+  return { summary: (node.about || '').trim(), details: '' };
+}
+
+/**
+ * Parse a command's `after_help` "Examples:" block into the bare worked-example
+ * text (command + `# comment` lines), stripping the `Examples:` header and the
+ * common 2-space indent — the same shape the reference fences as ```bash.
+ */
+function examplesFromAfterHelp(afterHelp) {
+  if (!afterHelp) return '';
+  const lines = afterHelp.split('\n');
+  const i = lines.findIndex((l) => /^Examples:/.test(l));
+  const body = i >= 0 ? lines.slice(i + 1) : lines;
+  const out = body.map((l) => l.replace(/^ {2}/, ''));
   while (out.length && out[0].trim() === '') out.shift();
   while (out.length && out[out.length - 1].trim() === '') out.pop();
   return out.join('\n');
 }
 
 /**
- * Parse a flags block (Cobra "Flags:"/"Global Flags:" or clap "Options:").
- * Returns [{ short, long, arg, desc }]. Handles wrapped continuation lines.
+ * Build a generator CLI node from a `__dump` command, recursively. The node
+ * shape matches what renderCliBody / emitCli / emitMapping consume:
+ *   { path, name, full, summary, details, usage, examples,
+ *     localFlags, globalFlags, clapArgs, children: [node...] }
+ * `globals` is the dump's `global_args[]` (already mapped to flag rows), shared
+ * across every node — the renderer de-dupes locals before showing them.
  */
-function parseFlagBlock(text, header) {
-  const lines = text.split('\n');
-  const i = lines.findIndex((l) => new RegExp('^' + header).test(l));
-  if (i < 0) return [];
-  const flags = [];
-  let cur = null;
-  for (let j = i + 1; j < lines.length; j++) {
-    const l = lines[j];
-    if (l.trim() === '') {
-      // blank line ends a contiguous flag block
-      if (cur) {
-        flags.push(cur);
-        cur = null;
-      }
-      break;
-    }
-    if (/^\S/.test(l)) break; // next un-indented section
-    // A flag line starts with optional short (-x,) then a long (--xxx).
-    const m = l.match(
-      /^\s+(?:(-\w),\s+)?(--[\w-]+|-\w)(?:\s+(<[^>]+>|\S+))?\s{2,}(.*)$/,
-    );
-    if (m) {
-      if (cur) flags.push(cur);
-      let short = m[1] || '';
-      let long = m[2] || '';
-      let arg = m[3] || '';
-      // Drop the universal --help flag — it's noise on every page.
-      if (long === '--help' || (long === '-h' && !short)) {
-        cur = null;
-        continue;
-      }
-      // clap sometimes lists only a long flag without a type token; Cobra puts
-      // the value type (string/int/duration/...) in the `arg` slot.
-      cur = { short, long, arg, desc: m[4].trim() };
-    } else if (cur) {
-      // continuation of previous flag description (wrapped line)
-      cur.desc += ' ' + l.trim();
-    }
-  }
-  if (cur) flags.push(cur);
-  return flags;
-}
-
-/** clap "Arguments:" block → [{ name, desc }]. */
-function parseClapArguments(text) {
-  const lines = text.split('\n');
-  const i = lines.findIndex((l) => /^Arguments:/.test(l));
-  if (i < 0) return [];
-  const out = [];
-  let cur = null;
-  for (let j = i + 1; j < lines.length; j++) {
-    const l = lines[j];
-    if (l.trim() === '') {
-      if (cur) out.push(cur);
-      break;
-    }
-    if (/^\S/.test(l)) break;
-    const m = l.match(/^\s+(\[?<?[\w.-]+>?\]?(?:\.\.\.)?)\s{2,}(.*)$/);
-    if (m) {
-      if (cur) out.push(cur);
-      cur = { name: m[1], desc: m[2].trim() };
-    } else if (cur) {
-      cur.desc += ' ' + l.trim();
-    }
-  }
-  if (cur && !out.includes(cur)) out.push(cur);
-  return out;
-}
-
-/**
- * Parse "Available Commands". Top-level help groups commands under category
- * headers (un-indented `Name:` lines); subcommand help lists them flat. We
- * return both the flat command names and (for top-level) the categories.
- */
-function parseAvailableCommands(text) {
-  const lines = text.split('\n');
-  const i = lines.findIndex((l) => /^Available Commands:/.test(l));
-  if (i < 0) return { categories: [], commands: [] };
-  const categories = [];
-  let cur = { name: null, commands: [] };
-  categories.push(cur);
-  for (let j = i + 1; j < lines.length; j++) {
-    const l = lines[j];
-    if (l.trim() === '') continue;
-    if (COBRA_TERMINATOR.test(l) || /^Use "/.test(l)) break;
-    // category header: un-indented, ends with ":"
-    if (/^\S.*:\s*$/.test(l)) {
-      cur = { name: l.trim().replace(/:$/, ''), commands: [] };
-      categories.push(cur);
-      continue;
-    }
-    const m = l.match(/^\s{2,}(\S+)\s+(.*)$/);
-    if (m && m[1] !== 'help') {
-      cur.commands.push({ name: m[1], summary: m[2].trim() });
-    }
-  }
-  const filtered = categories.filter((c) => c.commands.length > 0);
-  const commands = filtered.flatMap((c) => c.commands.map((x) => x.name));
-  return { categories: filtered, commands };
-}
-
-/**
- * Recursively build the CLI command tree. Each node:
- *   { path: ['find','role'], help, description, usage, examples,
- *     localFlags, globalFlags, clapArgs, isClap, children: [node...] }
- */
-function buildCliNode(path) {
-  const text = help(path);
-  const isClap = /^Usage:\s+\S/m.test(text) && /^(Options|Arguments):/m.test(text);
-  const { categories, commands } = parseAvailableCommands(text);
+function buildCliNode(cmd, globals) {
+  const path = cmd.path ? cmd.path.split(' ') : [cmd.name];
+  const args = cmd.args || [];
+  // Args with no help text are clap-hidden / internal (e.g. `daemon start
+  // --detach`, `--_internal`) — they were never in the documented help and
+  // stay out of the reference. Hidden *positionals* (e.g. `ws-test <url>`)
+  // still feed the usage line, but produce no empty-description table row.
+  const documented = args.filter((a) => a.help != null && a.help !== '');
   const node = {
     path,
-    name: path[path.length - 1],
+    name: cmd.name,
     full: 'bl ' + path.join(' '),
-    help: text,
-    isClap,
-    ...parseDescription(text),
-    usage: parseUsage(text),
-    examples: parseExamples(text),
-    localFlags: parseFlagBlock(text, isClap ? 'Options:' : 'Flags:'),
-    globalFlags: isClap ? [] : parseFlagBlock(text, 'Global Flags:'),
-    clapArgs: isClap ? parseClapArguments(text) : [],
-    children: [],
+    ...describe(cmd),
+    usage: [],
+    examples: examplesFromAfterHelp(cmd.after_help),
+    localFlags: documented.filter(isFlagArg).map(flagFromArg),
+    globalFlags: globals,
+    clapArgs: documented.filter((a) => !isFlagArg(a)).map(clapArgFromArg),
+    children: (cmd.subcommands || []).map((s) => buildCliNode(s, globals)),
   };
-  for (const c of commands) {
-    node.children.push(buildCliNode([...path, c]));
-  }
+  // The usage line uses ALL positionals (documented or not) so the synthesized
+  // signature stays accurate even for an undocumented required arg.
+  node.usage = buildUsage({ ...node, args });
   return node;
 }
 
-/** Walk the top-level help to get categories + their command nodes. */
-function buildCliTree() {
-  const top = help([]);
-  const { categories } = parseAvailableCommands(top);
-  return categories.map((cat) => ({
-    name: cat.name,
-    commands: cat.commands.map((c) => buildCliNode([c.name])),
-  }));
+// Category enum (from `bl __dump`) → top-level group display name. The display
+// name + slug + nav order live in CLI_GROUP_ORDER below; this just bridges the
+// dump's enum identifiers to those display names.
+const CATEGORY_TO_GROUP = new Map([
+  ['Navigation', 'Navigation'],
+  ['Interaction', 'Interaction'],
+  ['InspectPage', 'Inspect page'],
+  ['Capture', 'Capture'],
+  ['BrowserState', 'Browser state & emulation'],
+  ['Scripting', 'Scripting'],
+  ['SessionDaemon', 'Session & daemon'],
+  ['AgentMcp', 'Agent & MCP'],
+  ['SetupDiagnostics', 'Setup & diagnostics'],
+]);
+
+/**
+ * Build the CLI tree from `bl __dump`: a list of groups in CLI_GROUP_ORDER,
+ * each `{ name, commands: [node...] }`. Top-level commands are bucketed by
+ * their `category`; their subcommands ride along on the parent node. Command
+ * order within a group is the dump's command order (which is the clap
+ * registration order the reference has always followed).
+ */
+function buildCliTree(dump) {
+  const globals = (dump.global_args || []).map(flagFromArg);
+  const byGroup = new Map(); // group display name → [node...]
+  for (const cmd of dump.commands) {
+    const group = CATEGORY_TO_GROUP.get(cmd.category);
+    if (!group) {
+      console.warn(
+        `[gen-reference] command "${cmd.name}" has unknown category ` +
+          `"${cmd.category}" — bucketing under "Setup & diagnostics"`,
+      );
+    }
+    const key = group || 'Setup & diagnostics';
+    if (!byGroup.has(key)) byGroup.set(key, []);
+    byGroup.get(key).push(buildCliNode(cmd, globals));
+  }
+  // Emit groups in the canonical nav order; skip any that ended up empty.
+  return CLI_GROUP_ORDER.map(([name]) => name)
+    .filter((name) => byGroup.has(name))
+    .map((name) => ({ name, commands: byGroup.get(name) }));
 }
 
 // ---------------------------------------------------------------------------
@@ -633,7 +649,7 @@ function flagToken(f) {
 
 function flagsTable(flags) {
   const rows = flags.map((f) => `| \`${flagToken(f)}\` | ${td(f.desc)} |`);
-  return ['| Flag | Description |', '| --- | --- |', ...rows].join('\n');
+  return ['| Option | Description |', '| --- | --- |', ...rows].join('\n');
 }
 
 function writeMdx(file, frontmatter, bodyParts) {
@@ -711,10 +727,10 @@ function renderCliBody(node, depth = 2) {
   const localLongs = new Set(node.localFlags.map((f) => f.long));
   const globals = node.globalFlags.filter((f) => !localLongs.has(f.long));
   if (node.localFlags.length) {
-    parts.push('**Flags**\n\n' + flagsTable(node.localFlags));
+    parts.push('**Options**\n\n' + flagsTable(node.localFlags));
   }
   if (globals.length) {
-    parts.push('**Global flags**\n\n' + flagsTable(globals));
+    parts.push('**Global options**\n\n' + flagsTable(globals));
   }
 
   if (node.examples) {
@@ -1371,9 +1387,19 @@ async function main() {
   const version = blVersion();
   console.log(`[gen-reference] using binary: ${BL} (${version})`);
 
-  // CLI
-  console.log('[gen-reference] walking CLI help…');
-  const cliTree = buildCliTree();
+  // CLI (introspected from the hidden `bl __dump` JSON command).
+  console.log('[gen-reference] loading CLI tree from `bl __dump`…');
+  const dump = loadDump();
+  if (!dump) {
+    // Binary predates `__dump` (e.g. building against an older release). Keep the
+    // committed cli-reference/ + mcp-reference/ MDX rather than failing the build;
+    // regeneration resumes automatically once a `bl` release supports `__dump`.
+    console.warn(
+      '[gen-reference] skipping regeneration — using committed reference MDX as-is.',
+    );
+    return;
+  }
+  const cliTree = buildCliTree(dump);
   const { totalCommands } = emitCli(cliTree, version);
 
   // MCP

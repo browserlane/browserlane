@@ -1,0 +1,27 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Get or set the browser viewport size
+
+Usage: bl viewport [OPTIONS] [args]...
+
+Arguments:
+  [args]...  Width and height to set (omit both to print the current viewport)
+
+Options:
+      --dpr <dpr>  Device pixel ratio (e.g., 2 for Retina)
+  -v, --verbose    Enable debug logging
+      --headless   Hide browser window (visible by default)
+      --json       Output as JSON
+  -h, --help       Print help
+
+Examples:
+  bl viewport
+  # {"width":1280,"height":720,"devicePixelRatio":1}
+
+  bl viewport 1280 720
+  # Set viewport to 1280x720
+
+  bl viewport 375 812 --dpr 3
+  # Simulate iPhone X viewport

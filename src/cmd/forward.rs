@@ -2,10 +2,16 @@ use clap::Command;
 use serde_json::Map;
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn forward_command() -> Command {
-    Command::new("forward").about("Navigate forward in browser history")
+    Command::new("forward")
+        .about("Navigate forward in browser history")
+        .after_help(examples(&[(
+            "forward",
+            "Go forward one page (like clicking the forward button)",
+        )]))
 }
 
 pub async fn run_forward(headless: bool, json_output: bool) {

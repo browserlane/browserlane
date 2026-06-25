@@ -2,17 +2,32 @@ use clap::{Arg, ArgMatches, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn dialog_command() -> Command {
     Command::new("dialog")
         .about("Handle browser dialogs (alert, confirm, prompt)")
+        // No subcommand prints this parent's help natively (cobra's `cmd.Help()`).
+        .arg_required_else_help(true)
         .subcommand(
             Command::new("accept")
                 .about("Accept a dialog (optionally with prompt text)")
-                .arg(Arg::new("text").num_args(0..=1)),
+                .arg(
+                    Arg::new("text")
+                        .num_args(0..=1)
+                        .help("Text to enter into a prompt dialog before accepting"),
+                )
+                .after_help(examples(&[
+                    ("dialog accept", "Accept an alert or confirm dialog"),
+                    ("dialog accept \"my input\"", "Accept a prompt dialog with text"),
+                ])),
         )
-        .subcommand(Command::new("dismiss").about("Dismiss a dialog"))
+        .subcommand(
+            Command::new("dismiss")
+                .about("Dismiss a dialog")
+                .after_help(examples(&[("dialog dismiss", "Dismiss/cancel a dialog")])),
+        )
 }
 
 pub async fn run_dialog(matches: &ArgMatches, headless: bool, json_output: bool) {

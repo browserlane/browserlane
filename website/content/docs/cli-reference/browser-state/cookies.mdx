@@ -10,17 +10,23 @@ Manage browser cookies
 **Usage**
 
 ```bash
-bl cookies [name] [value] [flags]
-bl cookies [command]
+bl cookies [args...]
+bl cookies <command>
 ```
 
-**Global flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
+| --- | --- |
+| `[args...]` | Cookie name and value to set (omit both to list all cookies) |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 
@@ -39,16 +45,16 @@ Clear all cookies
 **Usage**
 
 ```bash
-bl cookies clear [flags]
+bl cookies clear
 ```
 
-**Global flags**
+**Global options**
 
-| Flag | Description |
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 

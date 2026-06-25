@@ -1,0 +1,26 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Press a key on a specific element or the focused element
+
+Usage: bl press [OPTIONS] <args>...
+
+Arguments:
+  <args>...  key [selector] — the key (or combo) to press, optionally on a specific element
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl press Enter
+  # Press Enter on the currently focused element
+
+  bl press Enter "input[name=search]"
+  # Click to focus the input, then press Enter
+
+  bl press "Control+a"
+  # Select all

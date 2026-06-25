@@ -10,24 +10,30 @@ Scroll the page or an element
 **Usage**
 
 ```bash
-bl scroll [direction] [flags]
-bl scroll [command]
+bl scroll [direction] [OPTIONS]
+bl scroll <command>
 ```
 
-**Flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
 | --- | --- |
-| `--amount int` | Number of scroll increments (default 3) |
-| `--selector string` | CSS selector for element to scroll to |
+| `[direction]` | Scroll direction: up or down (default down) |
 
-**Global flags**
+**Options**
 
-| Flag | Description |
+| Option | Description |
+| --- | --- |
+| `--amount <value>` | Number of scroll increments (default 3) |
+| `--selector <value>` | CSS selector for element to scroll to |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 
@@ -52,16 +58,22 @@ Scroll an element into view
 **Usage**
 
 ```bash
-bl scroll into-view [selector] [flags]
+bl scroll into-view <selector>
 ```
 
-**Global flags**
+**Arguments**
 
-| Flag | Description |
+| Argument | Description |
+| --- | --- |
+| `&lt;selector&gt;` | CSS selector (or map ref) for the element to scroll into view |
+
+**Global options**
+
+| Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `--json` | Output as JSON |
 | `-v, --verbose` | Enable debug logging |
+| `--json` | Output as JSON |
 
 **Examples**
 

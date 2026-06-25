@@ -1,0 +1,25 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Export or restore browser state (cookies, localStorage, sessionStorage)
+
+Usage: bl storage [OPTIONS] [COMMAND]
+
+Commands:
+  restore  Restore browser state from a JSON file
+  help     Print this message or the help of the given subcommand(s)
+
+Options:
+  -o, --output <output>  Output file path
+  -v, --verbose          Enable debug logging
+      --headless         Hide browser window (visible by default)
+      --json             Output as JSON
+  -h, --help             Print help
+
+Examples:
+  bl storage
+  # Print state as JSON
+
+  bl storage -o state.json
+  # Save state to file

@@ -145,7 +145,10 @@ pub async fn launch(opts: LaunchOptions) -> anyhow::Result<LaunchResult> {
                     log::info("browser launched via BiDi session.new");
                     return Ok(LaunchResult {
                         bidi_conn: Some(conn),
-                        web_socket_url: String::new(),
+                        // The endpoint we connected to. Populated (not left empty)
+                        // so diagnostics like `launch-test` can surface it; live
+                        // consumers use `bidi_conn` above and ignore this.
+                        web_socket_url: ws_url,
                         session_id: result.session_id,
                         chromedriver_cmd: child,
                         port,

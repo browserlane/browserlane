@@ -2,7 +2,7 @@
   "title": "Advanced / diagnostics",
   "pages": [
     "launch-test",
-    "bidi-test",
-    "ws-test"
+    "ws-test",
+    "bidi-test"
   ]
 }

@@ -2,12 +2,17 @@ use clap::{Arg, ArgMatches, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn frame_command() -> Command {
     Command::new("frame")
         .about("Find a frame by name or URL substring")
-        .arg(Arg::new("nameOrUrl").required(true))
+        .arg(Arg::new("nameOrUrl").required(true).help("Frame name or URL substring to match"))
+        .after_help(examples(&[
+            ("frame \"myIframe\"", "Find frame by name"),
+            ("frame \"example.com\"", "Find frame by URL substring"),
+        ]))
 }
 
 pub async fn run_frame(matches: &ArgMatches, headless: bool, json_output: bool) {

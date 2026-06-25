@@ -2,18 +2,28 @@ use clap::{Arg, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn viewport_command() -> Command {
     Command::new("viewport")
         .about("Get or set the browser viewport size")
-        .arg(Arg::new("args").num_args(0..=2))
+        .arg(
+            Arg::new("args")
+                .num_args(0..=2)
+                .help("Width and height to set (omit both to print the current viewport)"),
+        )
         .arg(
             Arg::new("dpr")
                 .long("dpr")
                 .value_parser(clap::value_parser!(f64))
                 .help("Device pixel ratio (e.g., 2 for Retina)"),
         )
+        .after_help(examples(&[
+            ("viewport", "{\"width\":1280,\"height\":720,\"devicePixelRatio\":1}"),
+            ("viewport 1280 720", "Set viewport to 1280x720"),
+            ("viewport 375 812 --dpr 3", "Simulate iPhone X viewport"),
+        ]))
 }
 
 pub async fn run_viewport(args: Vec<String>, dpr: f64, headless: bool, json_output: bool) {

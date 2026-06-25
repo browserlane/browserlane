@@ -1,0 +1,40 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Start a recording
+
+Usage: bl record start [OPTIONS]
+
+Options:
+      --screenshots [<screenshots>]  Capture screenshots after each action [default: true] [possible values: true, false]
+  -v, --verbose                      Enable debug logging
+      --snapshots                    Capture HTML snapshots
+      --sources                      Include source information
+      --bidi                         Record raw BiDi commands in the recording
+      --name <name>                  Name for the recording
+      --title <title>                Title shown in trace viewer (defaults to name)
+      --format <format>              Screenshot format: jpeg or png [default: jpeg]
+      --quality <quality>            JPEG quality 0.0-1.0 (ignored for png) [default: 0.5]
+      --headless                     Hide browser window (visible by default)
+      --json                         Output as JSON
+  -h, --help                         Print help
+
+Examples:
+  bl record start
+  # Start recording with screenshots (default)
+
+  bl record start --screenshots=false
+  # Record without screenshots
+
+  bl record start --snapshots
+  # Record with screenshots and HTML snapshots
+
+  bl record start --format png
+  # Use PNG format instead of JPEG (larger files, lossless)
+
+  bl record start --quality 0.1
+  # Lower JPEG quality for smaller recording files
+
+  bl record start --title "Login Flow"
+  # Set a title shown in the trace viewer

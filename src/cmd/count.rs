@@ -2,12 +2,22 @@ use clap::{Arg, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn count_command() -> Command {
     Command::new("count")
         .about("Count matching elements")
-        .arg(Arg::new("selector").required(true).num_args(1))
+        .arg(
+            Arg::new("selector")
+                .required(true)
+                .num_args(1)
+                .help("CSS selector to count matches for"),
+        )
+        .after_help(examples(&[
+            ("count \"a\"", "Print number of links on the page"),
+            ("count \"li.item\"", "Count list items"),
+        ]))
 }
 
 pub async fn run_count(selector: String, headless: bool, json_output: bool) {

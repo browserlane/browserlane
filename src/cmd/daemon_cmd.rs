@@ -11,6 +11,7 @@ use tokio_tungstenite::tungstenite::http::{HeaderMap, HeaderName, HeaderValue};
 use super::dial_unix::dial_socket;
 #[cfg(windows)]
 use super::dial_windows::dial_socket;
+use super::examples::examples;
 use super::output::print_json_value;
 #[cfg(unix)]
 use super::pipe_unix::wait_shutdown_signal;
@@ -30,18 +31,26 @@ use daemon::process_exists;
 pub fn daemon_command() -> Command {
     Command::new("daemon")
         .about("Manage the browserlane daemon (background browser process)")
+        // No subcommand prints this parent's help natively (was cobra's
+        // `Run: cmd.Help()`); clap renders it and exits 0.
+        .arg_required_else_help(true)
         .subcommand(daemon_start_command())
         .subcommand(Command::new("stop").about("Stop the browserlane daemon"))
         .subcommand(Command::new("status").about("Show daemon status"))
 }
 
 fn daemon_start_command() -> Command {
+    // The hidden `--detach`/`--_internal` flags are internal plumbing; cobra's
+    // captured help omits them (they're hidden), so they carry no .help text.
+    // `--idle-timeout` shows its default via clap's default_value, matching the
+    // cobra `(default 30m0s)` suffix, so we don't repeat it in the help string.
     Command::new("start")
         .about("Start the browserlane daemon")
         .arg(
             Arg::new("foreground")
                 .long("foreground")
-                .action(ArgAction::SetTrue),
+                .action(ArgAction::SetTrue)
+                .help("Run daemon in foreground (for debugging)"),
         )
         .arg(
             Arg::new("detach")
@@ -50,19 +59,45 @@ fn daemon_start_command() -> Command {
                 .action(ArgAction::SetTrue)
                 .hide(true),
         )
-        .arg(Arg::new("idle-timeout").long("idle-timeout").default_value("30m"))
+        .arg(
+            Arg::new("idle-timeout")
+                .long("idle-timeout")
+                .default_value("30m")
+                .help("Shutdown after this duration of inactivity (0 to disable)"),
+        )
         .arg(
             Arg::new("_internal")
                 .long("_internal")
                 .action(ArgAction::SetTrue)
                 .hide(true),
         )
-        .arg(Arg::new("connect").long("connect").default_value(""))
+        .arg(
+            Arg::new("connect")
+                .long("connect")
+                .default_value("")
+                .help("Connect to a remote BiDi WebSocket URL instead of launching a local browser"),
+        )
         .arg(
             Arg::new("connect-header")
                 .long("connect-header")
-                .action(ArgAction::Append),
+                .action(ArgAction::Append)
+                .help("HTTP header for WebSocket connect (repeatable, format: \"Key: Value\")"),
         )
+        .after_help(examples(&[
+            ("daemon start", "Starts daemon in background"),
+            (
+                "daemon start --foreground",
+                "Starts daemon in foreground (for debugging)",
+            ),
+            (
+                "daemon start --idle-timeout 30m",
+                "Auto-shutdown after 30 minutes of inactivity",
+            ),
+            (
+                "daemon start --connect ws://remote:9515/session",
+                "Connect to a remote browser instead of launching a local one",
+            ),
+        ]))
 }
 
 /// Dispatches the `daemon` subcommands.

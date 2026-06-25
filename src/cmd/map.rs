@@ -2,6 +2,7 @@ use clap::{Arg, ArgMatches, Command};
 use serde_json::{Map, Value};
 
 use super::daemon_client::daemon_call;
+use super::examples::examples;
 use super::output::{print_error, print_result};
 
 pub fn map_command() -> Command {
@@ -12,6 +13,16 @@ pub fn map_command() -> Command {
                 .long("selector")
                 .help("Scope to elements within this CSS selector"),
         )
+        .after_help(examples(&[
+            (
+                "map",
+                "Lists interactive elements with refs like @e1, @e2\n  # Use refs with other commands: {prog} click @e1",
+            ),
+            (
+                "map --selector \"nav\"",
+                "Only map elements inside the <nav> element",
+            ),
+        ]))
 }
 
 pub async fn run_map(matches: &ArgMatches, headless: bool, json_output: bool) {

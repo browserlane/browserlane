@@ -1,5 +1,7 @@
 use clap::{Arg, ArgAction, ArgMatches, Command};
 
+use super::examples::examples;
+
 /// The browser skill, embedded at build time. Mirrors Go's `//go:embed SKILL.md`.
 /// (SKILL.md is browserlane-rebranded; the skill installs to
 /// `~/.claude/skills/browserlane/`.)
@@ -14,6 +16,10 @@ pub fn skill_command() -> Command {
                 .action(ArgAction::SetTrue)
                 .help("Print skill content to stdout instead of installing"),
         )
+        .after_help(examples(&[
+            ("add-skill", "Installs skill to ~/.claude/skills/vibe-check/"),
+            ("add-skill --stdout", "Print skill content to stdout"),
+        ]))
 }
 
 pub fn run_skill(matches: &ArgMatches) {
