@@ -7,27 +7,32 @@ description: "Double-click an element"
 
 Double-click an element
 
-**Usage**
+## Usage
 
 ```bash
-bl dblclick <selector>
+bl dblclick <selector> [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `&lt;selector&gt;` | CSS selector or @ref of the element to double-click |
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-**Examples**
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## Examples
 
 ```bash
 bl dblclick "td.cell"

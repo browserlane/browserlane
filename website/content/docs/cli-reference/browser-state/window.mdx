@@ -7,33 +7,33 @@ description: "Get or set the OS browser window size, position, or state"
 
 Get or set the OS browser window size, position, or state
 
-**Usage**
+## Usage
 
 ```bash
 bl window [args...] [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `[args...]` | Width and height, optionally followed by x and y position (omit all to print the current window) |
 
-**Options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--state <value>` | Window state: normal, maximized, minimized, fullscreen |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
-**Global options**
+## Global options
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
-**Examples**
+## Examples
 
 ```bash
 bl window

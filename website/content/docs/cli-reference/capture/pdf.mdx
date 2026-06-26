@@ -7,33 +7,33 @@ description: "Save page as PDF"
 
 Save page as PDF
 
-**Usage**
+## Usage
 
 ```bash
 bl pdf [url] [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `[url]` | URL to navigate to before saving |
 
-**Options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `-o, --output <value>` | Output file path (default page.pdf) |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
-**Global options**
+## Global options
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
-**Examples**
+## Examples
 
 ```bash
 bl pdf -o page.pdf

@@ -7,29 +7,34 @@ description: "Manage browser downloads"
 
 Manage browser downloads
 
-**Usage**
+## Usage
 
 ```bash
-bl download
+bl download [OPTIONS]
 bl download <command>
 ```
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-### `bl download dir`
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## `bl download dir`
 
 Set the download directory
 
 **Usage**
 
 ```bash
-bl download dir <path>
+bl download dir <path> [OPTIONS]
 ```
 
 **Arguments**
@@ -38,13 +43,18 @@ bl download dir <path>
 | --- | --- |
 | `&lt;path&gt;` | Directory to save downloads into |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 

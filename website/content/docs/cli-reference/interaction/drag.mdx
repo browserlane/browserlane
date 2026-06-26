@@ -7,28 +7,33 @@ description: "Drag from one element to another"
 
 Drag from one element to another
 
-**Usage**
+## Usage
 
 ```bash
-bl drag <source> <target>
+bl drag <source> <target> [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `&lt;source&gt;` | CSS selector (or map ref) for the element to drag |
 | `&lt;target&gt;` | CSS selector (or map ref) for the drop target |
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-**Examples**
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## Examples
 
 ```bash
 bl drag ".draggable" ".dropzone"

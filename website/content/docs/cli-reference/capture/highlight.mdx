@@ -7,27 +7,32 @@ description: "Highlight an element with a red outline for 3 seconds"
 
 Highlight an element with a red outline for 3 seconds
 
-**Usage**
+## Usage
 
 ```bash
-bl highlight <selector>
+bl highlight <selector> [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `&lt;selector&gt;` | CSS selector or @-reference of the element to highlight |
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-**Examples**
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## Examples
 
 ```bash
 bl highlight "h1"

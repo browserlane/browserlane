@@ -7,28 +7,33 @@ description: "Set files on an input[type=file] element"
 
 Set files on an input[type=file] element
 
-**Usage**
+## Usage
 
 ```bash
-bl upload <selector> <files>
+bl upload <selector> <files> [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `&lt;selector&gt;` | CSS selector (or map ref) for the input[type=file] element |
 | `&lt;files&gt;` | One or more file paths to set on the input |
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-**Examples**
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## Examples
 
 ```bash
 bl upload "input[type=file]" ./photo.jpg

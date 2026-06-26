@@ -7,34 +7,34 @@ description: "Override the browser geolocation"
 
 Override the browser geolocation
 
-**Usage**
+## Usage
 
 ```bash
 bl geolocation <latitude> <longitude> [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `&lt;latitude&gt;` | Latitude in decimal degrees |
 | `&lt;longitude&gt;` | Longitude in decimal degrees |
 
-**Options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--accuracy <value>` | Accuracy in meters (default: 1) |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
-**Global options**
+## Global options
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
-**Examples**
+## Examples
 
 ```bash
 bl geolocation 40.7128 -74.006

@@ -7,22 +7,27 @@ description: "Record browser sessions (screenshots and snapshots)"
 
 Record browser sessions (screenshots and snapshots)
 
-**Usage**
+## Usage
 
 ```bash
-bl record
+bl record [OPTIONS]
 bl record <command>
 ```
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-### `bl record start`
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## `bl record start`
 
 Start a recording
 
@@ -44,14 +49,14 @@ bl record start [OPTIONS]
 | `--title <value>` | Title shown in trace viewer (defaults to name) |
 | `--format <value>` | Screenshot format: jpeg or png (default jpeg) |
 | `--quality <value>` | JPEG quality 0.0-1.0 (ignored for png) (default 0.5) |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
 **Examples**
 
@@ -75,7 +80,7 @@ bl record start --title "Login Flow"
 # Set a title shown in the trace viewer
 ```
 
-### `bl record stop`
+## `bl record stop`
 
 Stop recording and save
 
@@ -90,14 +95,14 @@ bl record stop [OPTIONS]
 | Option | Description |
 | --- | --- |
 | `-o, --output <value>` | Output file path (default: record.zip) |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
 **Examples**
 
@@ -109,33 +114,38 @@ bl record stop -o my-recording.zip
 # Save recording to custom path
 ```
 
-### `bl record group`
+## `bl record group`
 
 Manage recording groups
 
 **Usage**
 
 ```bash
-bl record group
+bl record group [OPTIONS]
 bl record group <command>
 ```
+
+**Options**
+
+| Option | Description |
+| --- | --- |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
-#### `bl record group start`
+### `bl record group start`
 
 Start a named group in the recording
 
 **Usage**
 
 ```bash
-bl record group start <name>
+bl record group start <name> [OPTIONS]
 ```
 
 **Arguments**
@@ -144,13 +154,18 @@ bl record group start <name>
 | --- | --- |
 | `&lt;name&gt;` | Name for the group |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 
@@ -159,23 +174,28 @@ bl record group start "Login"
 # Groups nest actions in the trace viewer
 ```
 
-#### `bl record group stop`
+### `bl record group stop`
 
 End the current recording group
 
 **Usage**
 
 ```bash
-bl record group stop
+bl record group stop [OPTIONS]
 ```
+
+**Options**
+
+| Option | Description |
+| --- | --- |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
 **Examples**
 
@@ -183,26 +203,31 @@ bl record group stop
 bl record group stop
 ```
 
-### `bl record chunk`
+## `bl record chunk`
 
 Manage recording chunks
 
 **Usage**
 
 ```bash
-bl record chunk
+bl record chunk [OPTIONS]
 bl record chunk <command>
 ```
+
+**Options**
+
+| Option | Description |
+| --- | --- |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
-#### `bl record chunk start`
+### `bl record chunk start`
 
 Start a new chunk within the current recording
 
@@ -218,14 +243,14 @@ bl record chunk start [OPTIONS]
 | --- | --- |
 | `--name <value>` | Name for the chunk |
 | `--title <value>` | Title shown in trace viewer |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
 **Examples**
 
@@ -236,7 +261,7 @@ bl record chunk start
 bl record chunk start --name "part2" --title "Checkout Flow"
 ```
 
-#### `bl record chunk stop`
+### `bl record chunk stop`
 
 Package current chunk into a ZIP file (recording stays active)
 
@@ -251,14 +276,14 @@ bl record chunk stop [OPTIONS]
 | Option | Description |
 | --- | --- |
 | `-o, --output <value>` | Output file path (default: chunk.zip) |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
 **Examples**
 

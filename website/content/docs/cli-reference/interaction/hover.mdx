@@ -7,27 +7,32 @@ description: "Hover over an element by CSS selector"
 
 Hover over an element by CSS selector
 
-**Usage**
+## Usage
 
 ```bash
-bl hover <args...>
+bl hover <args...> [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `&lt;args...&gt;` | [url] selector — optional URL to navigate first, then the selector to hover |
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-**Examples**
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## Examples
 
 ```bash
 bl hover "a"

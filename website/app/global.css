@@ -55,3 +55,30 @@
   --color-fd-accent-foreground: #fafaf7;
   --color-fd-ring: #61aaf2; /* Focus */
 }
+
+/*
+ * ---------------------------------------------------------------------------
+ * Notebook layout tweaks (we run the notebook layout with `nav.mode: 'top'`).
+ * ---------------------------------------------------------------------------
+ *
+ * 1. Sidebar / content distinction. Fumadocs only paints the sidebar with a
+ *    card background + divider in `nav.mode: 'auto'`; in 'top' mode the sidebar
+ *    is transparent and melts into the page. Give the expanded sidebar the same
+ *    card surface + right border so the left nav reads as a distinct panel.
+ *    Scoped to the expanded state so the collapsed floating panel keeps its own
+ *    rounded-card styling.
+ */
+#nd-sidebar[data-collapsed='false'] {
+  background-color: var(--color-fd-card);
+  border-inline-end: 1px solid var(--color-fd-border);
+}
+
+/*
+ * 2. Collapse trigger placement. We render our own toggle beside the logo
+ *    (see app/(docs)/layout.tsx → SidebarToggle), so hide Fumadocs' built-in
+ *    top-mode trigger that otherwise sits in the right-hand nav cluster. Ours
+ *    carries a distinct aria-label, so this only hits the built-in one.
+ */
+#nd-subnav button[aria-label='Collapse Sidebar'] {
+  display: none;
+}

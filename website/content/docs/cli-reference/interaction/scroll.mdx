@@ -7,35 +7,35 @@ description: "Scroll the page or an element"
 
 Scroll the page or an element
 
-**Usage**
+## Usage
 
 ```bash
 bl scroll [direction] [OPTIONS]
 bl scroll <command>
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `[direction]` | Scroll direction: up or down (default down) |
 
-**Options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--amount <value>` | Number of scroll increments (default 3) |
 | `--selector <value>` | CSS selector for element to scroll to |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
-**Global options**
+## Global options
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
-**Examples**
+## Examples
 
 ```bash
 bl scroll
@@ -51,14 +51,14 @@ bl scroll down --selector "div.content"
 # Scroll within a specific element
 ```
 
-### `bl scroll into-view`
+## `bl scroll into-view`
 
 Scroll an element into view
 
 **Usage**
 
 ```bash
-bl scroll into-view <selector>
+bl scroll into-view <selector> [OPTIONS]
 ```
 
 **Arguments**
@@ -67,13 +67,18 @@ bl scroll into-view <selector>
 | --- | --- |
 | `&lt;selector&gt;` | CSS selector (or map ref) for the element to scroll into view |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 

@@ -7,33 +7,33 @@ description: "Get HTML content of the page or an element"
 
 Get HTML content of the page or an element
 
-**Usage**
+## Usage
 
 ```bash
 bl html [args...] [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `[args...]` | CSS selector, or a URL to navigate to first (optionally followed by a selector) |
 
-**Options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--outer` | Return outerHTML instead of innerHTML |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
-**Global options**
+## Global options
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
-**Examples**
+## Examples
 
 ```bash
 bl html

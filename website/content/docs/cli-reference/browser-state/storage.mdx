@@ -7,28 +7,28 @@ description: "Export or restore browser state (cookies, localStorage, sessionSto
 
 Export or restore browser state (cookies, localStorage, sessionStorage)
 
-**Usage**
+## Usage
 
 ```bash
 bl storage [OPTIONS]
 bl storage <command>
 ```
 
-**Options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `-o, --output <value>` | Output file path |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
-**Global options**
+## Global options
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
-**Examples**
+## Examples
 
 ```bash
 bl storage
@@ -38,14 +38,14 @@ bl storage -o state.json
 # Save state to file
 ```
 
-### `bl storage restore`
+## `bl storage restore`
 
 Restore browser state from a JSON file
 
 **Usage**
 
 ```bash
-bl storage restore <path>
+bl storage restore <path> [OPTIONS]
 ```
 
 **Arguments**
@@ -54,13 +54,18 @@ bl storage restore <path>
 | --- | --- |
 | `&lt;path&gt;` | Path to a JSON state file to restore |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 

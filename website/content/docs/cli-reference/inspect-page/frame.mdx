@@ -7,27 +7,32 @@ description: "Find a frame by name or URL substring"
 
 Find a frame by name or URL substring
 
-**Usage**
+## Usage
 
 ```bash
-bl frame <nameOrUrl>
+bl frame <nameOrUrl> [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `&lt;nameOrUrl&gt;` | Frame name or URL substring to match |
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-**Examples**
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## Examples
 
 ```bash
 bl frame "myIframe"

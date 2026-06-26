@@ -7,28 +7,33 @@ description: "Manage browser cookies"
 
 Manage browser cookies
 
-**Usage**
+## Usage
 
 ```bash
-bl cookies [args...]
+bl cookies [args...] [OPTIONS]
 bl cookies <command>
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `[args...]` | Cookie name and value to set (omit both to list all cookies) |
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-**Examples**
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## Examples
 
 ```bash
 bl cookies
@@ -38,23 +43,28 @@ bl cookies "session" "abc123"
 # Set a cookie with name and value
 ```
 
-### `bl cookies clear`
+## `bl cookies clear`
 
 Clear all cookies
 
 **Usage**
 
 ```bash
-bl cookies clear
+bl cookies clear [OPTIONS]
 ```
+
+**Options**
+
+| Option | Description |
+| --- | --- |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
 **Examples**
 

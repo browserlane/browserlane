@@ -7,29 +7,34 @@ description: "Manage browser pages (new, close, switch)"
 
 Manage browser pages (new, close, switch)
 
-**Usage**
+## Usage
 
 ```bash
-bl page
+bl page [OPTIONS]
 bl page <command>
 ```
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-### `bl page new`
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## `bl page new`
 
 Open a new browser page
 
 **Usage**
 
 ```bash
-bl page new [url]
+bl page new [url] [OPTIONS]
 ```
 
 **Arguments**
@@ -38,13 +43,18 @@ bl page new [url]
 | --- | --- |
 | `[url]` | URL to navigate the new page to (omit for a blank page) |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 
@@ -56,14 +66,14 @@ bl page new https://example.com
 # Open a new page and navigate to URL
 ```
 
-### `bl page close`
+## `bl page close`
 
 Close a browser page by index (default: current page)
 
 **Usage**
 
 ```bash
-bl page close [index]
+bl page close [index] [OPTIONS]
 ```
 
 **Arguments**
@@ -72,13 +82,18 @@ bl page close [index]
 | --- | --- |
 | `[index]` | Index of the page to close (default: current page) |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 
@@ -90,14 +105,14 @@ bl page close 1
 # Close page at index 1
 ```
 
-### `bl page switch`
+## `bl page switch`
 
 Switch to a browser page by index or URL substring
 
 **Usage**
 
 ```bash
-bl page switch <target>
+bl page switch <target> [OPTIONS]
 ```
 
 **Arguments**
@@ -106,13 +121,18 @@ bl page switch <target>
 | --- | --- |
 | `&lt;target&gt;` | Page index, or a substring to match against page URLs |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 

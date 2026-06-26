@@ -7,6 +7,25 @@ Notable changes in each `bl` release. Versions follow the published
 [GitHub releases](https://github.com/browserlane/browserlane/releases); check
 your own build with `bl --version`.
 
+## v0.1.2 — 2026-06-25
+
+Help system rebuilt on clap, with per-command flag scoping.
+
+- **clap-native help** — usage, `--help`, `--version`, and error handling all
+  render from the live command tree, so help is one source of truth. The root
+  `--help` stays grouped by category, now with clap-native `Commands:` /
+  `Options:` headings.
+- **Flag scoping** — `--headless` and `--json` are now per-command flags and
+  must follow the subcommand (`bl go --json`, not `bl --json go`); each
+  command's help lists only the flags it honors. `--verbose` remains the one
+  true global. **Breaking** if you previously placed `--headless` / `--json`
+  before the subcommand.
+- `bl add-skill` help now points at the correct install path
+  (`~/.claude/skills/browserlane/`).
+- Docs site: the CLI reference gains a per-page "On this page" outline, the left
+  navigation reads as a distinct panel, and the sidebar toggle now sits beside
+  the logo.
+
 ## v0.1.1 — 2026-06-18
 
 CLI UX polish on top of the v0.1.0 surface (same 65 CLI commands, 85 MCP tools).

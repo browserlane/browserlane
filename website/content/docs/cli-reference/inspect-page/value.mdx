@@ -7,27 +7,32 @@ description: "Get the current value of a form element"
 
 Get the current value of a form element
 
-**Usage**
+## Usage
 
 ```bash
-bl value <selector>
+bl value <selector> [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `&lt;selector&gt;` | CSS selector for the form element |
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-**Examples**
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## Examples
 
 ```bash
 bl value "input[name=email]"

@@ -7,28 +7,33 @@ description: "Get an HTML attribute value from an element"
 
 Get an HTML attribute value from an element
 
-**Usage**
+## Usage
 
 ```bash
-bl attr <selector> <attribute>
+bl attr <selector> <attribute> [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `&lt;selector&gt;` | CSS selector for the element |
 | `&lt;attribute&gt;` | Attribute name to read (e.g. href, src) |
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-**Examples**
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## Examples
 
 ```bash
 bl attr "a" "href"

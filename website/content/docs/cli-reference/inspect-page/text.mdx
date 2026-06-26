@@ -7,27 +7,32 @@ description: "Get text content of the page or an element"
 
 Get text content of the page or an element
 
-**Usage**
+## Usage
 
 ```bash
-bl text [args...]
+bl text [args...] [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `[args...]` | CSS selector, or a URL to navigate to first (optionally followed by a selector) |
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-**Examples**
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## Examples
 
 ```bash
 bl text

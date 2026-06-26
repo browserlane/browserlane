@@ -7,33 +7,33 @@ description: "Type text into an element (optionally navigate to URL first)"
 
 Type text into an element (optionally navigate to URL first)
 
-**Usage**
+## Usage
 
 ```bash
 bl type <args...> [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `&lt;args...&gt;` | [url] selector text — optional URL to navigate first, then the selector and the text to type |
 
-**Options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--timeout <value>` | Timeout for actionability checks (e.g., 5s, 30s) (default 30s) |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
-**Global options**
+## Global options
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
-**Examples**
+## Examples
 
 ```bash
 bl type "input" "12345"

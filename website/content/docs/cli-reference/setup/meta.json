@@ -5,7 +5,6 @@
     "paths",
     "is-installed",
     "install",
-    "completion",
-    "inspect"
+    "completion"
   ]
 }
