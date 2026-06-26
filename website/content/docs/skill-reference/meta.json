@@ -1,0 +1,8 @@
+{
+  "title": "Skill reference",
+  "root": true,
+  "pages": [
+    "index",
+    "skill-file"
+  ]
+}
