@@ -148,7 +148,7 @@ they're cleanly separated from the core. See [AGENTS.md](AGENTS.md) and
 
 ## Status
 
-**v0.1.1** — 65 CLI commands, 85 MCP tools, a persistent
+**v0.1.2** — 65 CLI commands, 85 MCP tools, a persistent
 daemon, and a self-checking CLI test harness (`scripts/cli-smoke.sh`). Signed,
 notarized prebuilt binaries ship for macOS, Linux, and Windows (via the one-line
 installer above); a crates.io release is on the roadmap.
