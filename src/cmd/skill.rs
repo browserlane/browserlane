@@ -17,7 +17,7 @@ pub fn skill_command() -> Command {
                 .help("Print skill content to stdout instead of installing"),
         )
         .after_help(examples(&[
-            ("add-skill", "Installs skill to ~/.claude/skills/vibe-check/"),
+            ("add-skill", "Installs skill to ~/.claude/skills/browserlane/"),
             ("add-skill --stdout", "Print skill content to stdout"),
         ]))
 }

@@ -13,7 +13,7 @@ Options:
 
 Examples:
   bl add-skill
-  # Installs skill to ~/.claude/skills/vibe-check/
+  # Installs skill to ~/.claude/skills/browserlane/
 
   bl add-skill --stdout
   # Print skill content to stdout
