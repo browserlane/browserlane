@@ -88,7 +88,7 @@ order matters). Args/flag variants exercised are noted.
 ### Phase 1 — meta (no browser)
 | Path | Tier | Asserted |
 |---|---|---|
-| `version` / `--version` | AUTO | `bl v0.1.1` |
+| `version` / `--version` | AUTO | `bl v0.1.2` |
 | `paths` | AUTO | exit 0 |
 | `is-installed` | AUTO | exit 0 (Chrome present) |
 | `--help` / `help` | AUTO | lists `Commands` |
@@ -104,7 +104,7 @@ order matters). Args/flag variants exercised are noted.
 |---|---|---|
 | `daemon start` (`--headless`) | AUTO | exit 0; readiness-waited |
 | `daemon status` | AUTO | `running` |
-| `daemon status --json` | AUTO | JSON contains `0.1.1` |
+| `daemon status --json` | AUTO | JSON contains `0.1.2` |
 | `daemon stop` | AUTO | *(phase 11)* |
 
 ### Phase 3 — read-only inspection (on a local fixture)
