@@ -7,7 +7,7 @@ expression: "normalize_prog(&cmd::dashboard_plain())"
  | |__ | |   browserlane
  | '_ \| |   browser automation for humans and AI agents
  | |_) | |   one binary · CLI + MCP · over WebDriver BiDi
- |_.__/|_|   v0.1.1
+ |_.__/|_|   v0.1.2
 
   Get started
     bl install                  download Chrome for Testing (run once)

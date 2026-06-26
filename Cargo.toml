@@ -3,7 +3,7 @@
 # MCP), BiDi-only. See NOTICE for third-party license attribution.
 [package]
 name = "browserlane"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "Browser automation for humans and AI agents, via CLI and MCP, built on WebDriver BiDi in Rust."
 license = "Apache-2.0"
