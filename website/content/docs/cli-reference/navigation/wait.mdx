@@ -7,35 +7,35 @@ description: "Wait for an element, URL, text, page load, or JS condition"
 
 Wait for an element, URL, text, page load, or JS condition
 
-**Usage**
+## Usage
 
 ```bash
 bl wait [selector] [OPTIONS]
 bl wait <command>
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `[selector]` | CSS selector of the element to wait for |
 
-**Options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--state <value>` | State to wait for: attached, visible, hidden (default attached) |
 | `--timeout <value>` | Timeout in milliseconds (default 30000) |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
-**Global options**
+## Global options
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
-**Examples**
+## Examples
 
 ```bash
 bl wait "div.loaded"
@@ -48,7 +48,7 @@ bl wait "div.spinner" --state hidden --timeout 5000
 # Wait for spinner to disappear
 ```
 
-### `bl wait url`
+## `bl wait url`
 
 Wait until the page URL contains a substring
 
@@ -69,14 +69,14 @@ bl wait url <pattern> [OPTIONS]
 | Option | Description |
 | --- | --- |
 | `--timeout <value>` | Timeout in milliseconds (default 30000) |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
 **Examples**
 
@@ -88,7 +88,7 @@ bl wait url "success" --timeout 10000
 # Wait up to 10 seconds
 ```
 
-### `bl wait text`
+## `bl wait text`
 
 Wait until text appears on the page
 
@@ -109,14 +109,14 @@ bl wait text <text> [OPTIONS]
 | Option | Description |
 | --- | --- |
 | `--timeout <value>` | Timeout in milliseconds (default 30000) |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
 **Examples**
 
@@ -128,7 +128,7 @@ bl wait text "Success" --timeout 10000
 # Wait with custom timeout (10 seconds)
 ```
 
-### `bl wait load`
+## `bl wait load`
 
 Wait until the page is fully loaded
 
@@ -143,14 +143,14 @@ bl wait load [OPTIONS]
 | Option | Description |
 | --- | --- |
 | `--timeout <value>` | Timeout in milliseconds (default 30000) |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
 **Examples**
 
@@ -162,7 +162,7 @@ bl wait load --timeout 10000
 # Wait up to 10 seconds
 ```
 
-### `bl wait fn`
+## `bl wait fn`
 
 Wait until a JS expression returns truthy
 
@@ -183,14 +183,14 @@ bl wait fn <expression> [OPTIONS]
 | Option | Description |
 | --- | --- |
 | `--timeout <value>` | Timeout in milliseconds (default 30000) |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
 **Examples**
 

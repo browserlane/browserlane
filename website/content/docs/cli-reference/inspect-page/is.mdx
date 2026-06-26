@@ -7,29 +7,34 @@ description: "Check element state (visible, enabled, checked, actionable)"
 
 Check element state (visible, enabled, checked, actionable)
 
-**Usage**
+## Usage
 
 ```bash
-bl is
+bl is [OPTIONS]
 bl is <command>
 ```
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-### `bl is visible`
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## `bl is visible`
 
 Check if an element is visible on the page
 
 **Usage**
 
 ```bash
-bl is visible <selector>
+bl is visible <selector> [OPTIONS]
 ```
 
 **Arguments**
@@ -38,13 +43,18 @@ bl is visible <selector>
 | --- | --- |
 | `&lt;selector&gt;` | CSS selector of the element to check |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 
@@ -53,14 +63,14 @@ bl is visible "h1"
 # Prints true or false
 ```
 
-### `bl is enabled`
+## `bl is enabled`
 
 Check if an element is enabled
 
 **Usage**
 
 ```bash
-bl is enabled <selector>
+bl is enabled <selector> [OPTIONS]
 ```
 
 **Arguments**
@@ -69,13 +79,18 @@ bl is enabled <selector>
 | --- | --- |
 | `&lt;selector&gt;` | CSS selector of the element to check |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 
@@ -84,14 +99,14 @@ bl is enabled "button[type=submit]"
 # Prints true or false
 ```
 
-### `bl is checked`
+## `bl is checked`
 
 Check if a checkbox or radio is checked
 
 **Usage**
 
 ```bash
-bl is checked <selector>
+bl is checked <selector> [OPTIONS]
 ```
 
 **Arguments**
@@ -100,13 +115,18 @@ bl is checked <selector>
 | --- | --- |
 | `&lt;selector&gt;` | CSS selector of the checkbox or radio to check |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 
@@ -115,14 +135,14 @@ bl is checked "input[type=checkbox]"
 # Prints true or false
 ```
 
-### `bl is actionable`
+## `bl is actionable`
 
 Check actionability of an element (Visible, Stable, ReceivesEvents, Enabled, Editable)
 
 **Usage**
 
 ```bash
-bl is actionable <url> <selector>
+bl is actionable <url> <selector> [OPTIONS]
 ```
 
 **Arguments**
@@ -132,13 +152,18 @@ bl is actionable <url> <selector>
 | `&lt;url&gt;` | URL to navigate to before checking |
 | `&lt;selector&gt;` | CSS selector of the element to check |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 

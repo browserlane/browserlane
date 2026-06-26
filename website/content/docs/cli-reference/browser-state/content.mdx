@@ -7,33 +7,33 @@ description: "Replace the page HTML content"
 
 Replace the page HTML content
 
-**Usage**
+## Usage
 
 ```bash
 bl content [html] [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `[html]` | HTML to set as the page content |
 
-**Options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--stdin` | Read HTML from stdin |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
-**Global options**
+## Global options
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
-**Examples**
+## Examples
 
 ```bash
 bl content "<h1>Hello World</h1>"

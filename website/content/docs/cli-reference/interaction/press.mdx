@@ -7,27 +7,32 @@ description: "Press a key on a specific element or the focused element"
 
 Press a key on a specific element or the focused element
 
-**Usage**
+## Usage
 
 ```bash
-bl press <args...>
+bl press <args...> [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `&lt;args...&gt;` | key [selector] — the key (or combo) to press, optionally on a specific element |
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-**Examples**
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## Examples
 
 ```bash
 bl press Enter

@@ -7,33 +7,33 @@ description: "Evaluate a JavaScript expression (optionally navigate to URL first
 
 Evaluate a JavaScript expression (optionally navigate to URL first)
 
-**Usage**
+## Usage
 
 ```bash
 bl eval [args...] [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `[args...]` | [url] expression — JS to evaluate, optionally preceded by a URL to navigate first |
 
-**Options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--stdin` | Read expression from stdin |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
-**Global options**
+## Global options
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
-**Examples**
+## Examples
 
 ```bash
 bl eval "document.title"

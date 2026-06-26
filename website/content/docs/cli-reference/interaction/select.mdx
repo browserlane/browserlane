@@ -7,28 +7,33 @@ description: "Select an option in a &lt;select&gt; element"
 
 Select an option in a &lt;select&gt; element
 
-**Usage**
+## Usage
 
 ```bash
-bl select <selector> <value>
+bl select <selector> <value> [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `&lt;selector&gt;` | CSS selector or @ref of the &lt;select&gt; element |
 | `&lt;value&gt;` | Value of the option to select |
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-**Examples**
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## Examples
 
 ```bash
 bl select "select#color" "blue"

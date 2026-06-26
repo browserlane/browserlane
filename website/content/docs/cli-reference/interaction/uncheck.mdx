@@ -7,27 +7,32 @@ description: "Uncheck a checkbox"
 
 Uncheck a checkbox
 
-**Usage**
+## Usage
 
 ```bash
-bl uncheck <selector>
+bl uncheck <selector> [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `&lt;selector&gt;` | CSS selector (or map ref) for the checkbox |
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-**Examples**
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## Examples
 
 ```bash
 bl uncheck "input[name=agree]"

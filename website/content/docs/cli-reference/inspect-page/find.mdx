@@ -7,35 +7,35 @@ description: "Find elements by CSS selector or semantic locator"
 
 Find elements by CSS selector or semantic locator
 
-**Usage**
+## Usage
 
 ```bash
 bl find [selector...] [OPTIONS]
 bl find <command>
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `[selector...]` | CSS selector (optionally preceded by a URL to navigate first) |
 
-**Options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--all` | Find all matching elements |
 | `--limit <value>` | Maximum number of elements to return (with --all) (default 10) |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
-**Global options**
+## Global options
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
-**Examples**
+## Examples
 
 ```bash
 bl find "a"
@@ -54,14 +54,14 @@ bl find role heading --name "Example"
 # Find heading with accessible name "Example"
 ```
 
-### `bl find text`
+## `bl find text`
 
 Find element by text content
 
 **Usage**
 
 ```bash
-bl find text <text>
+bl find text <text> [OPTIONS]
 ```
 
 **Arguments**
@@ -70,13 +70,18 @@ bl find text <text>
 | --- | --- |
 | `&lt;text&gt;` | Find element by text content |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 
@@ -85,7 +90,7 @@ bl find text "Sign In"
 # → @e1 [button] "Sign In"
 ```
 
-### `bl find role`
+## `bl find role`
 
 Find element by ARIA role
 
@@ -106,14 +111,14 @@ bl find role <role> [OPTIONS]
 | Option | Description |
 | --- | --- |
 | `--name <value>` | Accessible name filter |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
 **Examples**
 
@@ -125,14 +130,14 @@ bl find role heading --name "Example"
 # Find heading with accessible name "Example"
 ```
 
-### `bl find label`
+## `bl find label`
 
 Find input by associated label text
 
 **Usage**
 
 ```bash
-bl find label <label>
+bl find label <label> [OPTIONS]
 ```
 
 **Arguments**
@@ -141,13 +146,18 @@ bl find label <label>
 | --- | --- |
 | `&lt;label&gt;` | Find input by associated label text |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 
@@ -156,14 +166,14 @@ bl find label "Email"
 # → @e1 [input type="email"] placeholder="Email"
 ```
 
-### `bl find placeholder`
+## `bl find placeholder`
 
 Find element by placeholder attribute
 
 **Usage**
 
 ```bash
-bl find placeholder <placeholder>
+bl find placeholder <placeholder> [OPTIONS]
 ```
 
 **Arguments**
@@ -172,13 +182,18 @@ bl find placeholder <placeholder>
 | --- | --- |
 | `&lt;placeholder&gt;` | Find element by placeholder attribute |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 
@@ -187,14 +202,14 @@ bl find placeholder "Search..."
 # → @e1 [input] placeholder="Search..."
 ```
 
-### `bl find testid`
+## `bl find testid`
 
 Find element by data-testid attribute
 
 **Usage**
 
 ```bash
-bl find testid <testid>
+bl find testid <testid> [OPTIONS]
 ```
 
 **Arguments**
@@ -203,13 +218,18 @@ bl find testid <testid>
 | --- | --- |
 | `&lt;testid&gt;` | Find element by data-testid attribute |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 
@@ -218,14 +238,14 @@ bl find testid "submit-btn"
 # → @e1 [button] data-testid="submit-btn"
 ```
 
-### `bl find xpath`
+## `bl find xpath`
 
 Find element by XPath expression
 
 **Usage**
 
 ```bash
-bl find xpath <expression>
+bl find xpath <expression> [OPTIONS]
 ```
 
 **Arguments**
@@ -234,13 +254,18 @@ bl find xpath <expression>
 | --- | --- |
 | `&lt;expression&gt;` | Find element by XPath expression |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 
@@ -249,14 +274,14 @@ bl find xpath "//div[@class='main']"
 # → @e1 [div.main] ...
 ```
 
-### `bl find alt`
+## `bl find alt`
 
 Find element by alt attribute
 
 **Usage**
 
 ```bash
-bl find alt <alt>
+bl find alt <alt> [OPTIONS]
 ```
 
 **Arguments**
@@ -265,13 +290,18 @@ bl find alt <alt>
 | --- | --- |
 | `&lt;alt&gt;` | Find element by alt attribute |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 
@@ -279,14 +309,14 @@ bl find alt <alt>
 bl find alt "Logo"
 ```
 
-### `bl find title`
+## `bl find title`
 
 Find element by title attribute
 
 **Usage**
 
 ```bash
-bl find title <title>
+bl find title <title> [OPTIONS]
 ```
 
 **Arguments**
@@ -295,13 +325,18 @@ bl find title <title>
 | --- | --- |
 | `&lt;title&gt;` | Find element by title attribute |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 

@@ -7,22 +7,27 @@ description: "Mouse control (click, move, down, up)"
 
 Mouse control (click, move, down, up)
 
-**Usage**
+## Usage
 
 ```bash
-bl mouse
+bl mouse [OPTIONS]
 bl mouse <command>
 ```
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-### `bl mouse click`
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## `bl mouse click`
 
 Click at coordinates or current position
 
@@ -43,14 +48,14 @@ bl mouse click [coords...] [OPTIONS]
 | Option | Description |
 | --- | --- |
 | `--button <value>` | Mouse button (0=left, 1=middle, 2=right) (default 0) |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
 **Examples**
 
@@ -65,14 +70,14 @@ bl mouse click
 # Left click at current position
 ```
 
-### `bl mouse move`
+## `bl mouse move`
 
 Move the mouse to coordinates
 
 **Usage**
 
 ```bash
-bl mouse move <coords...>
+bl mouse move <coords...> [OPTIONS]
 ```
 
 **Arguments**
@@ -81,13 +86,18 @@ bl mouse move <coords...>
 | --- | --- |
 | `&lt;coords...&gt;` | x and y coordinates to move to |
 
-**Global options**
+**Options**
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
+
+**Global options**
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
 
 **Examples**
 
@@ -96,7 +106,7 @@ bl mouse move 100 200
 # Move mouse to position (100, 200)
 ```
 
-### `bl mouse down`
+## `bl mouse down`
 
 Press a mouse button down
 
@@ -111,14 +121,14 @@ bl mouse down [OPTIONS]
 | Option | Description |
 | --- | --- |
 | `--button <value>` | Mouse button (0=left, 1=middle, 2=right) (default 0) |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
 **Examples**
 
@@ -130,7 +140,7 @@ bl mouse down --button 2
 # Press right mouse button
 ```
 
-### `bl mouse up`
+## `bl mouse up`
 
 Release a mouse button
 
@@ -145,14 +155,14 @@ bl mouse up [OPTIONS]
 | Option | Description |
 | --- | --- |
 | `--button <value>` | Mouse button (0=left, 1=middle, 2=right) (default 0) |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
 **Examples**
 

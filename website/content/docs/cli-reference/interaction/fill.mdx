@@ -7,28 +7,33 @@ description: "Clear an input field and type new text"
 
 Clear an input field and type new text
 
-**Usage**
+## Usage
 
 ```bash
-bl fill <selector> <text>
+bl fill <selector> <text> [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `&lt;selector&gt;` | CSS selector or @ref of the input field |
 | `&lt;text&gt;` | Text to type into the field after clearing it |
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-**Examples**
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## Examples
 
 ```bash
 bl fill "input[name=email]" "user@example.com"

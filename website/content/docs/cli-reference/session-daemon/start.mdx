@@ -14,27 +14,32 @@ back to a local browser launch.
 Set BROWSERLANE_CONNECT_API_KEY to send an Authorization: Bearer header.
 ```
 
-**Usage**
+## Usage
 
 ```bash
-bl start [url]
+bl start [url] [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `[url]` | Remote BiDi WebSocket URL to connect to (omit to launch a local browser) |
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-**Examples**
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## Examples
 
 ```bash
 bl start

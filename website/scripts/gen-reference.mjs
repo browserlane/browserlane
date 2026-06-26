@@ -697,21 +697,38 @@ const CLI_GROUP_SLUG = new Map(CLI_GROUP_ORDER);
 const ADVANCED_COMMANDS = new Set(['launch-test', 'bidi-test', 'ws-test']);
 const ADVANCED_SLUG = 'advanced';
 
-/** Render one command node (and its subcommands) into a single MDX body. */
+/**
+ * Render one command node (and its subcommands) into a single MDX body.
+ *
+ * Heading model — built so the right-hand "On this page" TOC mirrors the MCP
+ * pages (which list each `## tool` as a jump target):
+ *   - The page command (depth 2) has no heading of its own (the frontmatter
+ *     title is the H1); its section labels (Usage / Arguments / Options / Global
+ *     options / Examples) are `##` headings, so they populate the TOC.
+ *   - Each subcommand is a `##` heading too (`## bl find text`), making every
+ *     subcommand a TOC entry; its own section labels stay **bold** so the TOC
+ *     lists one entry per subcommand rather than a Usage/Options row for each.
+ *   - Deeper subcommands (rare) step down to `###`, `####`, …
+ */
 function renderCliBody(node, depth = 2) {
   const parts = [];
-  const h = '#'.repeat(Math.min(depth, 6));
-  // For the top-level command on its own page we rely on frontmatter title,
-  // so the first heading is omitted; subcommands get their own heading.
-  if (depth > 2) {
+  const isPage = depth === 2;
+  // The page command relies on the frontmatter H1; subcommands get a heading
+  // one level up from their nesting depth so the first subcommand level is `##`.
+  if (!isPage) {
+    const h = '#'.repeat(Math.min(depth - 1, 6));
     parts.push(`${h} \`${node.full}\``);
   }
   if (node.summary) parts.push(mdxInline(node.summary));
   if (node.details) parts.push(detailsBlock(node.details));
 
+  // Section labels are `##` headings on the page command (so they show up in the
+  // TOC) and plain bold on subcommands (to keep the TOC to one entry each).
+  const label = (text) => (isPage ? `## ${text}` : `**${text}**`);
+
   if (node.usage.length) {
     parts.push(
-      `**Usage**\n\n\`\`\`bash\n${node.usage.join('\n')}\n\`\`\``,
+      `${label('Usage')}\n\n\`\`\`bash\n${node.usage.join('\n')}\n\`\`\``,
     );
   }
 
@@ -720,7 +737,7 @@ function renderCliBody(node, depth = 2) {
       (a) => `| \`${td(a.name)}\` | ${td(a.desc)} |`,
     );
     parts.push(
-      ['**Arguments**', '', '| Argument | Description |', '| --- | --- |', ...rows].join('\n'),
+      [label('Arguments'), '', '| Argument | Description |', '| --- | --- |', ...rows].join('\n'),
     );
   }
 
@@ -728,14 +745,14 @@ function renderCliBody(node, depth = 2) {
   const localLongs = new Set(node.localFlags.map((f) => f.long));
   const globals = node.globalFlags.filter((f) => !localLongs.has(f.long));
   if (node.localFlags.length) {
-    parts.push('**Options**\n\n' + flagsTable(node.localFlags));
+    parts.push(`${label('Options')}\n\n` + flagsTable(node.localFlags));
   }
   if (globals.length) {
-    parts.push('**Global options**\n\n' + flagsTable(globals));
+    parts.push(`${label('Global options')}\n\n` + flagsTable(globals));
   }
 
   if (node.examples) {
-    parts.push('**Examples**\n\n```bash\n' + node.examples + '\n```');
+    parts.push(`${label('Examples')}\n\n\`\`\`bash\n` + node.examples + '\n```');
   }
 
   for (const child of node.children) {

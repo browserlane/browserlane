@@ -7,33 +7,33 @@ description: "Click an element (optionally navigate to URL first)"
 
 Click an element (optionally navigate to URL first)
 
-**Usage**
+## Usage
 
 ```bash
 bl click <args...> [OPTIONS]
 ```
 
-**Arguments**
+## Arguments
 
 | Argument | Description |
 | --- | --- |
 | `&lt;args...&gt;` | [url] selector — optional URL to navigate first, then the selector to click |
 
-**Options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--timeout <value>` | Timeout for actionability checks (e.g., 5s, 30s) (default 30s) |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
-**Global options**
+## Global options
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
-**Examples**
+## Examples
 
 ```bash
 bl click "a"

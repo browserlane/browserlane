@@ -7,38 +7,48 @@ description: "Compare current state vs previous"
 
 Compare current state vs previous
 
-**Usage**
+## Usage
 
 ```bash
-bl diff
+bl diff [OPTIONS]
 bl diff <command>
 ```
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-### `bl diff map`
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## `bl diff map`
 
 Compare current page elements vs last map
 
 **Usage**
 
 ```bash
-bl diff map
+bl diff map [OPTIONS]
 ```
+
+**Options**
+
+| Option | Description |
+| --- | --- |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
 **Examples**
 

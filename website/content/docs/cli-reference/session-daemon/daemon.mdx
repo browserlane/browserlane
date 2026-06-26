@@ -7,22 +7,27 @@ description: "Manage the browserlane daemon (background browser process)"
 
 Manage the browserlane daemon (background browser process)
 
-**Usage**
+## Usage
 
 ```bash
-bl daemon
+bl daemon [OPTIONS]
 bl daemon <command>
 ```
 
-**Global options**
+## Options
 
 | Option | Description |
 | --- | --- |
 | `--headless` | Hide browser window (visible by default) |
-| `-v, --verbose` | Enable debug logging |
 | `--json` | Output as JSON |
 
-### `bl daemon start`
+## Global options
+
+| Option | Description |
+| --- | --- |
+| `-v, --verbose` | Enable debug logging |
+
+## `bl daemon start`
 
 Start the browserlane daemon
 
@@ -40,14 +45,14 @@ bl daemon start [OPTIONS]
 | `--idle-timeout <value>` | Shutdown after this duration of inactivity (0 to disable) (default 30m) |
 | `--connect <value>` | Connect to a remote BiDi WebSocket URL instead of launching a local browser |
 | `--connect-header <value>` | HTTP header for WebSocket connect (repeatable, format: "Key: Value") |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
 **Examples**
 
@@ -65,38 +70,48 @@ bl daemon start --connect ws://remote:9515/session
 # Connect to a remote browser instead of launching a local one
 ```
 
-### `bl daemon stop`
+## `bl daemon stop`
 
 Stop the browserlane daemon
 
 **Usage**
 
 ```bash
-bl daemon stop
+bl daemon stop [OPTIONS]
 ```
+
+**Options**
+
+| Option | Description |
+| --- | --- |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
 
-### `bl daemon status`
+## `bl daemon status`
 
 Show daemon status
 
 **Usage**
 
 ```bash
-bl daemon status
+bl daemon status [OPTIONS]
 ```
+
+**Options**
+
+| Option | Description |
+| --- | --- |
+| `--headless` | Hide browser window (visible by default) |
+| `--json` | Output as JSON |
 
 **Global options**
 
 | Option | Description |
 | --- | --- |
-| `--headless` | Hide browser window (visible by default) |
 | `-v, --verbose` | Enable debug logging |
-| `--json` | Output as JSON |
