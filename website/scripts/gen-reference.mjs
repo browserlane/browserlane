@@ -963,6 +963,7 @@ const MCP_GROUPS = [
         'browser_is_visible',
         'browser_is_enabled',
         'browser_is_checked',
+        'browser_expect',
         'browser_list_pages',
         'browser_frames',
         'browser_frame',
@@ -1329,6 +1330,18 @@ const CURATED_MAP = {
   'is visible': ['browser_is_visible'],
   'is enabled': ['browser_is_enabled'],
   'is checked': ['browser_is_checked'],
+  // expect.* assertions — every subcommand is CLI sugar over the one generic
+  // `browser_expect` tool (the subcommand becomes its `target` argument).
+  'expect url': ['browser_expect'],
+  'expect title': ['browser_expect'],
+  'expect text': ['browser_expect'],
+  'expect visible': ['browser_expect'],
+  'expect hidden': ['browser_expect'],
+  'expect enabled': ['browser_expect'],
+  'expect checked': ['browser_expect'],
+  'expect value': ['browser_expect'],
+  'expect count': ['browser_expect'],
+  'expect js': ['browser_expect'],
   // wait.* family
   wait: ['browser_wait'],
   'wait url': ['browser_wait_for_url'],
@@ -1578,9 +1591,9 @@ async function main() {
   );
   console.log('=======================================================');
 
-  if (tools.length !== 85) {
+  if (tools.length !== 86) {
     console.warn(
-      `[gen-reference] WARNING: expected 85 MCP tools, got ${tools.length}.`,
+      `[gen-reference] WARNING: expected 86 MCP tools, got ${tools.length}.`,
     );
   }
 }
