@@ -8,7 +8,7 @@
 
 `bl` is a single-binary browser-automation tool with two surfaces:
 - A **CLI** for humans and scripts (navigate, click, screenshot, find, ...)
-- An **MCP server** for AI agents (85 tools over stdio JSON-RPC)
+- An **MCP server** for AI agents (86 tools over stdio JSON-RPC)
 
 It drives Chrome via the WebDriver BiDi protocol, auto-installs the browser
 on first use, and ships as one static binary on macOS, Linux, and Windows.
@@ -113,8 +113,9 @@ instead of writing it. Run **`bl install` once first** so the agent's first
 browser action doesn't stall on the Chrome download.
 
 Then ask your agent things like "open example.com, click the second link,
-screenshot the result". The 85 tools cover navigation, interaction, capture,
-recording, emulation, network interception, the page clock, and more — see
+screenshot the result". The 86 tools cover navigation, interaction, capture,
+recording, emulation, network interception, assertions, the page clock, and
+more — see
 `bl mcp` → `tools/list` for the full catalog.
 
 ## Daemon
@@ -149,7 +150,7 @@ they're cleanly separated from the core. See [AGENTS.md](AGENTS.md) and
 
 ## Status
 
-**v0.1.2** — 65 CLI commands, 85 MCP tools, a persistent
+**v0.1.3** — 66 CLI commands, 86 MCP tools, a persistent
 daemon, and a self-checking CLI test harness (`scripts/cli-smoke.sh`). Signed,
 notarized prebuilt binaries ship for macOS, Linux, and Windows (via the one-line
 installer above); a crates.io release is on the roadmap.
