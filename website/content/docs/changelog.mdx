@@ -7,6 +7,23 @@ Notable changes in each `bl` release. Versions follow the published
 [GitHub releases](https://github.com/browserlane/browserlane/releases); check
 your own build with `bl --version`.
 
+## v0.1.3 — 2026-07-01
+
+Assertion primitives: a browser flow can now pass or fail with a real exit code.
+
+- **`bl expect`** — assert page state from the CLI: `url` / `title` / `text`
+  with `contains` or `equals`, `visible` / `hidden` / `enabled` / `checked`
+  (`--not` to invert), `value`, `count`, and `js` (truthiness of a JavaScript
+  expression, evaluated in the page). A pass prints `PASS expect …` and exits
+  `0`; a failure reports the actual value and exits `1`, so `&&` chains and CI
+  scripts stop at the first failed assertion. `hidden` passes when the element
+  is absent *or* not visible. (Now 66 CLI commands.)
+- **`browser_expect` MCP tool** — the same assertions for agents as one generic
+  tool taking `target` / `operator` / `expected` / `selector` / `expression` /
+  `negate`. (Now 86 MCP tools.)
+- The embedded agent skill (`bl add-skill`) gains an Assertions section and an
+  exit-code testing recipe.
+
 ## v0.1.2 — 2026-06-25
 
 Help system rebuilt on clap, with per-command flag scoping.

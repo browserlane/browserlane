@@ -135,9 +135,19 @@ bl upload "input[type=file]" ./resume.pdf
 requested state, so you can call them without first checking whether the box is
 already ticked.
 
-## Inspect before or after
+## Verify before or after
 
-To confirm a field holds what you expect, read its value back:
+To confirm a field holds what you expect, assert it with `bl expect` — a pass
+prints `PASS expect …` and exits `0`, a failure reports the actual value and
+exits `1`, so a `&&` chain or CI script stops on a wrong value:
+
+```bash
+bl expect value "input[name=email]" equals "user@example.com"
+bl expect checked "#terms"              # --not to assert it's unchecked
+bl expect value "select#country" equals "Canada"
+```
+
+To merely read a value back — no pass/fail verdict — use the read commands:
 
 ```bash
 bl value "input[name=email]"   # → user@example.com
@@ -147,7 +157,8 @@ bl is checked "#terms"         # → true
 ## Related
 
 - [`bl fill`](/cli-reference/interaction/fill), [`bl click`](/cli-reference/interaction/click),
-  [`bl select`](/cli-reference/interaction/select), and
-  [`bl find`](/cli-reference/inspect-page/find) in the CLI reference.
+  [`bl select`](/cli-reference/interaction/select),
+  [`bl find`](/cli-reference/inspect-page/find), and
+  [`bl expect`](/cli-reference/inspect-page/expect) in the CLI reference.
 - [Selectors vs @refs & the map → act → re-map loop](/concepts/selectors-vs-refs-map-act-remap).
 - [Auto-waiting vs. explicit waits](/concepts/auto-waiting-vs-explicit-waits) — when you need `bl wait` and when you don't.

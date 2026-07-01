@@ -86,6 +86,20 @@ browserlane yet, start with [Install](/getting-started/install).
     ```
   </Step>
   <Step>
+    ### Assert page state
+
+    ```bash
+    bl expect title contains "Example"
+    ```
+
+    `bl expect` turns a check into a pass/fail verdict: it prints
+    `PASS expect title contains "Example"` and exits `0` when the assertion
+    holds, or reports the actual value and exits `1`. You can assert the URL,
+    title, text, element state (`visible` / `hidden` / `enabled` / `checked`),
+    a form value, an element count, or any JavaScript expression — the building
+    block for scripted flows and CI checks.
+  </Step>
+  <Step>
     ### Run JavaScript
 
     ```bash

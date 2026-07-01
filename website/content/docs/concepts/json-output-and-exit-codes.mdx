@@ -52,6 +52,10 @@ if [ "$(bl is visible '.modal')" = "true" ]; then
 fi
 ```
 
+When the check is really an assertion — the flow should *stop* if the state is
+wrong — skip the string comparison and use `bl expect`, which folds the check
+into the exit code (next section).
+
 ## Exit codes for scripting
 
 Some commands signal their result through the **exit code** so you can use them
@@ -66,17 +70,34 @@ bl is-installed   # exit 0 = Chrome + chromedriver present, exit 1 = missing
 bl is-installed || bl install   # install Chrome only if it isn't already there
 ```
 
+`bl expect` makes the exit code the whole point: every assertion exits `0` on
+pass and `1` on failure, which turns a browser flow into something a script or
+CI job can gate on directly:
+
+```bash
+bl expect url contains "/dashboard"   # PASS expect … and exit 0 — or exit 1 with the actual URL
+bl expect count ".error" 0            # assert no error elements on the page
+bl expect js "window.appReady === true"
+```
+
+With `--json`, a passing assertion prints `{"ok":true,"result":"PASS …"}` and a
+failing one prints `{"ok":false,"error":"expect … failed: actual …"}` — same
+envelope, same exit codes.
+
 More generally, `bl` follows the usual convention: a command exits `0` on
 success and non-zero on failure. Chains stop on the first failure, so a sequence
-like the following won't take the screenshot if navigation fails:
+like the following won't take the screenshot if navigation fails — and an
+`expect` in the middle of a chain acts as a checkpoint:
 
 ```bash
 bl go https://example.com && bl screenshot -o page.png
+bl go https://example.com && bl expect title contains "Example" && bl screenshot -o page.png
 ```
 
 ## Related
 
 - [`bl is`](/cli-reference/inspect-page/is),
+  [`bl expect`](/cli-reference/inspect-page/expect),
   [`bl is-installed`](/cli-reference/setup/is-installed), and
   [`bl eval`](/cli-reference/scripting/eval) in the CLI reference.
 - [Auto-waiting vs. explicit waits](/concepts/auto-waiting-vs-explicit-waits) —
