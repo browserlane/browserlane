@@ -44,6 +44,7 @@ Inspect page:
   map           Map interactive page elements with @refs
   a11y-tree     Get the accessibility tree of the current page
   is            Check element state (visible, enabled, checked, actionable)
+  expect        Assert page state; exits 0 on pass, 1 on failure
   pages         List all open browser pages
   frames        List all child frames (iframes) on the page
   frame         Find a frame by name or URL substring

@@ -142,6 +142,7 @@ impl Handlers {
             "browser_is_visible" => self.browser_is_visible(args).await,
             "browser_is_enabled" => self.browser_is_enabled(args).await,
             "browser_is_checked" => self.browser_is_checked(args).await,
+            "browser_expect" => self.browser_expect(args).await,
             "browser_click" => self.browser_click(args).await,
             "browser_dblclick" => self.browser_dblclick(args).await,
             "browser_type" => self.browser_type(args).await,
@@ -635,6 +636,141 @@ impl Handlers {
             .map_err(|e| anyhow!("failed to check checked state: {e}"))?;
 
         Ok(text_result(&format!("{checked}")))
+    }
+
+    /// Asserts a condition about the current page (URL, title, text, element
+    /// state, count, or a JS expression). Returns a `PASS <assertion>` text
+    /// result when the assertion holds; fails with an error carrying the actual
+    /// value otherwise, so the CLI's `print_error` path yields exit code 1.
+    /// Reuses the sibling read-only handlers for every actual-value fetch.
+    async fn browser_expect(&mut self, args: Map<String, Value>) -> anyhow::Result<ToolsCallResult> {
+        let target = args.get("target").and_then(Value::as_str).unwrap_or("");
+        if target.is_empty() {
+            return Err(anyhow!("target is required"));
+        }
+        let operator = args.get("operator").and_then(Value::as_str).unwrap_or("contains");
+        if !matches!(operator, "contains" | "equals") {
+            return Err(anyhow!("operator must be \"contains\" or \"equals\""));
+        }
+        let selector = args.get("selector").and_then(Value::as_str).unwrap_or("").to_string();
+        let negate = args.get("negate").and_then(Value::as_bool).unwrap_or(false);
+        let not = if negate { "not " } else { "" };
+
+        let mut selector_args = Map::new();
+        if !selector.is_empty() {
+            selector_args.insert("selector".to_string(), Value::from(selector.clone()));
+        }
+
+        // Each arm yields (assertion description, raw pass/fail before negate,
+        // display form of the actual value for the failure message).
+        let (describe, matched, actual) = match target {
+            "url" | "title" => {
+                let expected = expect_expected(&args, target)?;
+                let describe = format!("expect {not}{target} {operator} {expected:?}");
+                let result = match target {
+                    "url" => self.browser_get_url(Map::new()).await,
+                    _ => self.browser_get_title(Map::new()).await,
+                };
+                let actual = expect_actual(&describe, result)?;
+                let matched = expect_matches(operator, &actual, &expected);
+                (describe, matched, format!("{:?}", ellipsize(&actual)))
+            }
+            "text" => {
+                let expected = expect_expected(&args, target)?;
+                let mut describe = format!("expect {not}text {operator} {expected:?}");
+                if !selector.is_empty() {
+                    describe.push_str(&format!(" in {selector:?}"));
+                }
+                let actual = expect_actual(&describe, self.browser_get_text(selector_args).await)?;
+                let matched = expect_matches(operator, &actual, &expected);
+                (describe, matched, format!("{:?}", ellipsize(&actual)))
+            }
+            "visible" | "hidden" | "enabled" | "checked" => {
+                if selector.is_empty() {
+                    return Err(anyhow!("selector is required for target {target:?}"));
+                }
+                let describe = format!("expect {not}{target} {selector:?}");
+                let result = match target {
+                    // `hidden` rides on the visibility check: an absent element
+                    // is not visible, so hidden passes for both absent and
+                    // invisible. browser_is_visible flattens EVERY error to
+                    // false, though — a typo'd selector would silently PASS
+                    // `hidden` — so probe with a count first: it surfaces CSS
+                    // syntax errors and settles the absent case exactly.
+                    "visible" | "hidden" => {
+                        let count =
+                            expect_actual(&describe, self.browser_count(selector_args.clone()).await)?;
+                        if count == "0" {
+                            Ok(text_result("false"))
+                        } else {
+                            self.browser_is_visible(selector_args).await
+                        }
+                    }
+                    "enabled" => self.browser_is_enabled(selector_args).await,
+                    _ => self.browser_is_checked(selector_args).await,
+                };
+                let state = expect_actual(&describe, result)? == "true";
+                let matched = if target == "hidden" { !state } else { state };
+                let state_name = if target == "hidden" { "visible" } else { target };
+                (describe, matched, format!("{state_name}={state}"))
+            }
+            "value" => {
+                if selector.is_empty() {
+                    return Err(anyhow!("selector is required for target {target:?}"));
+                }
+                let expected = expect_expected(&args, target)?;
+                let describe = format!("expect {not}value {selector:?} {operator} {expected:?}");
+                let actual = expect_actual(&describe, self.browser_get_value(selector_args).await)?;
+                let matched = expect_matches(operator, &actual, &expected);
+                (describe, matched, format!("{:?}", ellipsize(&actual)))
+            }
+            "count" => {
+                if selector.is_empty() {
+                    return Err(anyhow!("selector is required for target {target:?}"));
+                }
+                let expected = expect_expected(&args, target)?;
+                let expected_n: i64 = expected
+                    .parse()
+                    .map_err(|_| anyhow!("expected must be a whole number for target \"count\" (got {expected:?})"))?;
+                let describe = format!("expect {not}count {selector:?} {expected_n}");
+                let actual = expect_actual(&describe, self.browser_count(selector_args).await)?;
+                let actual_n: i64 = actual
+                    .parse()
+                    .map_err(|e| anyhow!("{describe} failed: unexpected count {actual:?}: {e}"))?;
+                (describe, actual_n == expected_n, actual)
+            }
+            "js" => {
+                let expression = args.get("expression").and_then(Value::as_str).unwrap_or("");
+                if expression.is_empty() {
+                    return Err(anyhow!("expression is required for target \"js\""));
+                }
+                let describe = format!("expect {not}js {expression:?}");
+                // Truthiness is decided in the page, not by inspecting the
+                // flattened eval text: string results like "false" and remote
+                // values with no text form (functions, symbols) would misreport
+                // otherwise. Same inline-wrap technique as wait_for_function;
+                // the newline before `)` tolerates a trailing `//` comment, and
+                // a throwing expression fails the assertion via the eval error.
+                let probe = format!(
+                    "(() => {{ const v = (\n{expression}\n); \
+                     let s; try {{ s = String(v); }} catch {{ s = Object.prototype.toString.call(v); }} \
+                     return (v ? 'truthy ' : 'falsy ') + s; }})()"
+                );
+                let mut eval_args = Map::new();
+                eval_args.insert("expression".to_string(), Value::from(probe));
+                let actual = expect_actual(&describe, self.browser_evaluate(eval_args).await)?;
+                let matched = actual.starts_with("truthy ");
+                let value = actual.split_once(' ').map_or(actual.as_str(), |(_, v)| v);
+                (describe, matched, format!("{:?}", ellipsize(value)))
+            }
+            other => return Err(anyhow!("unknown expect target: {other}")),
+        };
+
+        if matched != negate {
+            Ok(text_result(&format!("PASS {describe}")))
+        } else {
+            Err(anyhow!("{describe} failed: actual {actual}"))
+        }
     }
 
     /// Clicks an element (with actionability checks).
@@ -2450,6 +2586,7 @@ fn mcp_tool_to_method(name: &str) -> &str {
         "browser_is_visible" => "browserlane:element.isVisible",
         "browser_is_enabled" => "browserlane:element.isEnabled",
         "browser_is_checked" => "browserlane:element.isChecked",
+        "browser_expect" => "browserlane:expect",
         "browser_count" => "browserlane:page.findAll",
         "browser_evaluate" => "browserlane:page.eval",
         "browser_screenshot" => "browserlane:page.screenshot",
@@ -2508,6 +2645,51 @@ fn mcp_tool_to_method(name: &str) -> &str {
         "page_clock_set_system_time" => "browserlane:clock.setSystemTime",
         "page_clock_set_timezone" => "browserlane:clock.setTimezone",
         _ => name,
+    }
+}
+
+/// Reads `browser_expect`'s `expected` argument as a string, accepting the
+/// string/number/boolean forms the schema allows. Errors when absent, since
+/// every operator-comparing target needs it.
+fn expect_expected(args: &Map<String, Value>, target: &str) -> anyhow::Result<String> {
+    match args.get("expected") {
+        Some(Value::String(s)) => Ok(s.clone()),
+        Some(Value::Number(n)) => Ok(n.to_string()),
+        Some(Value::Bool(b)) => Ok(b.to_string()),
+        _ => Err(anyhow!("expected is required for target {target:?}")),
+    }
+}
+
+/// Unwraps the text of a fetched actual value, prefixing fetch errors with the
+/// assertion description so a failed lookup reads as a failed assertion.
+fn expect_actual(describe: &str, result: anyhow::Result<ToolsCallResult>) -> anyhow::Result<String> {
+    match result {
+        Ok(r) => Ok(r
+            .content
+            .iter()
+            .find(|c| c.content_type == "text")
+            .map(|c| c.text.clone())
+            .unwrap_or_default()),
+        Err(e) => Err(anyhow!("{describe} failed: {e}")),
+    }
+}
+
+/// Applies a `browser_expect` operator (`contains`/`equals`) to actual vs expected.
+fn expect_matches(operator: &str, actual: &str, expected: &str) -> bool {
+    match operator {
+        "equals" => actual == expected,
+        _ => actual.contains(expected),
+    }
+}
+
+/// Caps a string for failure messages (page text can be the whole document).
+fn ellipsize(s: &str) -> String {
+    const MAX: usize = 120;
+    if s.chars().count() <= MAX {
+        s.to_string()
+    } else {
+        let cut: String = s.chars().take(MAX).collect();
+        format!("{cut}…")
     }
 }
 

@@ -1,0 +1,22 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Assert the value of a form element
+
+Usage: bl expect value [OPTIONS] <selector> <operator> <text>
+
+Arguments:
+  <selector>  CSS selector of the form element
+  <operator>  Comparison: contains (substring) or equals (exact match) [possible values: contains, equals]
+  <text>      Expected value or value substring
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl expect value "input[name=email]" equals "a@b.com"
+  # Pass if the input holds exactly that value

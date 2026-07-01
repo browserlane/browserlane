@@ -1,6 +1,6 @@
 ---
 name: browserlane
-description: Browser automation for AI agents. Use when the user needs to navigate websites, read page content, fill forms, click elements, take screenshots, or manage browser pages.
+description: Browser automation for AI agents. Use when the user needs to navigate websites, read page content, fill forms, click elements, take screenshots, assert page state, or manage browser pages.
 ---
 
 # browserlane Browser Automation — CLI Reference
@@ -107,6 +107,19 @@ bl go https://example.com && bl map && bl click @e3 && bl diff map
 - `bl is checked "<selector>"` — check if checkbox/radio is checked (true/false)
 - `bl is actionable "<selector>"` — check if element is actionable (true/false)
 
+### Assertions
+Each `expect` prints `PASS …` and exits 0 when the assertion holds, or prints the actual value and exits 1 — use it to verify a flow reached the expected state.
+- `bl expect url contains|equals "<text>"` — assert the current URL
+- `bl expect title contains|equals "<text>"` — assert the page title
+- `bl expect text contains|equals "<text>"` — assert page text (`--selector` to scope to one element)
+- `bl expect visible "<selector>"` — assert element is visible
+- `bl expect hidden "<selector>"` — assert element is absent or not visible
+- `bl expect enabled "<selector>"` — assert element is enabled
+- `bl expect checked "<selector>"` — assert checkbox/radio is checked (`--not` for unchecked)
+- `bl expect value "<selector>" contains|equals "<text>"` — assert a form element's value
+- `bl expect count "<selector>" <n>` — assert the number of matching elements
+- `bl expect js "<expression>"` — assert a JS expression is truthy
+
 ### Waiting
 - `bl wait "<selector>"` — wait for element (`--state visible|hidden|attached`, `--timeout ms`)
 - `bl wait url "<pattern>"` — wait until URL contains substring (`--timeout ms`)
@@ -204,6 +217,19 @@ bl fill @e2 "secret"
 bl click @e3
 bl wait url "/dashboard"
 bl screenshot -o after-login.png
+```
+
+### Assert a flow passed (exit-code testing)
+```sh
+bl go https://app.example.com/login
+bl fill "input[name=email]" "user@example.com"
+bl fill "input[name=password]" "secret"
+bl click "button[type=submit]"
+bl wait url "/dashboard"
+bl expect url contains "/dashboard"
+bl expect text contains "Welcome" --selector "h1"
+bl expect hidden ".error"
+# each expect exits 0 on pass / 1 on failure, so a && chain (or a CI script) stops at the first failed assertion
 ```
 
 ### Scoped map (large pages)
@@ -352,6 +378,7 @@ Refs (`@e1`, `@e2`) are invalidated when the page changes. Always re-map after:
 - Use `bl a11y-tree` to understand page structure without visual rendering
 - Use `bl text "<selector>"` to read specific sections
 - Use `bl diff map` after interactions to see what changed
+- Use `bl expect` to turn a page check into a pass/fail exit code — `wait` blocks until a state arrives, `expect` verdicts the state now
 - `bl eval` is the escape hatch for complex DOM queries
 - `bl check`/`bl uncheck` are idempotent — safe to call without checking state first
 - Screenshots save to the current directory by default (`-o` to change)

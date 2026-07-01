@@ -1,0 +1,25 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Assert the text content of the page or an element
+
+Usage: bl expect text [OPTIONS] <operator> <text>
+
+Arguments:
+  <operator>  Comparison: contains (substring) or equals (exact match) [possible values: contains, equals]
+  <text>      Expected text or text substring
+
+Options:
+      --selector <selector>  CSS selector to scope the check to one element (defaults to full page text)
+  -v, --verbose              Enable debug logging
+      --headless             Hide browser window (visible by default)
+      --json                 Output as JSON
+  -h, --help                 Print help
+
+Examples:
+  bl expect text contains "Welcome back"
+  # Pass if the page text contains it
+
+  bl expect text equals "Logout" --selector "#nav button"
+  # Pass if the element's text matches exactly
