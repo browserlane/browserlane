@@ -19,12 +19,15 @@ what you found, then re-discover after the page changes.
 1. **Map** — `bl map` lists interactive elements as refs (`@e1`, `@e2`, …).
 2. **Act** — use a ref: `bl click @e1`, `bl fill @e2 "text"`.
 3. **Re-map** — after the page changes, `bl map` again for fresh refs.
+4. **Verify** — when the flow should have reached a state, assert it:
+   `bl expect url contains "/dashboard"` exits `0` on pass, `1` on failure.
 
 ```bash
 bl go https://example.com
 bl map            # → @e1, @e2, ...
 bl click @e1
 bl map            # re-map: the previous refs no longer apply
+bl expect url contains "example"   # close the loop with a pass/fail verdict
 ```
 
 ## Ref hygiene: refs go stale
@@ -108,14 +111,26 @@ bl click @e3
 bl diff map      # see exactly what changed on the page
 ```
 
-Other cheap verifications:
+When the verification is really an **assertion** — the flow should stop (or a
+test should fail) if the state is wrong — use `bl expect`. It prints
+`PASS expect …` and exits `0` when the assertion holds, or reports the actual
+value and exits `1`, so a `&&` chain or CI script stops right there:
 
 ```bash
-bl wait url "/dashboard"   # confirm a navigation actually happened
-bl wait text "Success"     # confirm a confirmation message appeared
-bl is checked "#terms"     # confirm a checkbox is in the expected state
-bl value "input[name=q]"   # read a field back to confirm it filled
+bl expect url contains "/dashboard"          # the navigation landed where it should
+bl expect text contains "Success"            # the confirmation message is on the page
+bl expect checked "#terms"                   # a checkbox is in the expected state (--not to invert)
+bl expect value "input[name=q]" equals "wireless headphones"   # a field holds what you filled
+bl expect hidden ".spinner"                  # loading finished (absent or not visible both pass)
+bl expect js "document.querySelectorAll('.error').length === 0"
 ```
+
+`bl wait` and `bl expect` are complements, not alternatives: `bl wait url
+"/dashboard"` *blocks until* the state arrives (then continues), while
+`bl expect url contains "/dashboard"` *verdicts* the state right now. After an
+action that takes time, wait first, then assert. To merely read state back
+without a verdict, the read commands still apply (`bl value`, `bl is checked`,
+`bl diff map`).
 
 ## `bl eval` is the escape hatch
 
@@ -170,6 +185,7 @@ bl click @e1
 bl wait load
 bl diff map                     # confirm we landed on a product page
 bl text "h1"                    # read the product title
+bl expect text contains "headphones" --selector "h1"   # assert it's the right product
 ```
 
 ## Related

@@ -41,8 +41,14 @@ A common pattern — click, then wait for the resulting navigation, then verify:
 ```bash
 bl click "button[type=submit]"
 bl wait url "/dashboard"
+bl expect text contains "Welcome"   # assert the landing state — exit 0/1
 bl screenshot -o after-login.png
 ```
+
+`bl wait` and [`bl expect`](/cli-reference/inspect-page/expect) are complements:
+`wait` **blocks until** a state arrives (then continues), `expect` **verdicts**
+the state right now with a pass/fail exit code. After an action that takes time,
+wait first, then assert.
 
 ## `bl sleep` is the last resort
 

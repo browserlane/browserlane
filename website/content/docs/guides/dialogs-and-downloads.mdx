@@ -31,7 +31,8 @@ For example, a "Delete" button that pops a confirm:
 bl map
 bl click @e3              # this raises a confirm dialog
 bl dialog accept          # confirm the deletion
-bl diff map               # verify the row is gone
+bl diff map               # see what changed
+bl expect hidden "#row-3" # assert the deleted row is gone (absent or invisible both pass)
 ```
 
 <Callout title="Confirm vs prompt vs alert">
