@@ -1,0 +1,21 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Assert the current page title
+
+Usage: bl expect title [OPTIONS] <operator> <text>
+
+Arguments:
+  <operator>  Comparison: contains (substring) or equals (exact match) [possible values: contains, equals]
+  <text>      Expected title or title substring
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl expect title contains "Dashboard"
+  # Pass if the title contains Dashboard

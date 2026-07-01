@@ -126,6 +126,7 @@ cat > "$FIX" <<'HTML'
 <input type=file id=file>
 <img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="logo">
 <div data-testid=tid role=note title="tt">tagged</div>
+<div id=hid style="display:none">ghost</div>
 <iframe srcdoc="<p id=inner>inside</p>" name=f1></iframe>
 <div style="height:3000px">tall</div>
 HTML
@@ -209,6 +210,21 @@ check AUTO map "" -- bl map --selector body
 check AUTO pages "" -- bl pages
 check AUTO frames "" -- bl frames
 check AUTO frame "" -- bl frame f1
+# expect — assertion primitives; every subcommand passes against the fixture,
+# then one deliberately failing assertion must exit 1 through the error path.
+check AUTO "expect url"     "PASS" -- bl expect url contains "bl-fixture"
+check AUTO "expect title"   "PASS" -- bl expect title equals "BL Fixture"
+check AUTO "expect text"    "PASS" -- bl expect text contains "Fixture" --selector "#h"
+check AUTO "expect visible" "PASS" -- bl expect visible "#h"
+check AUTO "expect hidden"  "PASS" -- bl expect hidden "#hid"
+check AUTO "expect enabled" "PASS" -- bl expect enabled "#btn"
+check AUTO "expect checked" "PASS" -- bl expect checked "#cb" --not
+check AUTO "expect value"   "PASS" -- bl expect value "#sel" equals "one"
+check AUTO "expect count"   "PASS" -- bl expect count "input" 4
+check AUTO "expect js"      "PASS" -- bl expect js "document.title === 'BL Fixture'"
+efout="$(bl expect title equals "WRONG TITLE" 2>&1)"; erc=$?
+if [ "$erc" -eq 1 ] && grep -qF 'failed' <<<"$efout"; then ok AUTO "expect (fail → exit 1)"
+else no AUTO "expect (fail → exit 1)" "want exit 1 + 'failed', got exit $erc: $(printf '%s' "$efout" | head -1 | cut -c1-60)"; fi
 
 # ===========================================================================
 phase "4 · wait"

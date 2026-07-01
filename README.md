@@ -88,6 +88,7 @@ bl screenshot -o page.png               # capture
 bl find role button                     # locate "Submit" buttons by ARIA role
 bl click "button[type=submit]"          # interact
 bl eval "document.title"                # run JS
+bl expect title contains "Example"      # assert page state (exit 0/1)
 bl --help                               # all commands
 ```
 

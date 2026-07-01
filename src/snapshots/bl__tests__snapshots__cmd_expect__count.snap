@@ -1,0 +1,21 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Assert the number of elements matching a selector
+
+Usage: bl expect count [OPTIONS] <selector> <number>
+
+Arguments:
+  <selector>  CSS selector to count matches for
+  <number>    Expected number of matches
+
+Options:
+      --headless  Hide browser window (visible by default)
+  -v, --verbose   Enable debug logging
+      --json      Output as JSON
+  -h, --help      Print help
+
+Examples:
+  bl expect count "li.item" 3
+  # Pass if exactly 3 items match

@@ -28,7 +28,7 @@ BL_VISIBLE=1 bash scripts/cli-smoke.sh   # watch it drive a real window
 
 One section navigates to `example.com` (cookies/storage need an http origin), so
 a network connection is required. The harness is bash-3.2 compatible (macOS
-system bash). Current status: **112 auto checks green · 9 manual · 110/110 live
+system bash). Current status: **123 auto checks green · 9 manual · 117/117 live
 command paths tracked**.
 
 ---
@@ -121,6 +121,10 @@ order matters). Args/flag variants exercised are noted.
 | `find role` (+`--name`) / `text` / `label` / `placeholder` / `alt` / `title` / `testid` / `xpath` | AUTO | exit 0 each |
 | `is visible` / `enabled` / `checked` | AUTO | `true` / `true` / `false` |
 | `is actionable` | AUTO | needs `[url] [selector]`; `actionab…` |
+| `expect url contains` / `title equals` / `text contains --selector` | AUTO | `PASS expect …`, exit 0 |
+| `expect visible` / `hidden` / `enabled` / `checked --not` | AUTO | `PASS expect …` (`hidden` uses the fixture's `display:none` div) |
+| `expect value equals` / `count` / `js` | AUTO | `PASS expect …` |
+| *(error)* failing `expect` | AUTO | `… failed: actual …`, exit 1 via the error path |
 | `a11y-tree` (+`--everything`) | AUTO | exit 0 |
 | `map` (+`--selector`) | AUTO | exit 0 |
 | `pages` / `frames` / `frame` | AUTO | exit 0 |

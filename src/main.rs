@@ -170,6 +170,7 @@ fn build_cli() -> Command {
         .subcommand(cmd::find_command())
         .subcommand(cmd::count_command())
         .subcommand(cmd::is_command())
+        .subcommand(cmd::expect_command())
         .subcommand(cmd::mouse_command())
         .subcommand(cmd::storage_command())
         .subcommand(cmd::pdf_command())
@@ -520,6 +521,7 @@ async fn main() {
             cmd::run_count(selector, headless, json_output).await;
         }
         Some(("is", is_matches)) => cmd::run_is(is_matches, headless, json_output).await,
+        Some(("expect", expect_matches)) => cmd::run_expect(expect_matches, headless, json_output).await,
         Some(("mouse", mouse_matches)) => cmd::run_mouse(mouse_matches, headless, json_output).await,
         Some(("pdf", sub)) => {
             let url = sub.get_one::<String>("url").cloned();

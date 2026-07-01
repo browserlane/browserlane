@@ -1416,6 +1416,44 @@ pub fn get_tool_schemas() -> Vec<Tool> {
                 "additionalProperties": false
             }),
         },
+        Tool {
+            name: "browser_expect".to_string(),
+            description: "Assert a condition about the current page (URL, title, text, element state, count, or a JS expression). Returns a PASS message when the assertion holds; fails with the actual value otherwise. Use this to verify a browser flow reached the expected state.".to_string(),
+            input_schema: json!({
+                "type": "object",
+                "properties": {
+                    "expected": {
+                        "type": ["string", "number", "boolean"],
+                        "description": "Expected value: the string/substring for url, title, text, and value targets, or the element count for the count target"
+                    },
+                    "expression": {
+                        "type": "string",
+                        "description": "JavaScript expression for the \"js\" target; the assertion passes when it evaluates to a truthy value (false, null, empty string, 0, and errors fail)"
+                    },
+                    "negate": {
+                        "type": "boolean",
+                        "description": "Invert the assertion (e.g. target \"checked\" with negate asserts the box is unchecked). Default: false",
+                        "default": false
+                    },
+                    "operator": {
+                        "type": "string",
+                        "description": "How to compare the actual value with \"expected\" for the url, title, text, and value targets (default: \"contains\")",
+                        "enum": ["contains", "equals"]
+                    },
+                    "selector": {
+                        "type": "string",
+                        "description": "CSS selector or @ref: required for visible, hidden, enabled, checked, value, and count targets; optional for text (defaults to full page text)"
+                    },
+                    "target": {
+                        "type": "string",
+                        "description": "What to assert on: \"url\", \"title\", \"text\" (page or element text), \"visible\", \"hidden\" (absent or not visible), \"enabled\", \"checked\" (element state), \"value\" (form element value), \"count\" (matching-element count), or \"js\" (expression truthiness)",
+                        "enum": ["url", "title", "text", "visible", "hidden", "enabled", "checked", "value", "count", "js"]
+                    }
+                },
+                "required": ["target"],
+                "additionalProperties": false
+            }),
+        },
     ];
     // ext-seam (browserlane extension hook)
     crate::ext::register_mcp_tools(&mut tools);
