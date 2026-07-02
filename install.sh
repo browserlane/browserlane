@@ -43,9 +43,15 @@ main() {
   binpath="$(find "$tmp" -type f -name "$BIN" | head -n1)"
   [ -n "$binpath" ] || err "could not find ${BIN} inside the archive"
 
+  # Install via stage-then-rename, never an in-place overwrite: the target
+  # path always gets a FRESH file. On macOS an overwritten binary can inherit a
+  # stale Gatekeeper verdict and get SIGKILLed on first run; a new inode gets a
+  # clean assessment. The rename is atomic within the same directory.
   mkdir -p "$INSTALL_DIR"
-  cp "$binpath" "${INSTALL_DIR}/${BIN}"
-  chmod 0755 "${INSTALL_DIR}/${BIN}"
+  staged="${INSTALL_DIR}/.${BIN}.new.$$"
+  cp "$binpath" "$staged"
+  chmod 0755 "$staged"
+  mv -f "$staged" "${INSTALL_DIR}/${BIN}"
   say "installed ${BIN} ${version} -> ${INSTALL_DIR}/${BIN}"
 
   ensure_path

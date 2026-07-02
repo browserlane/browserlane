@@ -13,6 +13,8 @@ use crate::agent::{Tool, ToolsCallResult};
 pub mod cli;
 pub mod mcp;
 mod add_mcp;
+mod uninstall;
+mod update;
 
 /// ext-seam: extend the CLI command tree with browserlane-specific subcommands.
 pub fn register_cli(cli: Command) -> Command {

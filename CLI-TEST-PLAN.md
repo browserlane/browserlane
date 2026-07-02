@@ -28,7 +28,7 @@ BL_VISIBLE=1 bash scripts/cli-smoke.sh   # watch it drive a real window
 
 One section navigates to `example.com` (cookies/storage need an http origin), so
 a network connection is required. The harness is bash-3.2 compatible (macOS
-system bash). Current status: **123 auto checks green · 9 manual · 117/117 live
+system bash). Current status: **123 auto checks green · 11 manual · 119/119 live
 command paths tracked**.
 
 ---
@@ -96,6 +96,8 @@ order matters). Args/flag variants exercised are noted.
 | `add-skill` (`--stdout`) | AUTO | non-empty skill text |
 | `add-mcp` (`--list`) *(ext)* | AUTO | lists MCP clients (`claude`) |
 | `install` | MANUAL | run once; verified via `is-installed` |
+| `update` *(ext)* | MANUAL | hits GitHub, replaces the running binary via atomic rename |
+| `uninstall` *(ext)* | MANUAL | removes the install dir + PATH entry (`--purge` also clears cache/screenshots) |
 | *(error)* `bl clik` | AUTO | `Did you mean … click` (cobra-exact) |
 | *(error)* `bl zzzznope` | AUTO | `unknown command`, exit 1 |
 
@@ -203,7 +205,7 @@ order matters). Args/flag variants exercised are noted.
 
 ### MANUAL (registered, not auto-executed) — see checklist below
 `launch-test`, `bidi-test`, `ws-test`, `drag`, `dialog accept`, `dialog dismiss`,
-`pipe`, `serve`, `install`.
+`pipe`, `serve`, `install`, `update`, `uninstall`.
 
 ---
 
@@ -228,11 +230,14 @@ Windows** for the per-OS items. Tick during a release pass.
 - [ ] `bl launch-test` / `bl bidi-test` — print a `ws://` URL / `session.status`.
 - [ ] `bl ws-test <url>` — interactive echo; type a line, see it echoed.
 - [ ] `bl serve -p 9515` — a client can connect on 127.0.0.1 (loopback-only by default; `--host 0.0.0.0` opts into LAN exposure with a warning); Ctrl-C stops it.
+- [ ] `bl update --check` reports up-to-date on the latest tag; `bl update` on an older build downloads + swaps the binary (new inode) and it still runs.
+- [ ] `bl uninstall` removes `~/.browserlane` and the PATH line from the shell rc, keeps the Chrome cache; `--purge` also clears cache + `~/Pictures/browserlane`.
 
 **Windows-only** (distinct code paths — a macOS run cannot cover these):
 - [ ] `bl daemon status --json` shows the named pipe `\\.\pipe\browserlane`.
 - [ ] `bl pipe` exits 1 with `pipe mode is not supported on Windows`.
 - [ ] `bl install` fetched `chrome.exe` into the `bl paths` cache dir.
+- [ ] `bl update` swaps `bl.exe` while not running (old renamed to `bl.exe.old`, swept next run); `bl uninstall` strips the user PATH entry.
 
 ---
 

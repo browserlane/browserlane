@@ -84,6 +84,8 @@ Agent & MCP:
 
 Setup & diagnostics:
   install       Download Chrome for Testing and chromedriver
+  update        Update bl to the latest release
+  uninstall     Remove bl, its install directory, and the PATH entry
   is-installed  Check if Chrome and chromedriver are installed (exit 0 = yes, exit 1 = no)
   paths         Print browser and cache paths
   version       Print the version number

@@ -1,0 +1,20 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Update bl to the latest release
+
+Usage: bl update [OPTIONS]
+
+Options:
+      --check    Only check whether a newer release exists (exit 1 if so)
+  -v, --verbose  Enable debug logging
+      --force    Reinstall the latest release even if already current
+  -h, --help     Print help
+
+Examples:
+  bl update
+  # Update to the latest release
+
+  bl update --check
+  # Report whether an update is available
