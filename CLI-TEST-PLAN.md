@@ -227,7 +227,7 @@ Windows** for the per-OS items. Tick during a release pass.
 - [ ] `bl drag <src> <dst>` — on a real drag-and-drop page.
 - [ ] `bl launch-test` / `bl bidi-test` — print a `ws://` URL / `session.status`.
 - [ ] `bl ws-test <url>` — interactive echo; type a line, see it echoed.
-- [ ] `bl serve -p 9515` — a client can connect; Ctrl-C stops it.
+- [ ] `bl serve -p 9515` — a client can connect on 127.0.0.1 (loopback-only by default; `--host 0.0.0.0` opts into LAN exposure with a warning); Ctrl-C stops it.
 
 **Windows-only** (distinct code paths — a macOS run cannot cover these):
 - [ ] `bl daemon status --json` shows the named pipe `\\.\pipe\browserlane`.
