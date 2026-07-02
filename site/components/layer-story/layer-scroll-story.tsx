@@ -66,16 +66,16 @@ export function LayerScrollStory() {
                   <BrowserStackVisual layer={layer.id} />
                 </div>
 
-                <p className="font-mono text-xs uppercase tracking-[0.22em] text-cloud">
-                  <span className="text-clay">{layer.index}</span> · {layer.name}
+                <p className="font-mono text-xs uppercase tracking-[0.22em] text-dim">
+                  <span className="text-accent">{layer.index}</span> · {layer.name}
                 </p>
-                <h3 className="mt-3 text-2xl font-semibold tracking-tight text-ivory-light md:text-3xl">
+                <h3 className="mt-3 text-2xl font-semibold tracking-tight text-fg md:text-3xl">
                   {layer.title}
                 </h3>
-                <p className="mt-3 max-w-md text-[15px] leading-relaxed text-cloud-light">
+                <p className="mt-3 max-w-md text-[15px] leading-relaxed text-muted">
                   {layer.body}
                 </p>
-                <div className="mt-5 max-w-md overflow-x-auto rounded-lg border border-edge bg-slate/50 p-4 font-mono text-xs leading-7 md:text-[13px]">
+                <div className="mt-5 max-w-md overflow-x-auto rounded-lg border border-edge bg-ink p-4 font-mono text-xs leading-7 md:text-[13px]">
                   {layer.commands.map((cmd) => (
                     <div key={cmd} className="whitespace-pre text-ivory">
                       <span className="select-none text-clay">$ </span>
@@ -90,10 +90,10 @@ export function LayerScrollStory() {
           {/* pinned visual column (desktop only) */}
           <div className="hidden lg:block">
             <div className="sticky top-0 flex h-screen flex-col justify-center py-10">
-              <div className="mb-5 flex items-center justify-between font-mono text-xs text-cloud">
+              <div className="mb-5 flex items-center justify-between font-mono text-xs text-dim">
                 <span aria-live="polite">
-                  <span className="text-clay">{LAYERS[active].index}</span>
-                  <span className="text-cloud-dark"> / 08</span> —{' '}
+                  <span className="text-accent">{LAYERS[active].index}</span>
+                  <span className="text-faint"> / 08</span> —{' '}
                   {LAYERS[active].name.toLowerCase()}
                 </span>
                 <span className="flex gap-1.5">
@@ -110,7 +110,7 @@ export function LayerScrollStory() {
                       className={`h-1.5 rounded-full transition-all duration-300 ${
                         active === i
                           ? 'w-6 bg-clay'
-                          : 'w-1.5 bg-edge hover:bg-cloud-dark'
+                          : 'w-1.5 bg-line hover:bg-faint'
                       }`}
                     />
                   ))}

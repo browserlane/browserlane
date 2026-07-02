@@ -8,7 +8,7 @@ function ArtifactCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-edge bg-slate/40 p-5">
+    <div className="rounded-xl border border-edge bg-slate p-5">
       <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-cloud">
         {label}
       </p>

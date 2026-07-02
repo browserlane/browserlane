@@ -6,8 +6,11 @@ import { TwoSurfaces } from '@/components/two-surfaces';
 import { Observability } from '@/components/observability';
 import { Quickstart } from '@/components/quickstart';
 import { SiteFooter } from '@/components/site-footer';
+import { getGitHubStars } from '@/lib/github';
 
-export default function Home() {
+export default async function Home() {
+  const stars = await getGitHubStars();
+
   return (
     <>
       <a
@@ -16,7 +19,7 @@ export default function Home() {
       >
         Skip to content
       </a>
-      <SiteNav />
+      <SiteNav stars={stars} />
       <main id="main">
         <Hero />
         <TrustStrip />
@@ -25,7 +28,7 @@ export default function Home() {
         <Observability />
         <Quickstart />
       </main>
-      <SiteFooter />
+      <SiteFooter stars={stars} />
     </>
   );
 }

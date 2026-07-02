@@ -21,15 +21,15 @@ export function TrustStrip() {
   return (
     <section
       aria-label="Why browserlane"
-      className="mt-24 border-y border-edge/60 md:mt-32"
+      className="mt-24 border-y border-line md:mt-32"
     >
-      <div className="mx-auto grid max-w-6xl grid-cols-1 divide-y divide-edge/60 sm:grid-cols-2 sm:divide-x lg:grid-cols-4 lg:divide-y-0">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 divide-y divide-line sm:grid-cols-2 sm:divide-x lg:grid-cols-4 lg:divide-y-0">
         {ITEMS.map((item) => (
           <div key={item.title} className="px-6 py-7">
-            <h2 className="font-mono text-[13px] font-medium text-ivory-light">
+            <h2 className="font-mono text-[13px] font-medium text-fg">
               {item.title}
             </h2>
-            <p className="mt-2 text-sm leading-relaxed text-cloud">
+            <p className="mt-2 text-sm leading-relaxed text-dim">
               {item.body}
             </p>
           </div>

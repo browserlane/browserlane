@@ -1,13 +1,21 @@
 @import 'tailwindcss';
 
+/* Class-based dark mode: `.dark` on <html> (set pre-paint by the inline
+   script in layout.tsx; 'system' follows prefers-color-scheme). */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /*
- * browserlane brand tokens — the Anthropic palette.
+ * browserlane brand — the Anthropic palette.
  * Slate (dark surfaces) · Cloud (grays) · Ivory (light) · Book Cloth accent.
+ *
+ * These raw tokens are theme-INDEPENDENT. They style the product visuals
+ * (browser frame, terminals, code panels), which stay dark in both modes —
+ * like code blocks in docs. Page chrome uses the semantic tokens below.
  */
 @theme {
-  --color-ink: #191919; /* Slate Dark — page background */
-  --color-slate: #262625; /* Slate Medium — raised surfaces */
-  --color-edge: #40403e; /* Slate Light — borders */
+  --color-ink: #191919; /* Slate Dark */
+  --color-slate: #262625; /* Slate Medium */
+  --color-edge: #40403e; /* Slate Light */
   --color-cloud-dark: #666663;
   --color-cloud: #91918d;
   --color-cloud-light: #bfbfba;
@@ -28,9 +36,60 @@
     monospace;
 }
 
+/*
+ * Semantic tokens — flip with the theme. Page chrome only:
+ *   canvas  page background          fg     headings / primary text
+ *   card    raised page surfaces     muted  body copy
+ *   line    borders / dividers       dim    secondary / labels
+ *                                    faint  decorative / footnotes
+ */
+@theme inline {
+  --color-canvas: var(--bl-canvas);
+  --color-card: var(--bl-card);
+  --color-line: var(--bl-line);
+  --color-fg: var(--bl-fg);
+  --color-muted: var(--bl-muted);
+  --color-dim: var(--bl-dim);
+  --color-faint: var(--bl-faint);
+  --color-accent: var(--bl-accent);
+  --color-accent-hover: var(--bl-accent-hover);
+  --color-ring: var(--bl-ring);
+}
+
+:root {
+  color-scheme: light;
+  --bl-canvas: #fafaf7; /* Ivory Light */
+  --bl-card: #f0f0eb; /* Ivory Medium */
+  --bl-line: #e5e4df; /* Ivory Dark */
+  --bl-fg: #191919; /* Slate Dark */
+  --bl-muted: #40403e; /* Slate Light */
+  --bl-dim: #666663; /* Cloud Dark */
+  --bl-faint: #91918d; /* Cloud Medium */
+  /* Book Cloth reads 3.1:1 on ivory — too low for small text, so accent
+     TEXT darkens in light mode (5.4:1); bg-clay surfaces stay raw clay. */
+  --bl-accent: #9d5238;
+  --bl-accent-hover: #7d4227;
+  --bl-ring: #2c74b3; /* Focus blue darkened for 3:1+ on ivory */
+  --bl-dot: rgba(25, 25, 25, 0.14); /* hero dot grid */
+}
+
+.dark {
+  color-scheme: dark;
+  --bl-canvas: #191919; /* Slate Dark */
+  --bl-card: #262625; /* Slate Medium */
+  --bl-line: #40403e; /* Slate Light */
+  --bl-fg: #fafaf7; /* Ivory Light */
+  --bl-muted: #bfbfba; /* Cloud Light */
+  --bl-dim: #91918d; /* Cloud Medium */
+  --bl-faint: #666663; /* Cloud Dark */
+  --bl-accent: #cc785c; /* Book Cloth */
+  --bl-accent-hover: #d4a27f; /* Kraft */
+  --bl-ring: #61aaf2;
+  --bl-dot: rgba(191, 191, 186, 0.13);
+}
+
 @layer base {
   html {
-    color-scheme: dark;
     scroll-behavior: smooth;
     scroll-padding-top: 5rem; /* keep anchors clear of the fixed nav */
   }
@@ -42,7 +101,7 @@
   }
 
   body {
-    @apply bg-ink text-ivory-light antialiased;
+    @apply bg-canvas text-fg antialiased;
     text-rendering: optimizeLegibility;
   }
 
@@ -52,7 +111,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-focus);
+    outline: 2px solid var(--bl-ring);
     outline-offset: 2px;
   }
 }
