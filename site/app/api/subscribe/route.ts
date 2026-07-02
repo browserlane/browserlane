@@ -35,10 +35,14 @@ function confirmEmailHtml(confirmUrl: string): string {
 <html>
   <body style="margin:0;padding:32px 16px;background:#fafaf7;font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#191919;">
     <div style="max-width:480px;margin:0 auto;">
-      <div style="font-weight:600;font-size:18px;letter-spacing:-0.01em;">
-        <span style="display:inline-block;width:22px;height:22px;border-radius:5px;background:#cc785c;color:#ffffff;text-align:center;line-height:22px;font-size:12px;font-weight:700;vertical-align:-4px;">bl</span>
-        browserlane
-      </div>
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td style="width:22px;height:22px;border-radius:5px;background:#cc785c;text-align:center;vertical-align:middle;">
+            <span style="color:#ffffff;font-size:12px;font-weight:700;line-height:1;">bl</span>
+          </td>
+          <td style="padding-left:9px;font-weight:600;font-size:18px;letter-spacing:-0.01em;vertical-align:middle;color:#191919;">browserlane</td>
+        </tr>
+      </table>
       <p style="margin:20px 0 8px;font-size:15px;line-height:1.6;">
         Confirm your subscription to browserlane release updates — new
         commands, MCP tools, and release notes. No noise.
