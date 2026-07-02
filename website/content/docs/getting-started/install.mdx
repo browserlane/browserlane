@@ -91,6 +91,20 @@ The binary lands at `./target/release/bl`.
   </Step>
 </Steps>
 
+## Updating & uninstalling
+
+```bash
+bl update           # install the latest release
+bl update --check   # report whether a newer release exists (no changes)
+bl uninstall        # remove bl and the PATH entry it added
+bl uninstall --purge  # also remove the Chrome cache and screenshots
+```
+
+`bl update` swaps in the new binary as a fresh file rather than overwriting the
+old one in place. That side-steps a macOS Gatekeeper quirk where a binary
+overwritten on top of an existing one can be killed on launch. Re-running the
+install script has the same effect.
+
 ## Next steps
 
 - [Your first automation (CLI)](/getting-started/first-automation-cli)

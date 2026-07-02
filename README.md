@@ -51,7 +51,18 @@ irm https://browserlane.com/install.ps1 | iex
 ```
 
 The installer detects your platform, verifies the download's checksum, installs
-`bl`, and puts it on your `PATH`. **Re-run any time to update.**
+`bl`, and puts it on your `PATH`.
+
+### Update & uninstall
+
+```bash
+bl update          # fetch and install the latest release (bl update --check to just look)
+bl uninstall       # remove bl + its PATH entry (bl uninstall --purge also clears the Chrome cache)
+```
+
+`bl update` replaces the binary in place with a fresh file (never an in-place
+overwrite), which avoids a macOS Gatekeeper quirk that can kill a binary
+overwritten on top of an old one. Re-running the install script updates too.
 
 ### Manual download
 

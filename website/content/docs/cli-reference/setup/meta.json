@@ -5,6 +5,8 @@
     "paths",
     "is-installed",
     "install",
-    "completion"
+    "completion",
+    "update",
+    "uninstall"
   ]
 }
