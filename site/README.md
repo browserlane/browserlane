@@ -38,6 +38,18 @@ but script-driven signup abuse should be handled at the platform layer —
 add a Vercel WAF rate-limit rule for `POST /api/subscribe`, and enable
 double opt-in on the Resend audience so bombed addresses never get added.
 
+**Install one-liners keep working after the domain cutover.** The repo-root
+`install.sh`/`install.ps1` (canonical copies, also served by GitHub Pages
+today) are synced into `public/` by `scripts/sync-install-scripts.mjs` on
+every dev/build, so this deployment serves
+`browserlane.com/install.sh` and `/install.ps1` itself. This requires the
+Vercel project setting "Include source files outside of the Root Directory
+in the Build Step" to stay ON (the default) — the sync script fails the
+build loudly if it can't find the sources. The installers and `bl update`
+download binaries from GitHub Releases, so nothing else depends on the old
+GitHub Pages site; once the Vercel domain is live, the repo-root
+`index.html` + `CNAME` (GitHub Pages) can be retired.
+
 ## Stack
 
 - Next.js (App Router) + TypeScript

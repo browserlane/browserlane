@@ -4,7 +4,9 @@
   "private": true,
   "description": "Marketing landing page for browserlane.com — agentic browser testing and debugging for real web apps.",
   "scripts": {
+    "predev": "node scripts/sync-install-scripts.mjs",
     "dev": "next dev --port 3100",
+    "prebuild": "node scripts/sync-install-scripts.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
