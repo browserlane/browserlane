@@ -11,7 +11,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-0"
         style={{
           backgroundImage:
-            'radial-gradient(circle, rgba(191,191,186,0.13) 1px, transparent 1px)',
+            'radial-gradient(circle, var(--bl-dot) 1px, transparent 1px)',
           backgroundSize: '28px 28px',
           maskImage:
             'linear-gradient(to bottom, black 0%, black 40%, transparent 75%)',
@@ -21,16 +21,16 @@ export function Hero() {
       />
 
       <div className="relative mx-auto max-w-6xl px-6 text-center">
-        <p className="inline-flex items-center gap-2 rounded-full border border-edge bg-slate/60 px-3.5 py-1.5 font-mono text-[11px] text-cloud-light">
-          <span className="size-1.5 rounded-full bg-clay" />
-          v0.1.3 · one static binary · Apache-2.0
+        {/* the slogan */}
+        <p className="mx-auto max-w-3xl text-balance font-mono text-xs uppercase tracking-[0.22em] text-accent">
+          Agentic browser testing and debugging for real web apps
         </p>
 
-        <h1 className="mx-auto mt-7 max-w-4xl text-balance text-4xl font-semibold leading-[1.05] tracking-tight text-ivory-light sm:text-5xl md:text-[4.25rem]">
+        <h1 className="mx-auto mt-6 max-w-4xl text-balance text-4xl font-semibold leading-[1.05] tracking-tight text-fg sm:text-5xl md:text-[4.25rem]">
           A real browser, made legible for agents.
         </h1>
 
-        <p className="mx-auto mt-6 max-w-2xl text-balance text-base leading-relaxed text-cloud-light md:text-lg">
+        <p className="mx-auto mt-6 max-w-2xl text-balance text-base leading-relaxed text-muted md:text-lg">
           browserlane gives AI agents and developers a single binary for
           driving Chrome, inspecting web apps, debugging failures, and
           capturing evidence across every run.
@@ -42,8 +42,9 @@ export function Hero() {
             View docs
           </CTAButton>
         </div>
-        <p className="mt-4 font-mono text-xs text-cloud">
-          agentic browser testing &amp; debugging for real web apps
+        <p className="mt-5 inline-flex items-center gap-2 font-mono text-xs text-dim">
+          <span className="size-1.5 rounded-full bg-clay" />
+          v0.1.3 · one static binary · macOS / Linux / Windows · Apache-2.0
         </p>
       </div>
 

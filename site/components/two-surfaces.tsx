@@ -16,14 +16,14 @@ export function TwoSurfaces() {
 
       <div className="mt-12 grid grid-cols-1 gap-5 lg:grid-cols-2">
         {/* CLI */}
-        <div className="flex flex-col rounded-2xl border border-edge bg-slate/40 p-6 md:p-7">
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-clay">
+        <div className="flex flex-col rounded-2xl border border-line bg-card/60 p-6 md:p-7">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent">
             CLI · for humans &amp; scripts
           </p>
-          <h3 className="mt-3 text-xl font-semibold tracking-tight text-ivory-light">
+          <h3 className="mt-3 text-xl font-semibold tracking-tight text-fg">
             Drive the browser from your shell.
           </h3>
-          <p className="mt-2 text-sm leading-relaxed text-cloud-light">
+          <p className="mt-2 text-sm leading-relaxed text-muted">
             66 commands with composable output and real exit codes — pipe them,
             script them, put them in CI.
           </p>
@@ -43,21 +43,21 @@ export function TwoSurfaces() {
           />
           <a
             href="https://docs.browserlane.com/cli-reference"
-            className="mt-5 inline-block font-mono text-[13px] text-clay transition-colors hover:text-kraft"
+            className="mt-5 inline-block font-mono text-[13px] text-accent transition-colors hover:text-accent-hover"
           >
             CLI reference →
           </a>
         </div>
 
         {/* MCP */}
-        <div className="flex flex-col rounded-2xl border border-edge bg-slate/40 p-6 md:p-7">
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-clay">
+        <div className="flex flex-col rounded-2xl border border-line bg-card/60 p-6 md:p-7">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent">
             MCP · for AI agents
           </p>
-          <h3 className="mt-3 text-xl font-semibold tracking-tight text-ivory-light">
+          <h3 className="mt-3 text-xl font-semibold tracking-tight text-fg">
             Give your agent structured hands.
           </h3>
-          <p className="mt-2 text-sm leading-relaxed text-cloud-light">
+          <p className="mt-2 text-sm leading-relaxed text-muted">
             86 tools over stdio JSON-RPC. One command registers the server with
             Claude Code, Claude Desktop, Cursor, VS Code, or Codex.
           </p>
@@ -80,7 +80,7 @@ export function TwoSurfaces() {
             </code>
             <a
               href="https://docs.browserlane.com/mcp-reference"
-              className="font-mono text-[13px] text-clay transition-colors hover:text-kraft"
+              className="font-mono text-[13px] text-accent transition-colors hover:text-accent-hover"
             >
               MCP reference →
             </a>
@@ -88,7 +88,7 @@ export function TwoSurfaces() {
         </div>
       </div>
 
-      <p className="mt-6 text-sm text-cloud">
+      <p className="mt-6 text-sm text-dim">
         There’s a third, token-light surface too: a Claude Code skill that
         teaches agents the CLI directly —{' '}
         <code className="rounded bg-slate px-1.5 py-0.5 font-mono text-[13px] text-cloud-light">
@@ -97,7 +97,7 @@ export function TwoSurfaces() {
         .{' '}
         <a
           href="https://docs.browserlane.com/skill-reference"
-          className="text-clay hover:text-kraft"
+          className="text-accent hover:text-accent-hover"
         >
           Skill reference →
         </a>

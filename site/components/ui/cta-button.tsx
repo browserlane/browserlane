@@ -5,8 +5,7 @@ type Variant = 'primary' | 'ghost';
 const styles: Record<Variant, string> = {
   primary:
     'bg-clay text-ink hover:bg-kraft border border-clay hover:border-kraft',
-  ghost:
-    'border border-edge text-ivory-light hover:border-cloud hover:text-white',
+  ghost: 'border border-line text-fg hover:border-faint',
 };
 
 export function CTAButton({

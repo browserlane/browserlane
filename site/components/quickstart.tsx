@@ -24,7 +24,7 @@ export function Quickstart() {
       aria-label="Install browserlane"
       className="mx-auto max-w-6xl scroll-mt-24 px-6 pt-24 md:pt-32"
     >
-      <div className="rounded-2xl border border-edge bg-slate/40 p-6 md:p-12">
+      <div className="rounded-2xl border border-line bg-card/60 p-6 md:p-12">
         <SectionHeading
           eyebrow="Quickstart"
           title="Running in under a minute."
@@ -34,19 +34,19 @@ export function Quickstart() {
         <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-2">
           <div className="space-y-6">
             <div>
-              <p className="mb-2.5 font-mono text-xs uppercase tracking-[0.18em] text-cloud">
+              <p className="mb-2.5 font-mono text-xs uppercase tracking-[0.18em] text-dim">
                 1 · Install — macOS / Linux
               </p>
               <CommandRow command="curl -fsSL https://browserlane.com/install.sh | sh" />
             </div>
             <div>
-              <p className="mb-2.5 font-mono text-xs uppercase tracking-[0.18em] text-cloud">
+              <p className="mb-2.5 font-mono text-xs uppercase tracking-[0.18em] text-dim">
                 Windows (PowerShell)
               </p>
               <CommandRow command="irm https://browserlane.com/install.ps1 | iex" />
             </div>
             <div>
-              <p className="mb-2.5 font-mono text-xs uppercase tracking-[0.18em] text-cloud">
+              <p className="mb-2.5 font-mono text-xs uppercase tracking-[0.18em] text-dim">
                 2 · Fetch Chrome for Testing
               </p>
               <CommandRow command="bl install" />
@@ -55,7 +55,7 @@ export function Quickstart() {
 
           <div className="space-y-6">
             <div>
-              <p className="mb-2.5 font-mono text-xs uppercase tracking-[0.18em] text-cloud">
+              <p className="mb-2.5 font-mono text-xs uppercase tracking-[0.18em] text-dim">
                 3 · First commands
               </p>
               <div className="space-y-2.5">
@@ -64,7 +64,7 @@ export function Quickstart() {
               </div>
             </div>
             <div>
-              <p className="mb-2.5 font-mono text-xs uppercase tracking-[0.18em] text-cloud">
+              <p className="mb-2.5 font-mono text-xs uppercase tracking-[0.18em] text-dim">
                 For agents · register the MCP server
               </p>
               <CommandRow
@@ -85,7 +85,7 @@ export function Quickstart() {
           >
             Star on GitHub
           </CTAButton>
-          <p className="font-mono text-xs text-cloud">
+          <p className="font-mono text-xs text-dim">
             checksummed installer · signed &amp; notarized binaries
           </p>
         </div>
