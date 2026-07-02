@@ -1,0 +1,80 @@
+@import 'tailwindcss';
+
+/*
+ * browserlane brand tokens — the Anthropic palette.
+ * Slate (dark surfaces) · Cloud (grays) · Ivory (light) · Book Cloth accent.
+ */
+@theme {
+  --color-ink: #191919; /* Slate Dark — page background */
+  --color-slate: #262625; /* Slate Medium — raised surfaces */
+  --color-edge: #40403e; /* Slate Light — borders */
+  --color-cloud-dark: #666663;
+  --color-cloud: #91918d;
+  --color-cloud-light: #bfbfba;
+  --color-ivory-dark: #e5e4df;
+  --color-ivory: #f0f0eb;
+  --color-ivory-light: #fafaf7;
+  --color-clay: #cc785c; /* Book Cloth — primary accent */
+  --color-kraft: #d4a27f; /* accent hover */
+  --color-manilla: #ebdbbc;
+  --color-focus: #61aaf2; /* focus rings + info highlights */
+  --color-danger: #bf4d43;
+
+  --font-sans:
+    var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono:
+    var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas,
+    monospace;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem; /* keep anchors clear of the fixed nav */
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply bg-ink text-ivory-light antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-clay);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+}
+
+/* Blinking caret used in the typed-input layer visual. */
+@keyframes bl-caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.bl-caret {
+  animation: bl-caret 1.1s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-caret {
+    animation: none;
+  }
+}
