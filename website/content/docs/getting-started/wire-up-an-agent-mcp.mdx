@@ -18,8 +18,9 @@ the agent calls the tools for you.
     bl install
     ```
 
-    This downloads Chrome for Testing up front so the agent's first browser
-    action doesn't stall on the download.
+    This downloads Chrome for Testing into the local cache. It's required — `bl`
+    doesn't fetch Chrome on demand, so the agent's first browser action would
+    otherwise error with "Chrome not found".
   </Step>
   <Step>
     ### Register the MCP server

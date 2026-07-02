@@ -345,6 +345,8 @@ manual "dialog accept" "alert() blocks the page; dialog handling is interactive"
 manual "dialog dismiss" "interactive dialog handling"
 manual pipe            "hidden library transport (stdin BiDi); errors on Windows"
 manual serve           "hidden long-running WebDriver-ish server"
+manual update          "self-update: hits GitHub, replaces the running binary"
+manual uninstall       "destructive: removes the install dir + PATH entry"
 
 # mcp is a server but IS scriptable — verify the JSON-RPC handshake.
 phase "MCP handshake (scripted)"

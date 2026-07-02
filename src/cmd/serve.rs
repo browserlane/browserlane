@@ -22,10 +22,22 @@ pub fn serve_command() -> Command {
                 .default_value("9515")
                 .value_parser(clap::value_parser!(u16)),
         )
+        .arg(
+            Arg::new("host")
+                .long("host")
+                .default_value("127.0.0.1")
+                .help("Bind address (every client gets full browser control; only expose beyond loopback deliberately, e.g. --host 0.0.0.0)"),
+        )
 }
 
-pub async fn run_serve(port: u16, headless: bool) {
-    println!("Starting Browserlane proxy server on port {port}...");
+pub async fn run_serve(host: &str, port: u16, headless: bool) {
+    println!("Starting Browserlane proxy server on {host}:{port}...");
+    if host != "127.0.0.1" && host != "localhost" && host != "::1" {
+        eprintln!(
+            "WARNING: binding {host} — this server has no authentication; any host that can \
+             reach this port gets a fully-privileged browser session."
+        );
+    }
 
     // Create router to manage browser sessions.
     let router = api::new_router(headless, "", None);
@@ -35,6 +47,7 @@ pub async fn run_serve(port: u16, headless: bool) {
     let r_close = Arc::clone(&router);
 
     let server = api::new_server(vec![
+        api::with_host(host),
         api::with_port(port),
         api::with_on_connect(Arc::new(move |client| {
             let r = Arc::clone(&r_connect);
@@ -55,7 +68,7 @@ pub async fn run_serve(port: u16, headless: bool) {
         std::process::exit(1);
     }
 
-    println!("Server listening on ws://localhost:{}", server.port());
+    println!("Server listening on ws://{host}:{}", server.port());
     println!("Press Ctrl+C to stop...");
 
     // Wait for signal.

@@ -333,8 +333,9 @@ async fn main() {
             cmd::run_screenshot(url, output, full_page, annotate, headless, json_output).await;
         }
         Some(("serve", sub)) => {
+            let host = sub.get_one::<String>("host").cloned().unwrap_or_else(|| "127.0.0.1".to_string());
             let port = sub.get_one::<u16>("port").copied().unwrap_or(9515);
-            cmd::run_serve(port, headless).await;
+            cmd::run_serve(&host, port, headless).await;
         }
         Some(("pipe", sub)) => {
             let connect_url = sub.get_one::<String>("connect").cloned().unwrap_or_default();

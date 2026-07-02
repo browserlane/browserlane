@@ -17,4 +17,4 @@ Options:
 
 Examples:
   bl find label "Email"
-  # → @e1 [input type="email"] placeholder="Email"
+  # → @e1 [input type="email"] placeholder="Email" @ (80,240) 320x36

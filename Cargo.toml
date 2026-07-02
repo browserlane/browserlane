@@ -52,6 +52,9 @@ directories = "5"
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream"] }
 zip = "2"
 
+# Release-asset checksum verification (bl update).
+sha2 = "0.10"
+
 # Daemon IPC: cross-platform local socket (Unix-domain socket on unix, named pipe on Windows).
 interprocess = { version = "2", features = ["tokio"] }
 

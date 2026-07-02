@@ -17,4 +17,4 @@ Options:
 
 Examples:
   bl find placeholder "Search..."
-  # → @e1 [input] placeholder="Search..."
+  # → @e1 [input] placeholder="Search..." @ (80,240) 320x36

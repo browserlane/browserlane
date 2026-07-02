@@ -55,8 +55,20 @@ try {
 
   $installDir = if ($env:BL_INSTALL_DIR) { $env:BL_INSTALL_DIR } else { Join-Path $HOME '.browserlane\bin' }
   New-Item -ItemType Directory -Force -Path $installDir | Out-Null
-  Copy-Item $exe.FullName (Join-Path $installDir 'bl.exe') -Force
-  Say "installed bl $version -> $installDir\bl.exe"
+
+  # Install via stage-then-move rather than overwriting in place. A running
+  # bl.exe can't be replaced directly, so move the old one aside first.
+  $target = Join-Path $installDir 'bl.exe'
+  $staged = Join-Path $installDir ('.bl.exe.new.' + $PID)
+  Copy-Item $exe.FullName $staged -Force
+  if (Test-Path $target) {
+    $old = Join-Path $installDir 'bl.exe.old'
+    Remove-Item $old -Force -ErrorAction SilentlyContinue
+    try { Rename-Item $target $old -Force } catch { }
+  }
+  Move-Item $staged $target -Force
+  Remove-Item (Join-Path $installDir 'bl.exe.old') -Force -ErrorAction SilentlyContinue
+  Say "installed bl $version -> $target"
 
   $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
   if (($userPath -split ';') -notcontains $installDir) {

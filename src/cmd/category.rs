@@ -153,6 +153,8 @@ const COMMAND_ORDER: &[&str] = &[
     "add-mcp",
     // Setup & diagnostics
     "install",
+    "update",
+    "uninstall",
     "is-installed",
     "paths",
     "version",
@@ -255,6 +257,8 @@ pub fn category_for(name: &str) -> Category {
 
         // Setup & diagnostics
         "install" => Category::SetupDiagnostics,
+        "update" => Category::SetupDiagnostics,
+        "uninstall" => Category::SetupDiagnostics,
         "is-installed" => Category::SetupDiagnostics,
         "paths" => Category::SetupDiagnostics,
         "version" => Category::SetupDiagnostics,
@@ -310,12 +314,11 @@ pub fn caps_for(name: &str) -> Caps {
         },
         // No browser and no JSON result: shell script, long-running server,
         // interactive transport, or installer.
-        "ws-test" | "bidi-test" | "completion" | "mcp" | "add-skill" | "add-mcp" | "__dump" => {
-            Caps {
-                headless: false,
-                json: false,
-            }
-        }
+        "ws-test" | "bidi-test" | "completion" | "mcp" | "add-skill" | "add-mcp" | "update"
+        | "uninstall" | "__dump" => Caps {
+            headless: false,
+            json: false,
+        },
         // Everything else drives the browser and emits a result → both.
         _ => Caps {
             headless: true,
@@ -341,6 +344,8 @@ pub const CAPS_EXCEPTIONS: &[&str] = &[
     "mcp",
     "add-skill",
     "add-mcp",
+    "update",
+    "uninstall",
     "__dump",
 ];
 

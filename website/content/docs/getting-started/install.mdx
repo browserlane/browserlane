@@ -64,16 +64,16 @@ The binary lands at `./target/release/bl`.
   <Step>
     ### Download Chrome for Testing
 
-    `bl` drives a pinned build of **Chrome for Testing** (and a matching
+    `bl` drives its own build of **Chrome for Testing** (and a matching
     chromedriver) that it keeps in a local cache. Fetch it once:
 
     ```bash
     bl install
     ```
 
-    You can skip this — any browser command downloads Chrome on first use — but
-    running it up front means your first automation doesn't stall on the
-    download.
+    This is required before your first automation — `bl` doesn't download Chrome
+    on demand, so a browser command errors with "Chrome not found" until the
+    cache is populated.
   </Step>
   <Step>
     ### Verify the install
@@ -90,6 +90,20 @@ The binary lands at `./target/release/bl`.
     ```
   </Step>
 </Steps>
+
+## Updating & uninstalling
+
+```bash
+bl update           # install the latest release
+bl update --check   # report whether a newer release exists (no changes)
+bl uninstall        # remove bl and the PATH entry it added
+bl uninstall --purge  # also remove the Chrome cache and screenshots
+```
+
+`bl update` swaps in the new binary as a fresh file rather than overwriting the
+old one in place. That side-steps a macOS Gatekeeper quirk where a binary
+overwritten on top of an existing one can be killed on launch. Re-running the
+install script has the same effect.
 
 ## Next steps
 

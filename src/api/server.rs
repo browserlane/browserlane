@@ -25,6 +25,7 @@ pub type MessageFn = Arc<
 
 /// A WebSocket server that accepts client connections.
 pub struct Server {
+    host: String,
     port: u16,
     bound_port: AtomicU16,
     next_id: AtomicU64,
@@ -36,6 +37,14 @@ pub struct Server {
 
 /// Configures a Server.
 pub type ServerOption = Box<dyn FnOnce(&mut Server)>;
+
+/// Sets the bind address for the server. Every connected client gets a
+/// fully-privileged browser session, so anything other than loopback exposes
+/// browser control to the network.
+pub fn with_host(host: &str) -> ServerOption {
+    let host = host.to_string();
+    Box::new(move |s| s.host = host)
+}
 
 /// Sets the port for the server.
 pub fn with_port(port: u16) -> ServerOption {
@@ -60,6 +69,7 @@ pub fn with_on_close(f: ConnectFn) -> ServerOption {
 /// Creates a new WebSocket server.
 pub fn new_server(opts: Vec<ServerOption>) -> Arc<Server> {
     let mut s = Server {
+        host: "127.0.0.1".to_string(),
         port: 9515,
         bound_port: AtomicU16::new(0),
         next_id: AtomicU64::new(0),
@@ -87,9 +97,9 @@ impl Server {
 
     /// Starts the WebSocket server.
     pub async fn start(self: &Arc<Self>) -> anyhow::Result<()> {
-        let listener = TcpListener::bind(("0.0.0.0", self.port))
+        let listener = TcpListener::bind((self.host.as_str(), self.port))
             .await
-            .map_err(|e| anyhow!("failed to listen on port {}: {e}", self.port))?;
+            .map_err(|e| anyhow!("failed to listen on {}:{}: {e}", self.host, self.port))?;
 
         let actual = listener.local_addr()?.port();
         self.bound_port.store(actual, Ordering::SeqCst);

@@ -410,7 +410,7 @@ impl Handlers {
             self.ref_map.clear();
             self.ref_map.insert("@e1".to_string(), found.selector);
 
-            return Ok(text_result(&format!("@e1 {}", found.label)));
+            return Ok(text_result(&find_line("@e1", &found.label, found.box_.as_ref())));
         }
 
         // CSS selector mode.
@@ -423,7 +423,7 @@ impl Handlers {
         let selector = self.resolve_selector(selector);
 
         let label_script = format!(
-            "(selector) => {{\n\t\t{gl}\n\t\tconst el = document.querySelector(selector);\n\t\tif (!el) return null;\n\t\tif (el.scrollIntoViewIfNeeded) {{\n\t\t\tel.scrollIntoViewIfNeeded(true);\n\t\t}} else {{\n\t\t\tel.scrollIntoView({{ block: 'center', inline: 'nearest' }});\n\t\t}}\n\t\treturn getLabel(el);\n\t}}",
+            "(selector) => {{\n\t\t{gl}\n\t\tconst el = document.querySelector(selector);\n\t\tif (!el) return null;\n\t\tif (el.scrollIntoViewIfNeeded) {{\n\t\t\tel.scrollIntoViewIfNeeded(true);\n\t\t}} else {{\n\t\t\tel.scrollIntoView({{ block: 'center', inline: 'nearest' }});\n\t\t}}\n\t\tconst rect = el.getBoundingClientRect();\n\t\treturn JSON.stringify({{ label: getLabel(el), box: {{ x: Math.round(rect.x), y: Math.round(rect.y), w: Math.round(rect.width), h: Math.round(rect.height) }} }});\n\t}}",
             gl = get_label_js()
         );
         let label_result = client
@@ -433,8 +433,12 @@ impl Handlers {
         self.ref_map.clear();
         self.ref_map.insert("@e1".to_string(), selector);
 
-        let label_str = label_result.as_str().unwrap_or("").to_string();
-        Ok(text_result(&format!("@e1 {label_str}")))
+        let found: FindResult = match label_result.as_str() {
+            Some(s) if !s.is_empty() => serde_json::from_str(s)
+                .map_err(|e| anyhow!("failed to parse find result: {e}"))?,
+            _ => FindResult::default(),
+        };
+        Ok(text_result(&find_line("@e1", &found.label, found.box_.as_ref())))
     }
 
     /// Finds all elements matching a CSS selector, storing @e1.. refs.
@@ -450,7 +454,7 @@ impl Handlers {
         let limit = arg_float(&args, "limit").map(|l| l as i64).unwrap_or(10);
 
         let find_all_script = format!(
-            "(selector, limit) => {{\n\t\t{gs}\n\t\t{gl}\n\t\tconst els = document.querySelectorAll(selector);\n\t\tconst results = [];\n\t\tconst n = Math.min(els.length, limit);\n\t\tfor (let i = 0; i < n; i++) {{\n\t\t\tconst el = els[i];\n\t\t\tresults.push({{ selector: getSelector(el), label: getLabel(el) }});\n\t\t}}\n\t\treturn JSON.stringify(results);\n\t}}",
+            "(selector, limit) => {{\n\t\t{gs}\n\t\t{gl}\n\t\tconst els = document.querySelectorAll(selector);\n\t\tconst results = [];\n\t\tconst n = Math.min(els.length, limit);\n\t\tfor (let i = 0; i < n; i++) {{\n\t\t\tconst el = els[i];\n\t\t\tconst r = el.getBoundingClientRect();\n\t\t\tresults.push({{ selector: getSelector(el), label: getLabel(el), box: {{ x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.width), h: Math.round(r.height) }} }});\n\t\t}}\n\t\treturn JSON.stringify(results);\n\t}}",
             gs = get_selector_js(),
             gl = get_label_js()
         );
@@ -468,7 +472,7 @@ impl Handlers {
         for (i, el) in elements.iter().enumerate() {
             let ref_ = format!("@e{}", i + 1);
             self.ref_map.insert(ref_.clone(), el.selector.clone());
-            lines.push(format!("{ref_} {}", el.label));
+            lines.push(find_line(&ref_, &el.label, el.box_.as_ref()));
         }
 
         let text = if lines.is_empty() {
@@ -2759,13 +2763,34 @@ fn error_result(text: &str) -> ToolsCallResult {
     }
 }
 
-/// A {selector, label} pair returned by the find scripts.
+/// A {selector, label, box?} object returned by the find/map scripts.
+/// `box` is emitted only by the find scripts; the map script omits it.
 #[derive(Debug, Default, Deserialize)]
 struct FindResult {
     #[serde(default)]
     selector: String,
     #[serde(default)]
     label: String,
+    #[serde(default, rename = "box")]
+    box_: Option<ElementBox>,
+}
+
+/// Viewport bounding box (top-left origin, CSS pixels, rounded in-page).
+#[derive(Debug, Deserialize)]
+struct ElementBox {
+    x: i64,
+    y: i64,
+    w: i64,
+    h: i64,
+}
+
+/// Formats an `@eN [tag] "text"` find line, appending `@ (x,y) WxH` when the
+/// element's bounding box is known.
+fn find_line(ref_: &str, label: &str, box_: Option<&ElementBox>) -> String {
+    match box_ {
+        Some(b) => format!("{ref_} {label} @ ({},{}) {}x{}", b.x, b.y, b.w, b.h),
+        None => format!("{ref_} {label}"),
+    }
 }
 
 /// Extracts a float arg, accepting numbers or numeric strings.

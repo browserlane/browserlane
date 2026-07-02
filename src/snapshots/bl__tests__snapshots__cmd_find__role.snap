@@ -18,7 +18,7 @@ Options:
 
 Examples:
   bl find role button
-  # → @e1 [button] "Submit"
+  # → @e1 [button] "Submit" @ (312,428) 96x40
 
   bl find role heading --name "Example"
   # Find heading with accessible name "Example"

@@ -10,8 +10,9 @@
 - A **CLI** for humans and scripts (navigate, click, screenshot, find, ...)
 - An **MCP server** for AI agents (86 tools over stdio JSON-RPC)
 
-It drives Chrome via the WebDriver BiDi protocol, auto-installs the browser
-on first use, and ships as one static binary on macOS, Linux, and Windows.
+It drives Chrome via the WebDriver BiDi protocol, installs its own Chrome for
+Testing with one command, and ships as one static binary on macOS, Linux, and
+Windows.
 
 ## Why browserlane
 
@@ -50,7 +51,18 @@ irm https://browserlane.com/install.ps1 | iex
 ```
 
 The installer detects your platform, verifies the download's checksum, installs
-`bl`, and puts it on your `PATH`. **Re-run any time to update.**
+`bl`, and puts it on your `PATH`.
+
+### Update & uninstall
+
+```bash
+bl update          # fetch and install the latest release (bl update --check to just look)
+bl uninstall       # remove bl + its PATH entry (bl uninstall --purge also clears the Chrome cache)
+```
+
+`bl update` replaces the binary in place with a fresh file (never an in-place
+overwrite), which avoids a macOS Gatekeeper quirk that can kill a binary
+overwritten on top of an old one. Re-running the install script updates too.
 
 ### Manual download
 
@@ -76,8 +88,8 @@ cargo build --release
 ./target/release/bl --version
 ```
 
-The first `bl install` (or any browser command) downloads Chrome-for-Testing into
-the platform cache dir.
+`bl install` downloads Chrome-for-Testing into the platform cache dir. Run it
+once before your first browser command — `bl` doesn't fetch Chrome on demand.
 
 ## Quickstart — CLI
 
@@ -109,13 +121,13 @@ bl add-mcp codex           # OpenAI Codex CLI
 ```
 
 `bl add-mcp --list` shows every client; add `--stdout` to print the config
-instead of writing it. Run **`bl install` once first** so the agent's first
-browser action doesn't stall on the Chrome download.
+instead of writing it. Run **`bl install` once first** — the first browser
+action needs Chrome for Testing in the local cache (`bl` doesn't fetch it on
+demand).
 
 Then ask your agent things like "open example.com, click the second link,
 screenshot the result". The 86 tools cover navigation, interaction, capture,
-recording, emulation, network interception, assertions, the page clock, and
-more — see
+recording, emulation, assertions, the page clock, and more — see
 `bl mcp` → `tools/list` for the full catalog.
 
 ## Daemon

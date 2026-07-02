@@ -43,6 +43,47 @@ pub fn register(cli: Command) -> Command {
                 ),
             ])),
     )
+    .subcommand(
+        Command::new("update")
+            .about("Update bl to the latest release")
+            .arg(
+                Arg::new("check")
+                    .long("check")
+                    .action(ArgAction::SetTrue)
+                    .help("Only check whether a newer release exists (exit 1 if so)"),
+            )
+            .arg(
+                Arg::new("force")
+                    .long("force")
+                    .action(ArgAction::SetTrue)
+                    .help("Reinstall the latest release even if already current"),
+            )
+            .after_help(examples(&[
+                ("update", "Update to the latest release"),
+                ("update --check", "Report whether an update is available"),
+            ])),
+    )
+    .subcommand(
+        Command::new("uninstall")
+            .about("Remove bl, its install directory, and the PATH entry")
+            .arg(
+                Arg::new("purge")
+                    .long("purge")
+                    .action(ArgAction::SetTrue)
+                    .help("Also remove the Chrome cache and screenshots"),
+            )
+            .arg(
+                Arg::new("yes")
+                    .long("yes")
+                    .short('y')
+                    .action(ArgAction::SetTrue)
+                    .help("Skip the confirmation prompt"),
+            )
+            .after_help(examples(&[
+                ("uninstall", "Remove bl (keeps Chrome cache and screenshots)"),
+                ("uninstall --purge", "Remove bl and all cached data"),
+            ])),
+    )
 }
 
 /// Builds an `Examples:` after_help block matching the shared `cmd::examples`
@@ -75,6 +116,20 @@ pub async fn dispatch(name: &str, sub: &ArgMatches, _headless: bool, _json_outpu
     match name {
         "add-mcp" => {
             run_add_mcp(sub);
+            true
+        }
+        "update" => {
+            if let Err(e) = super::update::run(sub.get_flag("check"), sub.get_flag("force")).await {
+                eprintln!("Error: {e}");
+                std::process::exit(1);
+            }
+            true
+        }
+        "uninstall" => {
+            if let Err(e) = super::uninstall::run(sub.get_flag("purge"), sub.get_flag("yes")).await {
+                eprintln!("Error: {e}");
+                std::process::exit(1);
+            }
             true
         }
         _ => false,

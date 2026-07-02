@@ -17,4 +17,4 @@ Options:
 
 Examples:
   bl find testid "submit-btn"
-  # → @e1 [button] data-testid="submit-btn"
+  # → @e1 [button] data-testid="submit-btn" @ (312,428) 96x40

@@ -17,4 +17,4 @@ Options:
 
 Examples:
   bl find xpath "//div[@class='main']"
-  # → @e1 [div.main] ...
+  # → @e1 [div] "..." @ (0,64) 960x480

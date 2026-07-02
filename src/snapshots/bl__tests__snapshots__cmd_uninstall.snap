@@ -1,0 +1,20 @@
+---
+source: src/tests.rs
+expression: render_command_help(&refs)
+---
+Remove bl, its install directory, and the PATH entry
+
+Usage: bl uninstall [OPTIONS]
+
+Options:
+      --purge    Also remove the Chrome cache and screenshots
+  -v, --verbose  Enable debug logging
+  -y, --yes      Skip the confirmation prompt
+  -h, --help     Print help
+
+Examples:
+  bl uninstall
+  # Remove bl (keeps Chrome cache and screenshots)
+
+  bl uninstall --purge
+  # Remove bl and all cached data

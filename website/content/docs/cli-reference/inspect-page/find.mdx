@@ -39,16 +39,16 @@ bl find <command>
 
 ```bash
 bl find "a"
-# → @e1 [a] "More information..."
+# → @e1 [a] "More information..." @ (32,133) 140x18
 
 bl find "a" --all
-# → @e1 [a] "Home"  @e2 [a] "About"  ...
+# → @e1 [a] "Home" @ (16,12) 48x24  @e2 [a] "About"  ...
 
 bl find text "Sign In"
-# → @e1 [button] "Sign In"
+# → @e1 [button] "Sign In" @ (312,428) 96x40
 
 bl find role button
-# → @e1 [button] "Submit"
+# → @e1 [button] "Submit" @ (312,428) 96x40
 
 bl find role heading --name "Example"
 # Find heading with accessible name "Example"
@@ -87,7 +87,7 @@ bl find text <text> [OPTIONS]
 
 ```bash
 bl find text "Sign In"
-# → @e1 [button] "Sign In"
+# → @e1 [button] "Sign In" @ (312,428) 96x40
 ```
 
 ## `bl find role`
@@ -124,7 +124,7 @@ bl find role <role> [OPTIONS]
 
 ```bash
 bl find role button
-# → @e1 [button] "Submit"
+# → @e1 [button] "Submit" @ (312,428) 96x40
 
 bl find role heading --name "Example"
 # Find heading with accessible name "Example"
@@ -163,7 +163,7 @@ bl find label <label> [OPTIONS]
 
 ```bash
 bl find label "Email"
-# → @e1 [input type="email"] placeholder="Email"
+# → @e1 [input type="email"] placeholder="Email" @ (80,240) 320x36
 ```
 
 ## `bl find placeholder`
@@ -199,7 +199,7 @@ bl find placeholder <placeholder> [OPTIONS]
 
 ```bash
 bl find placeholder "Search..."
-# → @e1 [input] placeholder="Search..."
+# → @e1 [input] placeholder="Search..." @ (80,240) 320x36
 ```
 
 ## `bl find testid`
@@ -235,7 +235,7 @@ bl find testid <testid> [OPTIONS]
 
 ```bash
 bl find testid "submit-btn"
-# → @e1 [button] data-testid="submit-btn"
+# → @e1 [button] data-testid="submit-btn" @ (312,428) 96x40
 ```
 
 ## `bl find xpath`
@@ -271,7 +271,7 @@ bl find xpath <expression> [OPTIONS]
 
 ```bash
 bl find xpath "//div[@class='main']"
-# → @e1 [div.main] ...
+# → @e1 [div] "..." @ (0,64) 960x480
 ```
 
 ## `bl find alt`
