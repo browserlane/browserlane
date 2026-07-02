@@ -30,16 +30,16 @@ Options:
 
 Examples:
   bl find "a"
-  # → @e1 [a] "More information..."
+  # → @e1 [a] "More information..." @ (32,133) 140x18
 
   bl find "a" --all
-  # → @e1 [a] "Home"  @e2 [a] "About"  ...
+  # → @e1 [a] "Home" @ (16,12) 48x24  @e2 [a] "About"  ...
 
   bl find text "Sign In"
-  # → @e1 [button] "Sign In"
+  # → @e1 [button] "Sign In" @ (312,428) 96x40
 
   bl find role button
-  # → @e1 [button] "Submit"
+  # → @e1 [button] "Submit" @ (312,428) 96x40
 
   bl find role heading --name "Example"
   # Find heading with accessible name "Example"

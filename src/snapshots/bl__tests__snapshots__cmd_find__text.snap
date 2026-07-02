@@ -17,4 +17,4 @@ Options:
 
 Examples:
   bl find text "Sign In"
-  # → @e1 [button] "Sign In"
+  # → @e1 [button] "Sign In" @ (312,428) 96x40

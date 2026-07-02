@@ -37,10 +37,10 @@ pub fn find_command() -> Command {
                 .help("Maximum number of elements to return (with --all)"),
         )
         .after_help(examples(&[
-            ("find \"a\"", "→ @e1 [a] \"More information...\""),
-            ("find \"a\" --all", "→ @e1 [a] \"Home\"  @e2 [a] \"About\"  ..."),
-            ("find text \"Sign In\"", "→ @e1 [button] \"Sign In\""),
-            ("find role button", "→ @e1 [button] \"Submit\""),
+            ("find \"a\"", "→ @e1 [a] \"More information...\" @ (32,133) 140x18"),
+            ("find \"a\" --all", "→ @e1 [a] \"Home\" @ (16,12) 48x24  @e2 [a] \"About\"  ..."),
+            ("find text \"Sign In\"", "→ @e1 [button] \"Sign In\" @ (312,428) 96x40"),
+            ("find role button", "→ @e1 [button] \"Submit\" @ (312,428) 96x40"),
             (
                 "find role heading --name \"Example\"",
                 "Find heading with accessible name \"Example\"",
@@ -50,7 +50,7 @@ pub fn find_command() -> Command {
             "text",
             "text",
             "Find element by text content",
-            ("find text \"Sign In\"", "→ @e1 [button] \"Sign In\""),
+            ("find text \"Sign In\"", "→ @e1 [button] \"Sign In\" @ (312,428) 96x40"),
         ))
         .subcommand(
             Command::new("role")
@@ -63,7 +63,7 @@ pub fn find_command() -> Command {
                         .help("Accessible name filter"),
                 )
                 .after_help(examples(&[
-                    ("find role button", "→ @e1 [button] \"Submit\""),
+                    ("find role button", "→ @e1 [button] \"Submit\" @ (312,428) 96x40"),
                     (
                         "find role heading --name \"Example\"",
                         "Find heading with accessible name \"Example\"",
@@ -76,7 +76,7 @@ pub fn find_command() -> Command {
             "Find input by associated label text",
             (
                 "find label \"Email\"",
-                "→ @e1 [input type=\"email\"] placeholder=\"Email\"",
+                "→ @e1 [input type=\"email\"] placeholder=\"Email\" @ (80,240) 320x36",
             ),
         ))
         .subcommand(semantic(
@@ -85,7 +85,7 @@ pub fn find_command() -> Command {
             "Find element by placeholder attribute",
             (
                 "find placeholder \"Search...\"",
-                "→ @e1 [input] placeholder=\"Search...\"",
+                "→ @e1 [input] placeholder=\"Search...\" @ (80,240) 320x36",
             ),
         ))
         .subcommand(semantic(
@@ -94,14 +94,14 @@ pub fn find_command() -> Command {
             "Find element by data-testid attribute",
             (
                 "find testid \"submit-btn\"",
-                "→ @e1 [button] data-testid=\"submit-btn\"",
+                "→ @e1 [button] data-testid=\"submit-btn\" @ (312,428) 96x40",
             ),
         ))
         .subcommand(semantic(
             "xpath",
             "expression",
             "Find element by XPath expression",
-            ("find xpath \"//div[@class='main']\"", "→ @e1 [div.main] ..."),
+            ("find xpath \"//div[@class='main']\"", "→ @e1 [div] \"...\" @ (0,64) 960x480"),
         ))
         .subcommand(semantic(
             "alt",
