@@ -28,7 +28,7 @@ export function NewsletterForm() {
       const json = (await res.json()) as { ok?: boolean; error?: string };
       if (res.ok && json.ok) {
         setStatus('success');
-        setMessage('Subscribed — see you in the next update.');
+        setMessage('Almost there — check your inbox to confirm.');
         form.reset();
       } else {
         setStatus('error');

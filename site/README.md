@@ -25,18 +25,31 @@ pins the Next.js framework preset, pnpm frozen-lockfile install, and
 
 | Variable | Purpose |
 |---|---|
-| `RESEND_API_KEY` | Resend API key for the newsletter form |
+| `RESEND_API_KEY` | Resend API key for the newsletter (also signs confirm tokens) |
 | `RESEND_AUDIENCE_ID` | Resend audience that collects subscribers |
+| `RESEND_FROM` | Optional sender override — default `browserlane <bl@browserlane.com>` |
 
-Without them the `/api/subscribe` endpoint returns a friendly 503 (the form
-tells visitors to email bl@browserlane.com instead), so deploying before
-Resend is configured is safe. GitHub stars are fetched server-side with a
-1-hour ISR revalidate and degrade to no-count if the API is unreachable.
+Without the required two the `/api/subscribe` endpoint returns a friendly
+503 (the form tells visitors to email bl@browserlane.com instead), so
+deploying before Resend is configured is safe. GitHub stars are fetched
+server-side with a 1-hour ISR revalidate and degrade to no-count if the
+API is unreachable.
 
-Newsletter abuse posture: the endpoint checks same-origin and a honeypot,
-but script-driven signup abuse should be handled at the platform layer —
-add a Vercel WAF rate-limit rule for `POST /api/subscribe`, and enable
-double opt-in on the Resend audience so bombed addresses never get added.
+**The newsletter is double opt-in** (Resend has no native toggle; this is
+their documented pattern): `/api/subscribe` creates the contact with
+`unsubscribed: true` and emails a signed 48-hour confirmation link;
+`/api/confirm` verifies the HMAC token and flips the contact to
+subscribed. Bombed or typo'd addresses get one confirmation email and are
+never actually subscribed. **Requires browserlane.com to be a verified
+domain in Resend** (Resend dashboard → Domains → Add Domain → add the
+DKIM/SPF DNS records), otherwise the confirmation email fails to send.
+
+On top of that: same-origin check + honeypot in the route, plus a
+platform-level rate limit — in the Vercel project go to **Firewall →
+Configure → New Rule**, match `Request Path equals /api/subscribe` and
+`Method equals POST`, add a **Rate Limit** (fixed window, e.g. 5 requests
+per 60 s, keyed by IP address) with action **Deny**. One rate-limit rule
+is included on every Vercel plan, Hobby included.
 
 **Install one-liners keep working after the domain cutover.** The repo-root
 `install.sh`/`install.ps1` (canonical copies, also served by GitHub Pages
@@ -85,7 +98,8 @@ app/
   layout.tsx            fonts + metadata + pre-paint theme script
   page.tsx              section assembly + GitHub stars fetch
   globals.css           Tailwind + brand tokens (raw + semantic)
-  api/subscribe/        newsletter endpoint (Resend Contacts API)
+  api/subscribe/        newsletter signup (Resend contact + confirm email)
+  api/confirm/          double opt-in confirmation (flips to subscribed)
 components/
   site-nav.tsx          fixed top nav (links, stars, theme toggle)
   hero.tsx              slogan + headline + browser/CLI/MCP product visual
@@ -105,6 +119,7 @@ components/
                         CopyButton, ThemeToggle
 lib/
   github.ts             starred-count fetch (ISR 1h) + formatting
+  confirm-token.ts      HMAC-signed 48h tokens for the opt-in link
 ```
 
 ## The scroll story

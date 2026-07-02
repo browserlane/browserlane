@@ -3,6 +3,7 @@ node_modules/
 out/
 *.tsbuildinfo
 next-env.d.ts
+.env*.local
 
 # synced from repo root by scripts/sync-install-scripts.mjs
 /public/install.sh
